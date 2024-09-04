@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+ {% if user.is_authenticated %}
+        {% if user.usuario.tipo.nome == "Supervisor" %}
+            <p>Supervisor</p>
+        {% elif user.usuario.tipo.nome == "Assistente" %}
+            <p>Assistente</p>
+        {% endif %}
+    {% else %}
+        <p>User not authenticated</p>
+    {% endif %}
+
+aqui
+
+
+{% endblock %}
