@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+<div class="container">
+    <div class="text-center">
+{% block main %}
+    {% if lista_pausas and not iniciado %}
+
+    <form action="{% url 'iniciar_intervalo' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            Iniciar Intervalo
+        </button>
+    </form>
+
+    
+    {% elif iniciado %}
+      {% for time in iniciado %}
+      <p>Intervalo iniciado</p>  
+      <div 
+      id="tempo-decorrido-{{ time.id }}" 
+      data-inicio="{{ time.inicio|date:'Y-m-d H:i:s' }}" 
+      class="tempo-decorrido"
+            >
+    
+    </div>
+
+        <a href="{% url 'finalizar_intervalo' time.id %}" class="btn btn-danger">Finalizar intervalo</a>
+
+    {% endfor %}
+    {% endif %}
+    {% if not nao_aprovado and not iniciado and not lista_pausas %}
+    <p class="btn btn-primary">Em fila para intervalo</p>
+        {{fila.id }}
+        {% endif %}
+       
+
+</div>
+</div>
+<script>
+    function startTimer(startTime, displayElement) {
+        setInterval(function() {
+            var now = new Date();
+            var start = new Date(startTime);
+            var diff = now - start;  // diferença em milissegundos
+
+            // Garante que a diferença é válida antes de continuar
+            if (isNaN(diff)) {
+                displayElement.textContent = "Erro na data";
+                return;
+            }
+
+            // Converte a diferença em horas, minutos e segundos
+            var hours = Math.floor(diff / (1000 * 60 * 60));
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            // Garante que horas, minutos e segundos sejam válidos
+            hours = hours >= 0 ? hours : 0;
+            minutes = minutes >= 0 ? minutes : 0;
+            seconds = seconds >= 0 ? seconds : 0;
+
+            // Formata o tempo decorrido
+            var formattedTime = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+            // Atualiza o elemento HTML com o tempo decorrido
+            displayElement.textContent = formattedTime;
+        }, 1000); // Atualiza a cada segundo
+    }
+
+    // Exemplo de como iniciar o contador
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.tempo-decorrido').forEach(function(element) {
+            var startTime = element.getAttribute('data-inicio');
+            if (startTime) {
+                startTimer(startTime, element);
+            }
+        });
+    });
+
+</script>
+
+
+{% endblock %}

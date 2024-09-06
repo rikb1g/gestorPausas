@@ -13,7 +13,7 @@ class TipoUsuario(models.Model):
 class Usuario(models.Model):
     nome = models.CharField(max_length=100)
     user = models.OneToOneField(User,on_delete=models.PROTECT)
-    tipo = models.OneToOneField(TipoUsuario, on_delete=models.PROTECT)
+    tipo = models.ForeignKey(TipoUsuario, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.nome
