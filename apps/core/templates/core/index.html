@@ -14,7 +14,7 @@
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_intervalos' %}">
                 <div>
-                    <label>Máximo de intervalos: </label>
+                    <label>Máximo de intervalos ({{ num_pausa_autorizados }}): </label>
                     <select name="num" id="num" aria-label="Small select example" onchange="salvarVAlorSelecionado()"
                         class="ms-2">
                         {% for num in contador %}
@@ -34,7 +34,7 @@
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_bo_autorizados' %}">
                 <div>
-                    <label>Máximo de BO: </label>
+                    <label>Máximo de BO ({{ num_bo_autorizado }}): </label>
                     <select name="num-bo" id="num-bo" aria-label="Small select example"
                         onchange="salvarVAlorSelecionadoBO()" class="ms-2">
                         {% for num in contador %}
@@ -89,7 +89,7 @@
                                 <p class="btn btn-success">
                                     {{ intervalo.funcionario}}
                                 </p>
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ bo.funcionario }}')"><img
+                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
                                     src="{% static 'images/close.svg' %}" alt="remover BO"></a>
                                 {% endif %}
 

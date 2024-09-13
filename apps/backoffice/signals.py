@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.utils import timezone
 
 from .models import BackOffice, BackofficeConfig, BackOfficeFilaEspera
 
@@ -18,7 +19,7 @@ def autorizar_proximo_bo(sender, instance, **kwargs):
         while num_bo_autorizado < num_maximo_bo:
             proximo = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
             if proximo:
-                BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True)
+                BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True,data_aprovacao=timezone.now())
                 proximo.delete()
                 num_bo_autorizado += 1
             else:

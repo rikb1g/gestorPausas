@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(){
-    
+    /*
     var select_num = document.getElementById('num')
     var valor_selecionado_num = select_num.value
     var select_num_bo = document.getElementById('num-bo')
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     localStorage.setItem('select_num', valor_selecionado_num)
     localStorage.setItem('select_num_bo', valor_selecionado_num_bo)
-
+        */
     history.pushState(null, null, '');
     window.onpopstate = function () {
         history.go(1);
@@ -35,20 +35,20 @@ function salvarVAlorSelecionadoBO(){
 
     localStorage.setItem('valor_selecionado_num_bo', valor_selecionado_num_bo)
 }
-
+/*
 window.onload = function() {
     var valor_salvo_num = localStorage.getItem('valor_selecionado_num');
     var valor_salvo_num_bo = localStorage.getItem('valor_selecionado_num_bo');
     if (valor_salvo_num) {
         var select_num = document.getElementById('num');
-        select_num.value = valor_salvo_num; // Aplica o valor do localStorage ao select
+        select_num.value = valor_salvo_num; 
     }
     if (valor_salvo_num_bo){
         var select_num_bo = document.getElementById('num-bo')
         select_num_bo.value = valor_salvo_num_bo
     }
 };
-
+*/
 
 function exibirPopUpConfirmacaoEliPAusa(nome){
     if(confirm("Tens a certeza que pretendes anular o intervalo de " +nome+ " ?")){
@@ -61,7 +61,7 @@ function exibirPopUpConfirmacaoEliPAusa(nome){
 }
 
 function exibirPopUpConfirmacaoAutPausa(nome){
-    if(confirm("Tens a certeza que pretendes anular o intervalo de " +nome+ " ?")){
+    if(confirm("Tens a certeza que pretendes autorizar o intervalo de " +nome+ " ?")){
         var url = "/pausas/autorizar_intervalo_sup?nome="+encodeURIComponent(nome);
         window.location.href = url
     }
@@ -99,3 +99,22 @@ function exibirPopUpconfirmacaoAutBO(nome){
     }
 }
 
+
+
+let isBlack = false;
+
+function mudarcorfundo(){
+    console.log("aqui")
+
+    if(isBlack){
+        document.body.style.backgroundColor = "white"
+        document.body.style.color = "black"
+        document.getElementById("toogleback").innerHTML = "Darkmode"
+    }else {
+        document.body.style.backgroundColor = "#363535"
+        document.body.style.color = "white"
+        document.getElementById("toogleback").innerHTML = "Lighmode"
+    }
+
+    isBlack = !isBlack
+}

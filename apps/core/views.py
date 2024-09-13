@@ -1,8 +1,8 @@
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from apps.pausas.models import  Pausa,FilaEspera,PausasDiarias
-from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera
+from apps.pausas.models import  Pausa,FilaEspera,PausasDiarias, ConfiguracaoPausa
+from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera, BackofficeConfig
 
 # Create your views here.
 
@@ -19,10 +19,14 @@ def home(request):
     data['intervalos_fila'] = FilaEspera.objects.order_by('data_entrada')
     bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
     fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
+    num_pausa_autorizados = ConfiguracaoPausa.objects.last()
+    data['num_pausa_autorizados'] = num_pausa_autorizados.capacidade_maxima  
     # BO
     data['total_bo'] = BackOfficeDiario.calcular_tempo_decorrido_bo(request.user.usuario)
     data['bo_autorizado'] = BackOffice.objects.filter(aprovado=True)
     data['bo_fila'] = BackOfficeFilaEspera.objects.order_by('data_entrada') 
+    num_bo_autorizado = BackofficeConfig.objects.last()
+    data['num_bo_autorizado'] = num_bo_autorizado.capacidade_maxima
 
 
 

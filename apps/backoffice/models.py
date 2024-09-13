@@ -10,6 +10,7 @@ class BackOffice(models.Model):
     inicio = models.DateTimeField(null=True,blank=True)
     fim = models.DateTimeField(null=True, blank=True)
     aprovado = models.BooleanField(default=False)
+    data_aprovacao = models.DateTimeField(null=True, blank=True)
 
     def calcular_tempo_decorrido_bo(self):
         bo_funcionario = BackOfficeDiario.objects.filter(funcionario=self.funcionario)

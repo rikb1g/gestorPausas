@@ -13,7 +13,7 @@ def pedir_bo(request):
     if not configuracao:
         configuracao = BackofficeConfig.objects.create(capacidade_maxima=0)
     if bo_aceites.count() < configuracao.capacidade_maxima:
-        BackOffice.objects.create(funcionario=request.user.usuario, aprovado=True)
+        BackOffice.objects.create(funcionario=request.user.usuario, aprovado=True,data_aprovacao=timezone.now())
         return redirect('lista_intervalos')
     else:
         BackOfficeFilaEspera.objects.create(funcionario=request.user.usuario, data_entrada= timezone.now())
@@ -40,8 +40,7 @@ def finalizar_bo(request):
 
         proximo_fila =BackOfficeFilaEspera.objects.order_by('data_entrada').first()
         if proximo_fila:
-            BackOffice.objects.create(funcionario= proximo_fila.funcionario, aprovado=True)
-
+            BackOffice.objects.create(funcionario= proximo_fila.funcionario, aprovado=True,data_aprovacao=timezone.now())
         return redirect('home')
 
     return redirect('home')
@@ -103,12 +102,6 @@ def cancelar_bo_supervisor(request):
                 bo.save()
                 BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.fim)
                 bo.delete()
-
-                proximo_fila = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
-                if proximo_fila:
-                    BackOffice.objects.create(funcionario=proximo_fila.funcionario,aprovado=True)
-                    proximo_fila.delete()
-                return redirect('home')
         
     return redirect('home')
 
@@ -118,7 +111,7 @@ def autorizar_bo_supervisor(request):
     funcionario = Usuario.objects.get(nome=nome)
     fila = BackOfficeFilaEspera.objects.get(funcionario=funcionario)
     fila.delete()
-    BackOffice.objects.create(funcionario=funcionario,aprovado=True)
+    BackOffice.objects.create(funcionario=funcionario,aprovado=True, data_aprovacao=timezone.now())
     return redirect('home')
 
 def iniciar_bo_supervisor(request):
