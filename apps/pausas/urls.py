@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import iniciarIntervalo, pedir_pausa,Lista_Pausas, finalizarIntervalo, cancelar_intervalo,maximo_intervalos
+from .views import iniciarIntervalo, pedir_pausa,Lista_Pausas, finalizarIntervalo, cancelar_intervalo,maximo_intervalos, cancelar_intervalo_sup, autorizar_intervalo_sup
 
 urlpatterns = [
     path('pausa', pedir_pausa, name='nova_pausa'),
@@ -9,4 +9,6 @@ urlpatterns = [
     path('finalizar_intervalo', finalizarIntervalo, name='finalizar_intervalo'),
     path('cancelar_intervalo', cancelar_intervalo, name='cancelar_intervalo'),
     path('maximo_intervalos', maximo_intervalos, name='maximo_intervalos'),
+    path('cancelar_intervalo_sup', cancelar_intervalo_sup, name='cancelar_intervalo_sup'),
+    path('autorizar_intervalo_sup', autorizar_intervalo_sup, name='autorizar_intervalo_sup'),
 ]

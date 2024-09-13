@@ -4,43 +4,47 @@
 {% block main %}
 <div class="container">
     <div class="text-center">
-        {% if lista_pausas and not iniciado %}
-
+        {% if lista_pausas and not iniciado   %}
+            <script>
+                alert("Intervalo aceite")
+            </script>
         <p>Tempo total de pausa</p>
         <a href="" class="btn btn-primary">{{ total_pausa }}</a>
         <form action="{% url 'iniciar_intervalo' %}" method="POST">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" onclick="iniciarIntervalo()">
                 Iniciar Intervalo
             </button>
         </form>
 
         <form action="{% url 'cancelar_intervalo' %}" method="POST">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" onclick="canelarIntervalo()">
                 Cancelar Intervalo
             </button>
         </form>
 
 
         {% elif iniciado %}
+        
 
         <p class="mt-5 tempo-pausa">Já gozaste {{ total_pausa }} de pausa</p>
         {% for time in iniciado %}
         <p>Intervalo iniciado</p>
-        <div id="tempo-decorrido-{{ time.id }}" data-inicio="{{ time.inicio|date:'Y-m-d H:i:s' }}"
-            class="tempo-decorrido">
-
-        </div>
+        <p id="tempo-decorrido-{{ time.id }}" data-inicio="{{ time.inicio|date:'Y-m-d H:i:s' }}"
+            class="tempo-decorrido"></p>
 
         <form action="{% url 'finalizar_intervalo' %}" method="POST">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" onclick="terminarIntervalo()">
                 Terminar Intervalo
             </button>
         </form>
 
         {% endfor %}
+
+        
+        
         {% endif %}
         {% if not nao_aprovado and not iniciado and not lista_pausas %}
 
@@ -50,14 +54,41 @@
         <p class="mt-5">Está quase....</p>
         <p class="btn btn-primary">És o proximo </p>
         <p class="mt-3 tempo-pausa">Já gozaste {{ total_pausa }} de pausa!</p>
+
+        <form action="{% url 'cancelar_intervalo' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" onclick="canelarIntervalo()">
+                Cancelar Intervalo
+            </button>
+        </form>
+        {% elif index is None  %}
+        <div class="text-center mt-5">
+
+            <a href="{% url 'nova_pausa' %}" class="btn btn-primary" type="submit">Pedir Pausa</a>
+        </div>
+        
+        <div class="text-center mt-5">
+            <p>Tempo total de pausa:</p>
+            <p href="" class="btn btn-primary notbtn">{{ total_pausa}}</p>
+        </div>
+        
         
         {% else %}
         <p class="mt-5">Ups, parece que tens que ter paciência</p>
         <p class="btn btn-primary">Tens {{ index }} a tua frente</p>
         <p class="mt-3 tempo-pausa">Já gozaste {{ total_pausa }} de pausa!</p>
-        {% endif %}
+        <form action="{% url 'cancelar_intervalo' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" onclick="canelarIntervalo()">
+                Cancelar Intervalo
+            </button>
+        </form>
         {% endif %}
         
+        
+        {% endif %}
+        
+    
     </div>
 </div>
 <script>
@@ -106,9 +137,20 @@
     window.onpopstate = function () {
         window.history.pushState(null, "", window.location.href)
     }
+function terminarIntervalo(){
+    alert("A tua pausa terminou")
+}
+function iniciarIntervalo(){
+    alert("Boa pausa!!!")
+    
+}
 
-
+function canelarIntervalo(){
+    alert("Intervalo cancelado!")
+}
 </script>
+
+
 
 
 {% endblock %}

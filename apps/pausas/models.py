@@ -35,9 +35,13 @@ class PausasDiarias(models.Model):
         minutes, seconds = divmod(remainder, 60)
         formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
         return formatted
+    
+    
 
     def __str__(self) -> str:
         return f"{self.funcionario}- Inicio: {self.inicio} - Fim: {self.fim}"
+    
+    
 
 
 class FilaEspera(models.Model):

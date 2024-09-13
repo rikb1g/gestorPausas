@@ -25,3 +25,5 @@ window.onload = function() {
         select_num.value = valor_salvo_num; // Aplica o valor do localStorage ao select
     }
 };
+
+

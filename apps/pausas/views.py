@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views.generic import  ListView
 from django.contrib import messages
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias
-
+from apps.usuarios.models import Usuario
 
 
 
@@ -26,7 +26,7 @@ class Lista_Pausas(ListView):
         context['nao_aprovado'] = Pausa.objects.filter(funcionario=funcionario,aprovado=False)
         context['fila'] = FilaEspera.objects.order_by('data_entrada').first()
         fila_object= FilaEspera.objects.order_by('data_entrada')
-        index_fila = 0
+        index_fila = None
         for index, fila in enumerate(fila_object):
             print(fila.funcionario)
             if fila.funcionario == self.request.user.usuario:
@@ -77,13 +77,15 @@ def iniciarIntervalo(request):
 
 def finalizarIntervalo(request):
     if request.method == 'POST':
-        intervalo = Pausa.objects.filter(funcionario=request.user.usuario)
-        for pausa in intervalo:
-            pausa.fim = timezone.now()
-            pausa.save()
-            arquivar = PausasDiarias(funcionario=pausa.funcionario, inicio=pausa.inicio, fim=pausa.fim)
+        print("aqui")
+        intervalo = Pausa.objects.get(funcionario=request.user.usuario)
+        print(f"aqui{intervalo}")
+        if intervalo:
+            intervalo.fim = timezone.now()
+            intervalo.save()
+            arquivar = PausasDiarias(funcionario=intervalo.funcionario, inicio=intervalo.inicio, fim=intervalo.fim)
             arquivar.save()
-            pausa.delete()
+            intervalo.delete()
 
         proximo_fila = FilaEspera.objects.order_by('data_entrada').first()
         if proximo_fila:
@@ -95,21 +97,27 @@ def finalizarIntervalo(request):
     return redirect('home')
 
 
-"""testar metodo de proximo fila"""
+
 def cancelar_intervalo(request):
     if request.method == 'POST':
-        intervalo = Pausa.objects.filter(funcionario=request.user.usuario)
-        for pausa in intervalo:
-            pausa.delete()
+        
+        
+        try:
+            intervalo = Pausa.objects.get(funcionario=request.user.usuario)
+            print(f"intervalo: {intervalo}")
+            if intervalo:
+                intervalo.delete()
+        except Exception as e:
+            print(f"Intervalo nao existe ou: {e}")
+        try:
+            pausa= FilaEspera.objects.get(funcionario=request.user.usuario)
+            print(f"pausa: {pausa}")
+            if pausa:
+                pausa.delete()
+        except Exception as e:
+            print(f"Pausa nao existe ou: {e}")
 
-        proximo_fila = FilaEspera.objects.order_by('data_entrada').first()
-        if proximo_fila:
-            Pausa.objects.create(funcionario= proximo_fila.funcionario, aprovado=True)
-
-            proximo_fila.delete()
         return redirect('home')
-
-    return redirect('home')
 
 
 def maximo_intervalos(request):
@@ -129,4 +137,53 @@ def maximo_intervalos(request):
         return redirect('home')
         
     return redirect('home')
+
+def cancelar_intervalo_sup(request):
+    nome = request.GET.get('nome')
+    funcionario = Usuario.objects.get(nome=nome)
+    try:
+        fila = FilaEspera.objects.get(funcionario=funcionario)
+        if fila:
+            fila.delete()
+    except:
+        pass
+
+    if funcionario:
+        pausa = Pausa.objects.filter(funcionario=funcionario)
+        
+        for intervalo in pausa:
+            print("intervalo")
+            if intervalo.inicio is None:
+                print("anulado")
+                intervalo.delete()
+                print("anulado")
+            else:
+                print("aqui errado")
+                intervalo.fim = timezone.now()
+                intervalo.save()
+                arquivar = PausasDiarias(funcionario=intervalo.funcionario, inicio=intervalo.inicio, fim=intervalo.fim)
+                arquivar.save()
+                intervalo.delete()
+
+                proximo_fila = FilaEspera.objects.order_by('data_entrada').first()
+                if proximo_fila:
+                    Pausa.objects.create(funcionario= proximo_fila.funcionario, aprovado=True)
+
+                    proximo_fila.delete()
+            
+            return redirect('home')
+        
+    return redirect('home')
+
+def autorizar_intervalo_sup(request):
+    print("aqui")
+    nome = request.GET.get('nome')
+    print(nome)
+    funcionario = Usuario.objects.get(nome=nome)
+    fila  = FilaEspera.objects.get(funcionario= funcionario)
+    fila.delete()
+    Pausa.objects.create(funcionario= funcionario, aprovado=True)
+    return redirect('home')
+            
+
         

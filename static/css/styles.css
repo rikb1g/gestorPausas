@@ -3,21 +3,40 @@ body{
     margin: 0;
 }
 
+
 .dados{
     display: flex;
     justify-content: center;
-    overflow-y: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100%;
+
+  
+    
 
 }
 
 .linha{
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
-    flex-direction: column;
-    overflow-y: auto;
+    flex-direction: row;
+    width: 100%;
+
+    
+
+    
+    
 
 }
+
+.item-linha {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
 .container-iframe{
     display: flex;
     justify-content: center;
