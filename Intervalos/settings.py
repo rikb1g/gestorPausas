@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.core',
     'apps.usuarios',
-    'apps.pausas',
-    'Intervalos',
+    'apps.pausas'
 ]
 
 MIDDLEWARE = [
@@ -94,8 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-pt'
 
-TIME_ZONE = 'Europe/Lisbon'
-
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -119,17 +116,3 @@ LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
 X_FRAME_OPTIONS = 'ALLOWALL'
-
-# Intervalos/settings.py
-
-CELERY_BEAT_SCHEDULE = {
-    'delete_old_data_daily': {
-        'task': 'Intervalos.tasks.delete_old_data',
-        'schedule': crontab(minute=0, hour=0),
-    },
-}
-
-
-
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_TIMEZONE = 'Europe/Lisbon'
