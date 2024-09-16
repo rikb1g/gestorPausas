@@ -5,6 +5,7 @@ body{
     color: white;
 }
 
+<<<<<<< HEAD
 .titulo-principal{
     font-family: 'ITC Benguiat Std', sans-serif;
     font-size: 80px;
@@ -12,6 +13,8 @@ body{
     transition: all 0.2s;
 }
 
+=======
+>>>>>>> 9f60b45 (botões de autorizar e eliminar na pagina de supervisro)
 
 .dados{
     display: flex;
