@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block main %}
+{% if user.usuario.tipo.tipo == "Supervisor" %}
+
+<div class="container text-center mt-5">
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <form id="form-filter" method="GET" class="form-container d-flex align-items-center"
+                action="{% url 'maximo_intervalos' %}">
+                <div class="d-flex">
+                    <label>Máximo de intervalos</label>
+                    <select name="num" id="num" aria-label="Small select example" onchange="salvarVAlorSelecionado()">
+                        {% for num in contador %}
+                        <option value="{{ num }}" id="num">{{ num }}</option>
+
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-info ms-3">Alterar</button>
+                </div>
+
+            </form>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
+</div>
+
+<div class="container text-center mt-5">
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-4">
+            <p class="fs-3">Intervalos em fila</p>
+            {% for intervalo in intervalos_fila %}
+            <div class="dados">
+                <div class="linha">
+                    
+                    <p class="btn btn-primary">{{ intervalo.funcionario }}</p>
+                    <a onclick="exibirPopUpConfirmacaoAutPausa('{{intervalo.funcionario.nome}}')"><img src="{% static 'images/check.svg' %}" alt="autorizar intervalo"></a>
+                    <a onclick="exibirPopUpConfirmacaoEliPAusa('{{intervalo.funcionario.nome}}')"><img src="{% static 'images/close.svg' %}" alt="eliminar intervalo"></a>
+                    
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+
+
+
+
+        <div class="col-4 l">
+            <p class="fs-3">Intervalos autorizados</p>
+            {% for intervalo in pausa_autorizada %}
+
+           
+            <div class="dados">
+                <div class="linha">
+                    
+                    <div class="item-linha">
+                        {% if intervalo.inicio is None %}
+                   
+
+                    
+
+                        <p class="btn btn-success">{{ intervalo.funcionario }}</p>
+
+                        <a onclick="exibirPopUpConfirmacaoEliPAusa('{{intervalo.funcionario.nome}}')"><img src="{% static 'images/close.svg' %}" alt="eliminar intervalo"></a>
+                    
+
+
+                    {% else %}
+                        <p class="btn btn-primary me-1">{{ intervalo.funcionario }}</p>
+                        <p id="tempo-decorrido-{{ intervalo.id }}" data-inicio="{{ intervalo.inicio|date:'Y-m-d H:i:s' }}" class="btn btn-secondary tempo-decorrido"></p>
+                        
+                        <a onclick="exibirPopUpConfirmacaoEliPAusa('{{intervalo.funcionario.nome}}')"><img src="{% static 'images/close.svg' %}" alt="eliminar intervalo"></a>
+            
+
+                   
+
+                    
+               
+                {% endif %}
+                    
+
+
+                </div>
+
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+        <div class="col-1"></div>
+
+
+
+    </div>
+
+
+</div>
+
+
+
+{% elif user.usuario.tipo.tipo == "Assistente" %}
+
+
+
+<div class="text-center mt-5">
+
+    <a href="{% url 'nova_pausa' %}" class="btn btn-primary" type="submit">Pedir Pausa</a>
+</div>
+
+<div class="text-center mt-5">
+    <p>Tempo total de pausa:</p>
+    <p href="" class="btn btn-primary notbtn">{{ total_pausa}}</p>
+</div>
+
+
+{% endif %}
+<script>
+
+    function startTimer(startTime, displayElement) {
+        setInterval(function () {
+            var now = new Date();
+            var start = new Date(startTime);
+            var diff = now - start;  // diferença em milissegundos
+
+            // Garante que a diferença é válida antes de continuar
+            if (isNaN(diff)) {
+                displayElement.textContent = "Erro na data";
+                return;
+            }
+
+            // Converte a diferença em horas, minutos e segundos
+            var hours = Math.floor(diff / (1000 * 60 * 60));
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            // Garante que horas, minutos e segundos sejam válidos
+            hours = hours >= 0 ? hours : 0;
+            minutes = minutes >= 0 ? minutes : 0;
+            seconds = seconds >= 0 ? seconds : 0;
+
+            // Formata o tempo decorrido
+            var formattedTime = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+            // Atualiza o elemento HTML com o tempo decorrido
+            displayElement.textContent = formattedTime;
+        }, 1000); // Atualiza a cada segundo
+    }
+
+    // Exemplo de como iniciar o contador
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.tempo-decorrido').forEach(function (element) {
+            var startTime = element.getAttribute('data-inicio');
+            if (startTime) {
+                startTimer(startTime, element);
+            }
+        });
+    });
+
+
+    function exibirPopUpConfirmacaoEliPAusa(nome){
+        if(confirm("Tens a certeza que pretende anular o intervalo de " +nome+ " ?")){
+            var url = "/pausas/cancelar_intervalo_sup?nome="+encodeURIComponent(nome);
+            window.location.href = url
+        }
+        else {
+            alert("Açao cancelada")
+        }
+    }
+
+    function exibirPopUpConfirmacaoAutPausa(nome){
+        if(confirm("Tens a certeza que pretende anular o intervalo de " +nome+ " ?")){
+            var url = "/pausas/autorizar_intervalo_sup?nome="+encodeURIComponent(nome);
+            window.location.href = url
+        }
+        else {
+            alert("Açao cancelada")
+        }
+    }
+</script>
+{% endblock %}
