@@ -1,6 +1,9 @@
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from apps.pausas.models import Pausa,FilaEspera,PausasDiarias
+from apps.pausas.models import ConfiguracaoPausa, Pausa,FilaEspera,PausasDiarias
+from apps.backoffice.models import BackOffice, BackofficeConfig, BackOfficeDiario, BackOfficeFilaEspera
+
 # Create your views here.
 
 @login_required
@@ -14,10 +17,12 @@ def home(request):
     data['pausa_autorizada'] = Pausa.objects.filter(aprovado=True)
     print(data['pausa_autorizada'])
     data['intervalos_fila'] = FilaEspera.objects.order_by('data_entrada')
+    bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
+    fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
 
         
-    if pausas.exists() or fila.exists():
+    if pausas.exists() or fila.exists() or bo.exists() or fila_bo.exists():
         return redirect('lista_intervalos')
         
-    return render(request=request,template_name='index.html',context=data)
+    return render(request=request,template_name='core/index.html',context=data)
         

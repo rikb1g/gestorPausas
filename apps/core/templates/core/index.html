@@ -4,6 +4,8 @@
 
 
 {% block main %}
+
+
 {% if user.usuario.tipo.tipo == "Supervisor" %}
 
 <div class="container text-center mt-5">
@@ -62,8 +64,6 @@
            
             <div class="dados">
                 <div class="linha">
-                    
-                    <div class="item-linha">
                         {% if intervalo.inicio is None %}
                    
 
@@ -90,7 +90,7 @@
                     
 
 
-                </div>
+                
 
             </div>
             {% endfor %}
@@ -109,22 +109,47 @@
 
 {% elif user.usuario.tipo.tipo == "Assistente" %}
 
+   <div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="fs-5 text-center mt-5">Pausas</p>
+            <div class="text-center mt-5">
+                
+                <a href="{% url 'nova_pausa' %}" class="btn btn-primary" type="submit">Pedir Pausa</a>
+
+                <div class="text-center mt-5">
+                    <p>Tempo total de pausa:</p>
+                    <p href="" class="btn btn-secondary notbtn">{{ total_pausa}}</p>
+                </div>
+            </div>
+            
+        </div>
+        <div class="col">
+            
+            <p class="fs-5 text-center mt-5">BO</p>
+            <div class="text-center mt-5">
+                
+                <a href="{% url 'pedir_bo' %}" class="btn btn-primary" type="submit">Pedir BO</a>
+
+                <div class="text-center mt-5">
+                    <p>Tempo total de BO:</p>
+                    <p href="" class="btn btn-secondary notbtn">colocar tempo bo</p>
+
+        </div>
+        <div class="col"></div>
+    </div>
+   </div>
 
 
-<div class="text-center mt-5">
 
-    <a href="{% url 'nova_pausa' %}" class="btn btn-primary" type="submit">Pedir Pausa</a>
-</div>
 
-<div class="text-center mt-5">
-    <p>Tempo total de pausa:</p>
-    <p href="" class="btn btn-primary notbtn">{{ total_pausa}}</p>
-</div>
+
+
 
 
 {% endif %}
 <script>
-
+    history.pushState(null, null, '');
     function startTimer(startTime, displayElement) {
         setInterval(function () {
             var now = new Date();
@@ -166,6 +191,8 @@
     });
 
 
+
+
     function exibirPopUpConfirmacaoEliPAusa(nome){
         if(confirm("Tens a certeza que pretende anular o intervalo de " +nome+ " ?")){
             var url = "/pausas/cancelar_intervalo_sup?nome="+encodeURIComponent(nome);
@@ -185,5 +212,8 @@
             alert("Açao cancelada")
         }
     }
+   
+;
+
 </script>
 {% endblock %}

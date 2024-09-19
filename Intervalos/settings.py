@@ -9,9 +9,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5*0#o3bmha(_5koh#@@b(-s6fp2g6)=rofv4zuu9jf1+fu1dqq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = False
 
 ALLOWED_HOSTS = ['rikb1g.pythonanywhere.com']
+
+
+
+
+
+
+
 
 
 # Application definition
@@ -26,6 +34,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.usuarios',
     'apps.pausas',
+    'apps.backoffice',
     'Intervalos',
 ]
 
@@ -120,4 +129,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
-X_FRAME_OPTIONS = 'ALLOWALL'
+
+
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Intervalos/settings.py
+"""
+CELERY_BEAT_SCHEDULE = {
+    'delete_old_data_daily': {
+        'task': 'Intervalos.tasks.delete_old_data',
+        'schedule': crontab(minute=0, hour=0),
+    },
+}
+
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_TIMEZONE = 'Europe/Lisbon'
+"""
+

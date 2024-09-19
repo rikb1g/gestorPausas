@@ -1,29 +1,10 @@
-from channels.layers import get_channel_layer
-from asgiref.sync import  async_to_sync
+
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from .models import Pausa, FilaEspera, ConfiguracaoPausa
 
 
-"""@receiver(post_save, sender=Pausa)
-def notificar_proximo_na_fila(sender,instance,**kwargs):
-    if instance.fim:
-        proximo_fila = FilaEspera.objects.order_by('data_entrada').first()
-        if proximo_fila:
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"user_{proximo_fila.funcionario.id}",
-                {
-                    'type': 'send_notification',
-                    'message': "Seu intervalo já pode ser iniciado"
-                }
-            )
-            proximo_fila.delete()
-        
-        else:
-            pass
-"""
 
 
 @receiver(post_save, sender=Pausa)
@@ -49,4 +30,4 @@ def autorizar_proximo_intervalo(sender, instance, **kwargs):
                 print("Não há mais funcionários na fila de espera")
                 break
     else:
-        print("Nenhuma configuração de pausa encontrada")
+        ConfiguracaoPausa.objects.create(capacidade_maxima=0)
