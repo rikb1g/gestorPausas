@@ -1,13 +1,14 @@
 from typing import Any
 from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
-from django.http import HttpResponse
+from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import  ListView
 from django.contrib import messages
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias
+from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera
 from apps.usuarios.models import Usuario
 
 
@@ -39,6 +40,22 @@ class Lista_Pausas(ListView):
         total_pausa = PausasDiarias()
         tota_horas= total_pausa.calcular_tempo_decorrido(funcionario)
         context['total_pausa'] = tota_horas
+        # BO
+        
+        context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True)
+        context['bo_nao_aprovado'] = BackOffice.objects.filter(funcionario=funcionario,aprovado=False)
+        context['fila_bo'] = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
+        fila_bo_object = BackOfficeFilaEspera.objects.order_by('data_entrada')
+        idex_fila_bo = None
+        for index_bo, fila_bo in enumerate(fila_bo_object):
+            if fila_bo.funcionario == self.request.user.usuario:
+                idex_fila_bo = index_bo
+
+        context['index_bo'] = idex_fila_bo
+        context['bo_iniciado'] = BackOffice.objects.filter(funcionario= funcionario, inicio__isnull=False, aprovado=True)
+        total_bo = BackOfficeDiario()
+        total_tempo_bo = total_bo.calcular_tempo_decorrido_bo(funcionario)
+        context['bo_total_tempo'] = total_tempo_bo
         return context
 
 

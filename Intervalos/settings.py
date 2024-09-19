@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.usuarios',
     'apps.pausas',
+    'apps.backoffice',
     'Intervalos',
 ]
 
@@ -119,7 +120,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
-X_FRAME_OPTIONS = 'ALLOWALL'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Intervalos/settings.py
 

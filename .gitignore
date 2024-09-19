@@ -3,3 +3,4 @@
 venv
 *.pyc
 Intervalos/__pycache__/
+settings.py
