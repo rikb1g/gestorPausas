@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from celery.schedules import crontab
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,11 +9,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5*0#o3bmha(_5koh#@@b(-s6fp2g6)=rofv4zuu9jf1+fu1dqq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = True
+
+DEBUG = False
 
 ALLOWED_HOSTS = ['rikb1g.pythonanywhere.com']
-#ALLOWED_HOSTS = []
+
+
+
+
+
+
+
 
 
 # Application definition
@@ -109,6 +115,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
@@ -121,10 +129,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
+
+
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Intervalos/settings.py
-
+"""
 CELERY_BEAT_SCHEDULE = {
     'delete_old_data_daily': {
         'task': 'Intervalos.tasks.delete_old_data',
@@ -136,3 +147,4 @@ CELERY_BEAT_SCHEDULE = {
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_TIMEZONE = 'Europe/Lisbon'
+"""
