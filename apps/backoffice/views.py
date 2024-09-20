@@ -84,7 +84,7 @@ def maximo_bo_autorizados(request):
     return redirect('home')
 
 def cancelar_bo_supervisor(request):
-    nome= request.GET.get('nome-bo')
+    nome= request.GET.get('nome')
     funcionario = Usuario.objects.get(nome=nome)
     try:
         fila = BackOfficeFilaEspera.objects.get(funcionario =funcionario)
@@ -114,11 +114,20 @@ def cancelar_bo_supervisor(request):
 
 
 def autorizar_bo_supervisor(request):
-    nome = request.GET.get('nome-bo')
+    nome = request.GET.get('nome')
     funcionario = Usuario.objects.get(nome=nome)
     fila = BackOfficeFilaEspera.objects.get(funcionario=funcionario)
     fila.delete()
     BackOffice.objects.create(funcionario=funcionario,aprovado=True)
+    return redirect('home')
+
+def iniciar_bo_supervisor(request):
+    nome = request.GET.get('nome')
+    funcionario = Usuario.objects.get(nome=nome)
+    bo = BackOffice.objects.get(funcionario=funcionario, aprovado=True)
+    if bo:   
+        bo.inicio= timezone.now()
+        bo.save()
     return redirect('home')
             
 
