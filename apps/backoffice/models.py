@@ -10,6 +10,19 @@ class BackOffice(models.Model):
     inicio = models.DateTimeField(null=True,blank=True)
     fim = models.DateTimeField(null=True, blank=True)
     aprovado = models.BooleanField(default=False)
+
+    def calcular_tempo_decorrido_bo(self):
+        bo_funcionario = BackOfficeDiario.objects.filter(funcionario=self.funcionario)
+        tempo_total = timedelta()
+        for bo in bo_funcionario:
+            if bo.inicio and bo.fim:
+                tempo_total += (bo.fim - bo.inicio)
+
+        total_seconds = tempo_total.total_seconds()
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
+        return formatted
     
     def get_absolute_url(self):
         return reverse('lista_pausas')
@@ -44,6 +57,33 @@ class BackOfficeDiario(models.Model):
 class BackOfficeFilaEspera(models.Model):
     funcionario = models.ForeignKey(Usuario,on_delete=models.CASCADE)
     data_entrada = models.DateTimeField(default=timezone.now())
+
+    def calcular_tempo_decorrido_entrada_fila_bo(self):
+        pausas = BackOfficeFilaEspera.objects.filter(funcionario=self.funcionario)
+        tempo_total = timedelta()
+        hora_atual = timezone.now()
+        for pausa in pausas:
+            if pausa.data_entrada:
+                tempo_total += (hora_atual - pausa.data_entrada)
+
+        total_seconds = tempo_total.total_seconds()
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
+        return formatted
+
+    def calcular_tempo_decorrido_bo(self):
+        bo_funcionario = BackOfficeDiario.objects.filter(funcionario=self.funcionario)
+        tempo_total = timedelta()
+        for bo in bo_funcionario:
+            if bo.inicio and bo.fim:
+                tempo_total += (bo.fim - bo.inicio)
+
+        total_seconds = tempo_total.total_seconds()
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
+        return formatted
 
     def __str__(self):
         return f'BO-{self.funcionario.nome} - Entrada na fila: {self.data_entrada}'

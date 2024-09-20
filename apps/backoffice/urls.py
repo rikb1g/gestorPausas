@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import pedir_bo,iniciar_bo, finalizar_bo, cancelar_bo, maximo_bo_autorizados, cancelar_bo_supervisor
+from .views import pedir_bo,iniciar_bo, finalizar_bo, cancelar_bo, maximo_bo_autorizados, cancelar_bo_supervisor, autorizar_bo_supervisor,iniciar_bo_supervisor
 
 
 
@@ -10,4 +10,6 @@ urlpatterns = [
     path('cancelar_bo',cancelar_bo,name="cancelar_bo"),
     path('maximo_bo_autorizados',maximo_bo_autorizados,name="maximo_bo_autorizados"),
     path('cancelar_bo_supervisor',cancelar_bo_supervisor,name="cancelar_bo_supervisor"),
+    path('autorizar_bo_supervisor',autorizar_bo_supervisor,name="autorizar_bo_supervisor"),
+    path('iniciar_bo_supervisor',iniciar_bo_supervisor,name="iniciar_bo_supervisor"),
 ]

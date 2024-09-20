@@ -1,6 +1,6 @@
-
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.utils import timezone
 
 from .models import Pausa, FilaEspera, ConfiguracaoPausa
 
@@ -22,7 +22,7 @@ def autorizar_proximo_intervalo(sender, instance, **kwargs):
             proximo = FilaEspera.objects.order_by('data_entrada').first()
             if proximo:
                 # Cria uma nova pausa para o próximo da fila
-                Pausa.objects.create(funcionario=proximo.funcionario, aprovado=True)
+                Pausa.objects.create(funcionario=proximo.funcionario, aprovado=True,data_aprovacao= timezone.now())
                 proximo.delete()
                 num_intervalos_autorizados += 1  
                 print("Pausa autorizada e removido da fila")

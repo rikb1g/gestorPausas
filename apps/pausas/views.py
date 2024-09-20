@@ -67,7 +67,7 @@ def pedir_pausa(request):
     if not configuracao:
         configuracao = ConfiguracaoPausa.objects.create(capacidade_maxima=1)
     if pausas_aceites.count() < configuracao.capacidade_maxima:
-        pausa= Pausa.objects.create(funcionario=request.user.usuario,aprovado=True)
+        Pausa.objects.create(funcionario=request.user.usuario,aprovado=True,data_aprovacao=timezone.now())
         print("pausa aceite e nao criada fila")
         return redirect('lista_intervalos')
     else:
