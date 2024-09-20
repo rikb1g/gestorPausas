@@ -1,0 +1,70 @@
+body{
+    height: 100%;
+    margin: 0;
+    background-color: #363535;
+    color: white;
+}
+
+
+.titulo-principal{
+    font-family: 'ITC Benguiat Std', sans-serif;
+    font-size: 80px;
+    color: deepskyblue;
+    transition: all 0.2s;
+}
+
+
+
+.dados{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100%;
+
+  
+    
+
+}
+
+.linha{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: row;
+    width: 100%;
+
+    
+
+    
+    
+
+}
+
+.item-linha {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+.container-iframe{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+
+
+
+.iframe_main{
+    width: 80%;
+    height: 70vh;
+    border: none;
+}
+
+.notbtn{
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    color: black;
+}
