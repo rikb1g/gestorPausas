@@ -25,6 +25,16 @@ class BackOffice(models.Model):
         formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
         return formatted
     
+    def calcular_tempo_decorrido_aprovacao(self):
+        if self.aprovado and self.data_aprovacao:
+            agora = timezone.now()
+            tempo_decorrido = agora - self.data_aprovacao
+            total_seconds = tempo_decorrido.total_seconds()
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, seconds = divmod(remainder,60)
+            formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"   
+            return formatted
+    
     def get_absolute_url(self):
         return reverse('lista_pausas')
 

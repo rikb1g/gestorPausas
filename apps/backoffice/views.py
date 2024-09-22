@@ -37,12 +37,6 @@ def finalizar_bo(request):
             bo_funcionario.save()
             BackOfficeDiario.objects.create(funcionario=bo_funcionario.funcionario, inicio=bo_funcionario.inicio,fim=bo_funcionario.fim)
             bo_funcionario.delete()
-
-        proximo_fila =BackOfficeFilaEspera.objects.order_by('data_entrada').first()
-        if proximo_fila:
-            BackOffice.objects.create(funcionario= proximo_fila.funcionario, aprovado=True,data_aprovacao=timezone.now())
-        return redirect('home')
-
     return redirect('home')
 
 

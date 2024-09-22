@@ -19,9 +19,13 @@ def autorizar_proximo_bo(sender, instance, **kwargs):
         while num_bo_autorizado < num_maximo_bo:
             proximo = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
             if proximo:
-                BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True,data_aprovacao=timezone.now())
-                proximo.delete()
-                num_bo_autorizado += 1
+                bo_existente = BackOffice.objects.filter(funcionario= proximo.funcionario, aprovado=True).exists()
+                if bo_existente:
+                    proximo.delete()
+                else:
+                    BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True,data_aprovacao=timezone.now())
+                    proximo.delete()
+                    num_bo_autorizado += 1
             else:
                 break
 

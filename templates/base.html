@@ -15,7 +15,7 @@
         <div class="col-md-4 text-center mt-3"><p>Olá {{ user.usuario}}</p></div>
         <div class="col-md-4"></div>
         <div class="col-md-4 text-end mt-3">
-            <a id="toogleback" onclick="mudarcorfundo()">Lighmode</a>
+            <a class="toogleback" id="toogleback" onclick="mudarcorfundo()">Lighmode</a>
             <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
                 {% csrf_token %}
                 <input type="submit" value="Logout">

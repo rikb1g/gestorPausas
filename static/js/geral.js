@@ -101,7 +101,7 @@ function exibirPopUpconfirmacaoAutBO(nome){
 
 
 
-let isBlack = false;
+let isBlack = true;
 
 function mudarcorfundo(){
     console.log("aqui")

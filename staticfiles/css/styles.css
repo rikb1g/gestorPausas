@@ -3,8 +3,7 @@ body{
     margin: 0;
     background-color: #363535;
     color: white;
-<<<<<<< HEAD
-=======
+
 }
 
 .titulo-principal{
@@ -12,10 +11,15 @@ body{
     font-size: 80px;
     color: deepskyblue;
     transition: all 0.2s;
->>>>>>> 919d44f (alterações de layout)
+
 }
-
-
+a{
+    text-decoration: none;
+}
+.toogleback{
+    cursor: pointer;
+    text-decoration: none;
+}
 .titulo-principal{
     font-family: 'ITC Benguiat Std', sans-serif;
     font-size: 80px;
