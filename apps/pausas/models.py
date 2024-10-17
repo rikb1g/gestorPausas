@@ -10,6 +10,7 @@ class Pausa(models.Model):
     fim = models.DateTimeField(null=True, blank=True)
     aprovado = models.BooleanField(default=False)
     data_aprovacao = models.DateTimeField(null=True, blank=True)
+    pausa = models.BooleanField(default=False)
 
     def calcular_tempo_decorrido_pausa(self):
         pausas = PausasDiarias.objects.filter(funcionario=self.funcionario)

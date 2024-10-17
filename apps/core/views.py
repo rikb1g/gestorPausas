@@ -20,7 +20,7 @@ def home(request):
     bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
     fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
     num_pausa_autorizados = ConfiguracaoPausa.objects.last()
-    data['num_pausa_autorizados'] = num_pausa_autorizados.capacidade_maxima  
+    data['num_pausa_autorizados'] = num_pausa_autorizados.capacidade_maxima
     # BO
     data['total_bo'] = BackOfficeDiario.calcular_tempo_decorrido_bo(request.user.usuario)
     data['bo_autorizado'] = BackOffice.objects.filter(aprovado=True)

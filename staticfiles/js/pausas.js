@@ -32,13 +32,21 @@ function startTimer(startTime, displayElement) {
 // Exemplo de como iniciar o contador
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.tempo-decorrido').forEach(function (element) {
+        const btnPause = document.getElementById('btn-pause');
+        const btnResume = document.getElementById('btn-resume');
         var startTime = element.getAttribute('data-inicio');
+        
+       
+
         if (startTime) {
-            
             startTimer(startTime, element);
+
         }
     });
 });
+
+
+
 
 // Desativar o botão "voltar" do navegador
 window.history.pushState(null, "", window.location.href)
@@ -67,4 +75,37 @@ function cancelarBO(){
 
 function terminarBO(){
     alert("O teu BO foi terminado com sucesso. Bom atendimento")
+}
+
+let alertTriggered = false
+
+function notifyUser(message){
+    const originalTitle = document.title;
+    let isTitleModified = false
+
+    const titleInterval = setInterval(function(){
+        document.title = isTitleModified ? originalTitle : message
+        isTitleModified = !isTitleModified
+        console.log("funciona ")
+    }, 1000)
+
+    window.addEventListener("focus", function handleFocus(){
+        if (!alertTriggered) {
+            clearInterval(titleInterval)
+            document.title = originalTitle
+            alert(message)
+            alertTriggered = true
+            window.removeEventListener("focus", handleFocus)
+        }
+
+    })
+
+    setTimeout(function() {
+        if (!alertTriggered) {
+            clearInterval(titleInterval);
+            document.title = originalTitle;
+            alert(message);
+            alertTriggered = true;
+        }
+    }, 1000);
 }

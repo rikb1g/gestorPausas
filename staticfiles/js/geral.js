@@ -1,25 +1,5 @@
-document.addEventListener("DOMContentLoaded", function(){
-    /*
-    var select_num = document.getElementById('num')
-    var valor_selecionado_num = select_num.value
-    var select_num_bo = document.getElementById('num-bo')
-    var valor_salvo_num_bo = select_num_bo.value
 
-
-    localStorage.setItem('select_num', valor_selecionado_num)
-    localStorage.setItem('select_num_bo', valor_selecionado_num_bo)
-        */
-    history.pushState(null, null, '');
-    window.onpopstate = function () {
-        history.go(1);
-    };
-
-
-})
-
-
-
-function salvarVAlorSelecionado(){
+function salvarVAlorSelecionado(){ 
     var select_num = document.getElementById('num')
     
     console.log(select_num.value)
@@ -35,20 +15,7 @@ function salvarVAlorSelecionadoBO(){
 
     localStorage.setItem('valor_selecionado_num_bo', valor_selecionado_num_bo)
 }
-/*
-window.onload = function() {
-    var valor_salvo_num = localStorage.getItem('valor_selecionado_num');
-    var valor_salvo_num_bo = localStorage.getItem('valor_selecionado_num_bo');
-    if (valor_salvo_num) {
-        var select_num = document.getElementById('num');
-        select_num.value = valor_salvo_num; 
-    }
-    if (valor_salvo_num_bo){
-        var select_num_bo = document.getElementById('num-bo')
-        select_num_bo.value = valor_salvo_num_bo
-    }
-};
-*/
+
 
 function exibirPopUpConfirmacaoEliPAusa(nome){
     if(confirm("Tens a certeza que pretendes anular o intervalo de " +nome+ " ?")){
@@ -98,21 +65,77 @@ function exibirPopUpconfirmacaoAutBO(nome){
         alert("Ação cancelada")
     }
 }
-
-
-let isBlack = true;
-function mudarcorfundo(){
-    const bodyElement = document.querySelector('body');
-
-    if(isBlack){
-        bodyElement.style.backgroundColor = "white"
-        bodyElement.style.color = "black"
-        document.getElementById("toogleback").innerHTML = "Darkmode"
-    }else {
-        bodyElement.style.backgroundColor = "#363535"
-        bodyElement.style.color = "white"
-        document.getElementById("toogleback").innerHTML = "Lighmode"
+function exibirPopUpconfirmacaoPausarBO(nome){
+    if(confirm("Tens a certeza que pretendes pausar o BO de "+nome+ " ?")){
+        var url = "/backoffice/pausar_bo_sup?nome="+encodeURIComponent(nome);
+        window.location.href = url
+    }
+    else{
+        alert("Ação cancelada")
     }
 
-    isBlack = !isBlack
 }
+
+function exibirPopUpconfirmacaoRetomarBO(nome){
+    if(confirm("Tens a certeza que pretendes retomar o BO de "+nome+ " ?")){
+        var url = "/backoffice/despausar_bo_sup?nome="+encodeURIComponent(nome);
+        window.location.href = url
+    }
+    else{
+        alert("Ação cancelada")
+    }
+}
+
+
+function setDarkMode(isBlack){
+    localStorage.setItem('isBlack', isBlack)   
+
+
+    if (isBlack === true){
+        document.body.style.backgroundColor = "black"
+        document.body.style.color = "white"
+        document.getElementById("toogleback").innerHTML = "Lighmode"
+    } else {
+        document.body.style.backgroundColor = "white"
+        document.body.style.color = "black"
+        document.getElementById("toogleback").innerHTML = "Darkmode"
+    }
+
+}
+
+
+function mudarcorfundo(){
+
+    let isBlack = localStorage.getItem('isBlack') === 'true'
+
+    setDarkMode(!isBlack)
+
+    
+}
+
+
+function loadTheme(){
+    let isBlack = localStorage.getItem('isBlack') === 'true'
+    setDarkMode(isBlack)
+}
+
+
+
+loadTheme()
+document.addEventListener("DOMContentLoaded", function(){
+    /*
+    var select_num = document.getElementById('num')
+    var valor_selecionado_num = select_num.value
+    var select_num_bo = document.getElementById('num-bo')
+    var valor_salvo_num_bo = select_num_bo.value
+
+
+    localStorage.setItem('select_num', valor_selecionado_num)
+    localStorage.setItem('select_num_bo', valor_selecionado_num_bo)
+        */
+    history.pushState(null, null, '');
+    window.onpopstate = function () {
+        history.go(1);
+    };
+    backgroundColor()
+})

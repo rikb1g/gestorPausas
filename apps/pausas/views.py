@@ -1,5 +1,6 @@
 from typing import Any
 from django.db.models.query import QuerySet
+from django.db.models.query_utils import Q
 from django.forms import BaseModelForm
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -44,7 +45,7 @@ class Lista_Pausas(ListView):
         
         # BO
         
-        context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True)
+        context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True, pausa=False)
         context['bo_nao_aprovado'] = BackOffice.objects.filter(funcionario=funcionario,aprovado=False)
         context['fila_bo'] = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
         fila_bo_object = BackOfficeFilaEspera.objects.order_by('data_entrada')
@@ -54,10 +55,17 @@ class Lista_Pausas(ListView):
                 idex_fila_bo = index_bo
 
         context['index_bo'] = idex_fila_bo
-        context['bo_iniciado'] = BackOffice.objects.filter(funcionario= funcionario, inicio__isnull=False, aprovado=True)
+        context['bo_iniciado'] = BackOffice.objects.filter(
+            Q(funcionario= funcionario),
+            Q(inicio__isnull=False) | Q(pausa=True),
+            Q(aprovado=True))
         total_bo = BackOfficeDiario()
         total_tempo_bo = total_bo.calcular_tempo_decorrido_bo(funcionario)
         context['bo_total_tempo'] = total_tempo_bo
+
+
+        for bo in context['bo_aprovado']:
+            print(bo.pausa)
 
         return context
 
@@ -183,6 +191,7 @@ def autorizar_intervalo_sup(request):
     fila.delete()
     Pausa.objects.create(funcionario= funcionario, aprovado=True, data_aprovacao=timezone.now())
     return redirect('home')
-            
+
+
 
         

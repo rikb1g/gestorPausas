@@ -116,5 +116,57 @@ def iniciar_bo_supervisor(request):
         bo.inicio= timezone.now()
         bo.save()
     return redirect('home')
+
+
+def pausar_bo(request):
+    nome = request.user.usuario
+    funcionario = Usuario.objects.get(nome=nome)
+    bo = BackOffice.objects.get(funcionario=funcionario)
+    bo.fim = timezone.now()
+    bo.pausa = True
+    bo.save()
+    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.fim)
+    bo.inicio = None
+    bo.fim = None
+    bo.save()
+    return redirect('lista_intervalos')
+
+def pausar_bo_sup(request):
+    nome = request.GET.get('nome')
+    print(nome)
+    funcionario = Usuario.objects.get(nome=nome)
+    bo = BackOffice.objects.get(funcionario=funcionario,aprovado=True)
+    print(bo)
+    bo.fim = timezone.now()
+    bo.pausa = True
+    bo.save()
+    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.fim)
+    bo.inicio = None
+    bo.fim = None
+    bo.save()
+    return redirect('home')
+
+
+def despausar_bo_sup(request):
+    nome = request.GET.get('nome')
+    funcionario = Usuario.objects.get(nome=nome)
+    bo = BackOffice.objects.get(funcionario=funcionario)
+    bo.inicio = timezone.now()
+    bo.pausa = False
+    bo.save()
+
+    return redirect('home')
+
+
+def despausar_bo(request):
+    nome = request.user.usuario
+    funcionario = Usuario.objects.get(nome=nome)
+    bo = BackOffice.objects.get(funcionario=funcionario)
+    bo.inicio = timezone.now()
+    bo.pausa = False
+    bo.save()
+
+    return redirect('lista_intervalos')
+
             
 
