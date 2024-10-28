@@ -193,5 +193,16 @@ def autorizar_intervalo_sup(request):
     return redirect('home')
 
 
+def calcular_tempo_pausa(request, id):
+    try:
+        pausa = Pausa.objects.get(id=id)
+        data = {
+            'calcular_tempo_pausa_ao_segundo': pausa.calcular_tempo_pausa_ao_segundo(),
+        }
+        return JsonResponse(data)
+    except Pausa.DoesNotExist:
+        return JsonResponse({'error': 'Objeto não encontrado'}, status=404)
+
+
 
         

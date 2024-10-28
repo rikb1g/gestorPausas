@@ -1,8 +1,10 @@
 from typing import Any
-from django.shortcuts import redirect, render
+import json
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.contrib import messages
-from .models import BackOffice, BackofficeConfig, BackOfficeDiario,BackOfficeFilaEspera
+from .models import BackOffice, BackofficeConfig, BackOfficeDiario,BackOfficeFilaEspera, parse_formatted_time, formatted_time
 from apps.usuarios.models import Usuario
 
 
@@ -118,55 +120,75 @@ def iniciar_bo_supervisor(request):
     return redirect('home')
 
 
-def pausar_bo(request):
-    nome = request.user.usuario
-    funcionario = Usuario.objects.get(nome=nome)
-    bo = BackOffice.objects.get(funcionario=funcionario)
-    bo.fim = timezone.now()
+def pausar_bo(request,id):
+    bo = BackOffice.objects.get(id=id)
     bo.pausa = True
+    bo.inicio_pausa = timezone.now()
     bo.save()
-    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.fim)
-    bo.inicio = None
-    bo.fim = None
-    bo.save()
+    if bo.tempo_ate_pausar:
+        tempo_decorrido = bo.inicio_pausa - bo.inicio
+        pausa_acumulada = parse_formatted_time(bo.tempo_ate_pausar)
+        total = tempo_decorrido + pausa_acumulada
+        bo.tempo_ate_pausar = formatted_time(total)
+        bo.save()
+    else:
+        tempo_decorrido = bo.inicio_pausa - bo.inicio
+        bo.tempo_ate_pausar = formatted_time(tempo_decorrido)
+        bo.save()
+    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.inicio_pausa)
     return redirect('lista_intervalos')
 
 def pausar_bo_sup(request):
-    nome = request.GET.get('nome')
-    print(nome)
-    funcionario = Usuario.objects.get(nome=nome)
-    bo = BackOffice.objects.get(funcionario=funcionario,aprovado=True)
-    print(bo)
-    bo.fim = timezone.now()
+    id = request.GET.get('id')
+    bo = BackOffice.objects.get(id=id)
     bo.pausa = True
+    bo.inicio_pausa = timezone.now()
     bo.save()
-    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.fim)
-    bo.inicio = None
-    bo.fim = None
-    bo.save()
+    if bo.tempo_ate_pausar:
+        tempo_decorrido = bo.inicio_pausa - bo.inicio
+        pausa_acumulada = parse_formatted_time(bo.tempo_ate_pausar)
+        total = tempo_decorrido + pausa_acumulada
+        bo.tempo_ate_pausar = formatted_time(total)
+        bo.save()
+    else:
+        tempo_decorrido = bo.inicio_pausa - bo.inicio
+        bo.tempo_ate_pausar = formatted_time(tempo_decorrido)
+        bo.save()
+    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.inicio_pausa)
     return redirect('home')
 
 
 def despausar_bo_sup(request):
-    nome = request.GET.get('nome')
-    funcionario = Usuario.objects.get(nome=nome)
-    bo = BackOffice.objects.get(funcionario=funcionario)
+    id = request.GET.get('id')
+    bo = BackOffice.objects.get(id=id)
     bo.inicio = timezone.now()
+    bo.termo_pausa = timezone.now()
     bo.pausa = False
     bo.save()
-
     return redirect('home')
 
 
-def despausar_bo(request):
-    nome = request.user.usuario
-    funcionario = Usuario.objects.get(nome=nome)
-    bo = BackOffice.objects.get(funcionario=funcionario)
+def despausar_bo(request,id):
+    bo = BackOffice.objects.get(id=id)
     bo.inicio = timezone.now()
+    bo.termo_pausa = timezone.now()
     bo.pausa = False
     bo.save()
-
     return redirect('lista_intervalos')
+
+
+def tempo_bo(request, id):
+    try:
+        bo = BackOffice.objects.get(id=id)
+        data = {
+            'calcular_tempo_bo_ao_segundo': bo.calcular_tempo_bo_ao_segundo(),
+        }
+        return JsonResponse(data)
+    except BackOffice.DoesNotExist:
+        return JsonResponse({'error': 'Objeto não encontrado'}, status=404)
+
+
+
 
             
 

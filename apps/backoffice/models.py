@@ -12,6 +12,9 @@ class BackOffice(models.Model):
     aprovado = models.BooleanField(default=False)
     data_aprovacao = models.DateTimeField(null=True, blank=True)
     pausa = models.BooleanField(default=False)
+    tempo_ate_pausar = models.CharField(null= True,blank=True, max_length=100)
+    inicio_pausa = models.DateTimeField(null=True, blank=True)
+    termo_pausa = models.DateTimeField(null=True, blank= True)
     
 
     def calcular_tempo_decorrido_bo(self):
@@ -19,23 +22,29 @@ class BackOffice(models.Model):
         tempo_total = timedelta()
         for bo in bo_funcionario:
             if bo.inicio and bo.fim:
-                tempo_total += (bo.fim - bo.inicio)
+                tempo_total += (bo.fim - bo.inicio)      
+        return formatted_time(tempo_total)
+    
+    def calcular_tempo_bo_ao_segundo(self):       
+        if self.inicio and not self.pausa and not self.inicio_pausa:
+            tempo_decorrido = timezone.now() - self.inicio
+            return formatted_time(tempo_decorrido)
+        elif self.pausa:
+                return self.tempo_ate_pausar
+        elif self.inicio and not self.pausa and self.inicio_pausa:
+            tempo_acumulado = self.tempo_ate_pausar
+            tempo_acumulado_formated = parse_formatted_time(tempo_acumulado)
+            tempo_decorrido = (timezone.now() - self.inicio) + tempo_acumulado_formated
+            return formatted_time(tempo_decorrido)
+        return "00:00:00"
 
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+
     
     def calcular_tempo_decorrido_aprovacao(self):
         if self.aprovado and self.data_aprovacao:
             agora = timezone.now()
-            tempo_decorrido = agora - self.data_aprovacao
-            total_seconds = tempo_decorrido.total_seconds()
-            hours, remainder = divmod(total_seconds, 3600)
-            minutes, seconds = divmod(remainder,60)
-            formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"   
-            return formatted
+            tempo_decorrido = agora - self.data_aprovacao  
+            return formatted_time(tempo_decorrido)
     
     def get_absolute_url(self):
         return reverse('lista_pausas')
@@ -55,13 +64,8 @@ class BackOfficeDiario(models.Model):
         tempo_total = timedelta()
         for bo in bo_funcionario:
             if bo.inicio and bo.fim:
-                tempo_total += (bo.fim - bo.inicio)
-
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+                tempo_total += (bo.fim - bo.inicio) 
+        return formatted_time(tempo_total)
     
     def __str__(self) -> str:
         return f"BO-{self.funcionario}- Inicio: {self.inicio} - Fim: {self.fim}"
@@ -69,7 +73,7 @@ class BackOfficeDiario(models.Model):
 
 class BackOfficeFilaEspera(models.Model):
     funcionario = models.ForeignKey(Usuario,on_delete=models.CASCADE)
-    data_entrada = models.DateTimeField(default=timezone.now())
+    data_entrada = models.DateTimeField(default=timezone.now)
 
     def calcular_tempo_decorrido_entrada_fila_bo(self):
         pausas = BackOfficeFilaEspera.objects.filter(funcionario=self.funcionario)
@@ -77,13 +81,8 @@ class BackOfficeFilaEspera(models.Model):
         hora_atual = timezone.now()
         for pausa in pausas:
             if pausa.data_entrada:
-                tempo_total += (hora_atual - pausa.data_entrada)
-
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+                tempo_total += (hora_atual - pausa.data_entrada)     
+        return formatted_time(tempo_total)
 
     def calcular_tempo_decorrido_bo(self):
         bo_funcionario = BackOfficeDiario.objects.filter(funcionario=self.funcionario)
@@ -106,3 +105,21 @@ class BackofficeConfig(models.Model):
 
     def __str__(self):
         return f"Capacidade_maxima_BO = {self.capacidade_maxima}"
+    
+
+
+
+def formatted_time(time):
+    if time is None:
+        return "00:00:00"
+    total_seconds = time.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
+    return formatted
+
+
+def parse_formatted_time(formatted_time):
+    hours, minutes, seconds = map(int, formatted_time.split(":"))
+    time_delta = timedelta(hours=hours, minutes=minutes,seconds=seconds)
+    return time_delta

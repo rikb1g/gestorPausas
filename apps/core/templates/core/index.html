@@ -102,16 +102,17 @@
                             {% else %}
 
                             {% endif %}
+                            
+                            {% if intervalo.inicio %}
+                            <div class="linha mt-0-5 p-0">
+                                <div><p>Iniciado a: <span id="tempo-decorrido-pausa'" data-id="{{ intervalo.id }}" class="tempo-decorrido-pausa"></span></p>
+                            </div>
+                                
+                            </div>
+                            {% endif %}
                             <div class="linha mt-0-5">
                                 <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>  
                             </div>
-                            {% if intervalo.inicio %}
-                            <div class="linha mt-0-5">
-                                <div>Iniciado a:
-                                    <p id="tempo-decorrido-{{ intervalo.id }}" data-inicio="{{ intervalo.inicio|date:'Y-m-d H:i:s' }}"
-                                        class="tempo-decorrido"></p></div>
-                                </div>
-                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
@@ -162,12 +163,12 @@
                                     <p class="btn btn-success">
                                         {{ bo.funcionario}}
                                     </p>
-                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.funcionario }}')"><img src="{% static 'images/pause.svg' %}" alt="Pausar BO"></a>
+                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}')"><img src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
                                     <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+                                        src="{% static 'images/close.svg' %}" alt="remover BO" ></a>
                                     {% elif bo.pausa %}
                                     <p class="btn btn-warning">{{ bo.funcionario}} </p>
-                                    <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO"></a>
+                                    <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
                                     <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
 
@@ -179,19 +180,24 @@
                                 <div>BO aceite: <b>{{bo.calcular_tempo_decorrido_aprovacao }}</b></div>
                                 
                                 </div>
-                                {% else %}
+                                {% elif bo.inicio and bo.pausa is False %}
+                                <div class="linha mt-0-5">
+                                    <div><p>Iniciado a: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
+                                        </div>
+                                    </div>
+                                    
+                                {% elif bo.pausa %}
+                                <div class="linha mt-1">
+                                    <div><p>Tempo até pausar: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
+                                        </div>
+                                    </div>
+                                
     
                                 {% endif %}
-                                <div class="linha mt-0-5">
-                                    <div>Total BO: <b>{{ bo.calcular_tempo_decorrido_bo  }}</b></div>  
+                                <div class="linha">
+                                    <div>Total BO: <b>{{ bo.calcular_tempo_decorrido_bo  }}</b></div> 
                                 </div>
-                                {% if bo.inicio and bo.pausa is False %}
-                                <div class="linha mt-0-5">
-                                    <div>Iniciado a:
-                                        <p id="tempo-decorrido-{{ bo.id }}" data-inicio="{{ bo.inicio|date:'Y-m-d H:i:s' }}"
-                                            class="tempo-decorrido"></p></div>
-                                    </div>
-                                {% endif %}
+                                
                             </div>
                             {% endfor %}
                         </div>
@@ -253,60 +259,6 @@
 
 
         {% endif %}
-        <script>
-            history.pushState(null, null, '');
-            function startTimer(startTime, displayElement) {
-                setInterval(function () {
-                    var now = new Date();
-                    var start = new Date(startTime);
-                    var diff = now - start;  // diferença em milissegundos
-
-                    // Garante que a diferença é válida antes de continuar
-                    if (isNaN(diff)) {
-                        displayElement.textContent = "Erro na data";
-                        return;
-                    }
-
-                    // Converte a diferença em horas, minutos e segundos
-                    var hours = Math.floor(diff / (1000 * 60 * 60));
-                    var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    // Garante que horas, minutos e segundos sejam válidos
-                    hours = hours >= 0 ? hours : 0;
-                    minutes = minutes >= 0 ? minutes : 0;
-                    seconds = seconds >= 0 ? seconds : 0;
-
-                    // Formata o tempo decorrido
-                    var formattedTime = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-
-                    // Atualiza o elemento HTML com o tempo decorrido
-                    displayElement.textContent = formattedTime;
-                }, 1000); // Atualiza a cada segundo
-            }
-
-            // Exemplo de como iniciar o contador
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.tempo-decorrido').forEach(function (element) {
-                    var startTime = element.getAttribute('data-inicio');
-                    if (startTime) {
-                        startTimer(startTime, element);
-                    }
-                });
-            });
-
-            ;
-
-            function exibirPopUpconfirmacaoInicioBO(nome){
-    if(confirm("Tens a certeza que pretendes iniciar o BO de "+nome+ " ?")){
-        var url = "/backoffice/iniciar_bo_supervisor?nome="+encodeURIComponent(nome);
-        window.location.href = url
-    }
-    else{
-        alert("Ação cancelada")
-    }
-}
-
-        </script>
+        
         <script src="{% static 'js/geral.js' %}"></script>
         {% endblock %}

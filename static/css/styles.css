@@ -15,14 +15,10 @@ body{
 }
 
 
-.titulo-principal{
-    font-family: 'ITC Benguiat Std', sans-serif;
-    font-size: 80px;
-    color: deepskyblue;
-    transition: all 0.2s;
+.titulo-imagem {
+    height: 1px; /* Defina a altura que você quiser */
+    width: auto;  /* A largura será ajustada automaticamente */
 }
-
-
 
 .dados{
     display: flex;
@@ -46,4 +42,10 @@ body{
 
 .toogleback{
     cursor: pointer;
+}
+
+.caixa{
+   background-color: aliceblue;
+    
+    
 }

@@ -6,25 +6,32 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1">
 <link href="https://fonts.cdnfonts.com/css/itc-benguiat-std" rel="stylesheet">
-
+{% block title %}
+    {% if lista_pausas and not iniciado %}
+    <title>✅ Pausa Aprovada!</title>
+    {% elif bo_aprovado and not bo_iniciado %}
+    <title>✅ BO Aprovado!</title>
+    {% else %}
+    <title>Pausas Alto Valor</title>
+    {% endif %}
+{% endblock %}
 
 {% block main %}
 <div class="container">
     <div class="text-center">
         {% if lista_pausas and not iniciado %}
-
+       
         <script>
             setTimeout(function () {
-                notifyUser("✅ Pausa Aprovado!");
-                console.log("aqui 2")
+                notifyUser("✅ Pausa Aprovada!");
             }, 1000);
         </script>
-        <div class="container">
+        <div class="container ">
             <div class="row">
                 <div class="col">
-                    <p class="fs-5 text-center mt-5">Pausas</p>
-                    <div class="text-center mt-5">
-                        <div class="row">
+                    <p class="fs-5 text-center mt-5"><b>Pausas</b></p>
+                    <div class="text-center mt-5" >
+                        <div class="row ">
                             <div class="col-2"></div>
                             <div class="col text-5">
                                 <p class="fs-6">Tempo total de pausa:</p>
@@ -36,7 +43,7 @@
 
                             <form action="{% url 'iniciar_intervalo' %}" method="POST">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-primary mt-4" onclick="iniciarIntervalo()">
+                                <button type="submit" class="btn btn-success mt-4" onclick="iniciarIntervalo()">
                                     Iniciar Intervalo
                                 </button>
                             </form>
@@ -51,15 +58,16 @@
 
                     </div>
                 </div>
+
                 <div class="col">
                     {% if bo_aprovado and not bo_iniciado  %}
+                      
                     <p class="fs-5 text-center mt-5">BO</p>
 
                     <div class="text-center mt-5">
                         <script>
                             setTimeout(function () {
                                 notifyUser("✅ BO Aprovado!");
-                                console.log("aqui 2")
                             }, 1000);
                         </script>
                         <div class="container">
@@ -75,7 +83,7 @@
                             <div class="col-2"></div>
                             <form action="{% url 'iniciar_bo' %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-primary mt-4" onclick="iniciarBO()">
+                                <button type="submit" class="btn btn-success mt-4" onclick="iniciarBO()">
                                     Iniciar BO
                                 </button>
                             </form>
@@ -85,11 +93,9 @@
                                     Cancelar BO
                                 </button>
                             </form>
-
-
-
                         </div>
                     </div>
+
                     {% elif bo_iniciado or bo_iniciado.pausa %}
                     <div class="container">
                         <div class="row">
@@ -97,26 +103,24 @@
                                 <p class="fs-5 text-center mt-5">BO</p>
                                 <div class="text-center mt-5">
                                     {% for tempo in bo_iniciado %}
-
-                                    <p class="fw-bold">BO iniciado:</p>
-                                    <p id="tempo-decorrido-{{ tempo.id }}"
-                                        data-inicio="{{ tempo.inicio|date:'Y-m-d H:i:s' }}" class="tempo-decorrido"></p>
+                                    
+                                    <p class="fw-bold">BO iniciado: </p>
+                                    <div class="linha">
+                                    <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
 
                                         {% if not tempo.pausa %}
                                        
-                                        <a onclick="pausarBO()" href="{% url 'pausar_bo' %}" class="btn-pause" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+                                        <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
 
                                         {% else  %}
-                                        <a onclick="retomarBOAposPausa()" href="{% url 'despausar_bo' %}" class="btn-resume" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+                                        <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
 
                                         {% endif %}
 
-                                        
-
-
+                                    </div>
                                    <form action="{% url 'finalizar_bo' %}" method="POST">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-primary" onclick="terminarBO()">
+                                        <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                             Terminar BO
                                         </button>
                                     </form>
@@ -183,16 +187,16 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <p class="fs-5 text-center mt-5">Pausas</p>
+                    <p class="fs-2 text-center mt-5">Pausas</p> 
                     <div class="text-center mt-5">
                         {% for time in iniciado %}
                         <p class="fw-bold">Intervalo iniciado:</p>
-                        <p id="tempo-decorrido-{{ time.id }}" data-inicio="{{ time.inicio|date:'Y-m-d H:i:s' }}"
-                            class="tempo-decorrido"></p>
+                        <p id="tempo-decorrido-pausa" data-id="{{ time.id }}"
+                            class="tempo-decorrido-pausa"></p>
 
                         <form action="{% url 'finalizar_intervalo' %}" method="POST">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary" onclick="terminarIntervalo()">
+                            <button type="submit" class="btn btn-danger" onclick="terminarIntervalo()">
                                 Terminar Intervalo
                             </button>
                         </form>
@@ -214,7 +218,6 @@
                         <script>
                             setTimeout(function () {
                                 notifyUser("✅ BO Aprovado!");
-                                console.log("aqui 2")
                             }, 1000);
                         </script>
                         <div class="container">
@@ -230,7 +233,7 @@
                             <div class="col-2"></div>
                             <form action="{% url 'iniciar_bo' %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-primary mt-4" onclick="iniciarBO()">
+                                <button type="submit" class="btn btn-success mt-4" onclick="iniciarBO()">
                                     Iniciar BO
                                 </button>
                             </form>
@@ -240,25 +243,33 @@
                                     Cancelar BO
                                 </button>
                             </form>
-
-
-
                         </div>
                     </div>
-                    {% elif bo_iniciado %}
+
+                    {% elif bo_iniciado or bo_iniciado.pausa %}
                     <div class="container">
                         <div class="row">
                             <div class="col">
                                 <p class="fs-5 text-center mt-5">BO</p>
                                 <div class="text-center mt-5">
                                     {% for tempo in bo_iniciado %}
-                                    <p class="fw-bold">BO iniciado:</p>
-                                    <p id="tempo-decorrido-{{ tempo.id }}"
-                                        data-inicio="{{ tempo.inicio|date:'Y-m-d H:i:s' }}" class="tempo-decorrido"></p>
+                                    <div class="linha">
+                                    <p class="fw-bold">BO iniciado: </p>
+                                    <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
 
-                                    <form action="{% url 'finalizar_bo' %}" method="POST">
+                                        {% if not tempo.pausa %}
+                                       
+                                        <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+
+                                        {% else  %}
+                                        <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+
+                                        {% endif %}
+
+                                    </div>
+                                   <form action="{% url 'finalizar_bo' %}" method="POST">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-primary" onclick="terminarBO()">
+                                        <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                             Terminar BO
                                         </button>
                                     </form>
@@ -329,7 +340,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            <p class="fs-5 text-center mt-5">Pausas</p>
+                            <p class="fs-2 text-center mt-5">Pausas</p>
                             <p class="mt-5">Está quase....</p>
                             <p class="btn btn-primary">És o proximo </p>
                             <p class="mt-3 tempo-pausa">Já gozaste {{ total_pausa }} de pausa!</p>
@@ -352,7 +363,6 @@
                                 <script>
                                     setTimeout(function () {
                                         notifyUser("✅ BO Aprovado!");
-                                        console.log("aqui 2")
                                     }, 1000);
                                 </script>
                                 <div class="container">
@@ -368,7 +378,7 @@
                                     <div class="col-2"></div>
                                     <form action="{% url 'iniciar_bo' %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-primary mt-4" onclick="iniciarBO()">
+                                        <button type="submit" class="btn btn-success mt-4" onclick="iniciarBO()">
                                             Iniciar BO
                                         </button>
                                     </form>
@@ -383,27 +393,36 @@
 
                                 </div>
                             </div>
-                            {% elif bo_iniciado %}
+                            {% elif bo_iniciado or bo_iniciado.pausa %}
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
                                         <p class="fs-5 text-center mt-5">BO</p>
                                         <div class="text-center mt-5">
                                             {% for tempo in bo_iniciado %}
-                                            <p class="fw-bold">BO iniciado:</p>
-                                            <p id="tempo-decorrido-{{ tempo.id }}"
-                                                data-inicio="{{ tempo.inicio|date:'Y-m-d H:i:s' }}"
-                                                class="tempo-decorrido"></p>
-
-                                            <form action="{% url 'finalizar_bo' %}" method="POST">
+                                            <div class="linha">
+                                            <p class="fw-bold">BO iniciado: </p>
+                                            <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
+        
+                                                {% if not tempo.pausa %}
+                                               
+                                                <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+        
+                                                {% else  %}
+                                                <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+        
+                                                {% endif %}
+        
+                                            </div>
+                                           <form action="{% url 'finalizar_bo' %}" method="POST">
                                                 {% csrf_token %}
-                                                <button type="submit" class="btn btn-primary" onclick="terminarBO()">
+                                                <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                                     Terminar BO
                                                 </button>
                                             </form>
                                             <p class="mt-5 tempo-pausa">Já gozaste {{ bo_total_tempo }} de BO</p>
                                             {% endfor %}
-
+        
                                         </div>
                                     </div>
                                 </div>
@@ -466,7 +485,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col">
-                        <p class="fs-5 text-center mt-5">Pausas</p>
+                        <p class="fs-2 text-center mt-5">Pausas</p>
                         <div class="text-center mt-5">
 
                             <a href="{% url 'nova_pausa' %}" class="btn btn-primary" type="submit">Pedir
@@ -481,6 +500,9 @@
                     </div>
                     <div class="col">
                         {% if bo_aprovado and not bo_iniciado %}
+                        
+                    
+                        
                         <p class="fs-5 text-center mt-5">BO</p>
 
                         <div class="text-center mt-5">
@@ -488,7 +510,6 @@
                             <script>
                                 setTimeout(function () {
                                     notifyUser("✅ BO Aprovado!");
-                                    console.log("aqui 2")
                                 }, 1000);
                             </script>
                             <div class="container">
@@ -504,7 +525,7 @@
                                 <div class="col-2"></div>
                                 <form action="{% url 'iniciar_bo' %}" method="post">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-primary mt-4" onclick="iniciarBO()">
+                                    <button type="submit" class="btn btn-success mt-4" onclick="iniciarBO()">
                                         Iniciar BO
                                     </button>
                                 </form>
@@ -519,27 +540,36 @@
 
                             </div>
                         </div>
-                        {% elif bo_iniciado %}
+                        {% elif bo_iniciado or bo_iniciado.pausa %}
                         <div class="container">
                             <div class="row">
                                 <div class="col">
                                     <p class="fs-5 text-center mt-5">BO</p>
                                     <div class="text-center mt-5">
                                         {% for tempo in bo_iniciado %}
-                                        <p class="fw-bold">BO iniciado:</p>
-                                        <p id="tempo-decorrido-{{ tempo.id }}"
-                                            data-inicio="{{ tempo.inicio|date:'Y-m-d H:i:s' }}" class="tempo-decorrido">
-                                        </p>
-
-                                        <form action="{% url 'finalizar_bo' %}" method="POST">
+                                        <div class="linha">
+                                        <p class="fw-bold">BO iniciado: </p>
+                                        <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
+    
+                                            {% if not tempo.pausa %}
+                                           
+                                            <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+    
+                                            {% else  %}
+                                            <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+    
+                                            {% endif %}
+    
+                                        </div>
+                                       <form action="{% url 'finalizar_bo' %}" method="POST">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary" onclick="terminarBO()">
+                                            <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                                 Terminar BO
                                             </button>
                                         </form>
                                         <p class="mt-5 tempo-pausa">Já gozaste {{ bo_total_tempo }} de BO</p>
                                         {% endfor %}
-
+    
                                     </div>
                                 </div>
                             </div>
@@ -596,7 +626,7 @@
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                <p class="fs-5 text-center mt-5">Pausas</p>
+                                <p class="fs-2 text-center mt-5">Pausas</p>
                                 <div class="text-center mt-5">
 
                                     <p class="mt-5">Ups, parece que tens que ter paciência</p>
@@ -617,9 +647,12 @@
                                 <p class="fs-5 text-center mt-5">BO</p>
 
                                 <div class="text-center mt-5">
-
-
-                                    notifyBOApproved()
+                                    <script>
+                                        setTimeout(function () {
+                                            notifyUser("✅ BO Aprovado!");
+                                            console.log("aqui 2")
+                                        }, 1000);
+                                    </script>
 
                                     <div class="container">
                                         <div class="row">
@@ -634,7 +667,7 @@
                                         <div class="col-2"></div>
                                         <form action="{% url 'iniciar_bo' %}" method="post">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary mt-4" onclick="iniciarBO()">
+                                            <button type="submit" class="btn btn-success mt-4" onclick="iniciarBO()">
                                                 Iniciar BO
                                             </button>
                                         </form>
@@ -644,33 +677,38 @@
                                                 Cancelar BO
                                             </button>
                                         </form>
-
-
-
                                     </div>
                                 </div>
-                                {% elif bo_iniciado %}
+                                {% elif bo_iniciado or bo_iniciado.pausa %}
                                 <div class="container">
                                     <div class="row">
                                         <div class="col">
                                             <p class="fs-5 text-center mt-5">BO</p>
                                             <div class="text-center mt-5">
                                                 {% for tempo in bo_iniciado %}
-                                                <p class="fw-bold">BO iniciado:</p>
-                                                <p id="tempo-decorrido-{{ tempo.id }}"
-                                                    data-inicio="{{ tempo.inicio|date:'Y-m-d H:i:s' }}"
-                                                    class="tempo-decorrido"></p>
-
-                                                <form action="{% url 'finalizar_bo' %}" method="POST">
+                                                <div class="linha">
+                                                <p class="fw-bold">BO iniciado: </p>
+                                                <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
+            
+                                                    {% if not tempo.pausa %}
+                                                   
+                                                    <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+            
+                                                    {% else  %}
+                                                    <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+            
+                                                    {% endif %}
+            
+                                                </div>
+                                               <form action="{% url 'finalizar_bo' %}" method="POST">
                                                     {% csrf_token %}
-                                                    <button type="submit" class="btn btn-primary"
-                                                        onclick="terminarBO()">
+                                                    <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                                         Terminar BO
                                                     </button>
                                                 </form>
                                                 <p class="mt-5 tempo-pausa">Já gozaste {{ bo_total_tempo }} de BO</p>
                                                 {% endfor %}
-
+            
                                             </div>
                                         </div>
                                     </div>
@@ -733,10 +771,11 @@
                         </div>
                     </div>
 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-
-
-
-                    <script src="{% static 'js/pausas.js' %}"></script>
+        <script src="{% static 'js/pausas.js' %}"></script>
                  {% endblock %}

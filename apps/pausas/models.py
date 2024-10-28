@@ -3,6 +3,8 @@ from django.urls import reverse
 from apps.usuarios.models import Usuario
 from django.utils import timezone
 from datetime import timedelta
+from apps.backoffice.models import formatted_time
+
 
 class Pausa(models.Model):
     funcionario = models.ForeignKey(Usuario,on_delete=models.CASCADE)
@@ -19,23 +21,21 @@ class Pausa(models.Model):
             if pausa.inicio and pausa.fim:
                 tempo_total += (pausa.fim - pausa.inicio)
 
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+            
+        return formatted_time(tempo_total)
     
     def calcular_tempo_desde_aprovacao(self):
         if self.aprovado and self.data_aprovacao:
             agora = timezone.now()
             tempo_decorrido = agora - self.data_aprovacao
 
-            total_seconds = tempo_decorrido.total_seconds()
-            hours, remainder = divmod(total_seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
-            return formatted
+            return formatted_time(tempo_decorrido)
         return "Pausa ainda não foi aprovada."
+    
+    def calcular_tempo_pausa_ao_segundo(self):
+        if self.inicio and self.aprovado:
+            tempo_decorrido = timezone.now() - self.inicio
+            return formatted_time(tempo_decorrido)
 
 
     def get_absolute_url(self):
@@ -56,12 +56,8 @@ class PausasDiarias(models.Model):
         for pausa in pausas:
             if pausa.inicio and pausa.fim:
                 tempo_total += (pausa.fim - pausa.inicio)
-
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+   
+        return formatted_time(tempo_total)
     
     
 
@@ -81,26 +77,16 @@ class FilaEspera(models.Model):
         hora_atual = timezone.now()
         for pausa in pausas:
             if pausa.data_entrada:
-                tempo_total += (hora_atual - pausa.data_entrada)
-
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+                tempo_total += (hora_atual - pausa.data_entrada)    
+        return formatted_time(tempo_total)
 
     def calcular_tempo_decorrido_pausa(self):
         pausas = PausasDiarias.objects.filter(funcionario=self.funcionario)
         tempo_total = timedelta()
         for pausa in pausas:
             if pausa.inicio and pausa.fim:
-                tempo_total += (pausa.fim - pausa.inicio)
-
-        total_seconds = tempo_total.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"    
-        return formatted
+                tempo_total += (pausa.fim - pausa.inicio)    
+        return formatted_time(tempo_total)
 
     def __str__(self):
         return f'{self.funcionario.nome} - Entrada na fila: {self.data_entrada}'

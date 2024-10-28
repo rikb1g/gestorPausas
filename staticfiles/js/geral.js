@@ -87,55 +87,46 @@ function exibirPopUpconfirmacaoRetomarBO(nome){
 }
 
 
-function setDarkMode(isBlack){
-    localStorage.setItem('isBlack', isBlack)   
+function startTimer(startTime, displayElement) {
+    setInterval(function () {
+        var now = new Date();
+        var start = new Date(startTime);
+        var diff = now - start;  // diferença em milissegundos
 
+        // Garante que a diferença é válida antes de continuar
+        if (isNaN(diff)) {
+            displayElement.textContent = "Erro na data";
+            return;
+        }
 
-    if (isBlack === true){
-        document.body.style.backgroundColor = "black"
-        document.body.style.color = "white"
-        document.getElementById("toogleback").innerHTML = "Lighmode"
-    } else {
-        document.body.style.backgroundColor = "white"
-        document.body.style.color = "black"
-        document.getElementById("toogleback").innerHTML = "Darkmode"
-    }
+        // Converte a diferença em horas, minutos e segundos
+        var hours = Math.floor(diff / (1000 * 60 * 60));
+        var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
+        // Garante que horas, minutos e segundos sejam válidos
+        hours = hours >= 0 ? hours : 0;
+        minutes = minutes >= 0 ? minutes : 0;
+        seconds = seconds >= 0 ? seconds : 0;
+
+        // Formata o tempo decorrido
+        var formattedTime = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+        // Atualiza o elemento HTML com o tempo decorrido
+        displayElement.textContent = formattedTime;
+    }, 1000); // Atualiza a cada segundo
 }
 
-
-function mudarcorfundo(){
-
-    let isBlack = localStorage.getItem('isBlack') === 'true'
-
-    setDarkMode(!isBlack)
-
-    
-}
-
-
-function loadTheme(){
-    let isBlack = localStorage.getItem('isBlack') === 'true'
-    setDarkMode(isBlack)
-}
-
-
-
-loadTheme()
-document.addEventListener("DOMContentLoaded", function(){
-    /*
-    var select_num = document.getElementById('num')
-    var valor_selecionado_num = select_num.value
-    var select_num_bo = document.getElementById('num-bo')
-    var valor_salvo_num_bo = select_num_bo.value
-
-
-    localStorage.setItem('select_num', valor_selecionado_num)
-    localStorage.setItem('select_num_bo', valor_selecionado_num_bo)
-        */
+// Exemplo de como iniciar o contador
+document.addEventListener('DOMContentLoaded', function () {
     history.pushState(null, null, '');
     window.onpopstate = function () {
         history.go(1);
     };
-    backgroundColor()
-})
+    document.querySelectorAll('.tempo-decorrido').forEach(function (element) {
+        var startTime = element.getAttribute('data-inicio');
+        if (startTime) {
+            startTimer(startTime, element);
+        }
+    });
+});
