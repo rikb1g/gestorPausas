@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import pedir_bo,iniciar_bo, finalizar_bo, cancelar_bo, maximo_bo_autorizados, cancelar_bo_supervisor, autorizar_bo_supervisor,iniciar_bo_supervisor
+from .views import (pedir_bo,iniciar_bo, finalizar_bo, cancelar_bo, maximo_bo_autorizados,
+                    cancelar_bo_supervisor, autorizar_bo_supervisor,iniciar_bo_supervisor, pausar_bo_sup, 
+                    despausar_bo_sup,despausar_bo,pausar_bo, tempo_bo
+                    )
 
 
 
@@ -12,4 +15,9 @@ urlpatterns = [
     path('cancelar_bo_supervisor',cancelar_bo_supervisor,name="cancelar_bo_supervisor"),
     path('autorizar_bo_supervisor',autorizar_bo_supervisor,name="autorizar_bo_supervisor"),
     path('iniciar_bo_supervisor',iniciar_bo_supervisor,name="iniciar_bo_supervisor"),
+    path('pausar_bo_sup',pausar_bo_sup, name='pausar_bo_sup'),
+    path('despausar_bo_sup',despausar_bo_sup, name='despausar_bo_sup'),
+    path('despausar_bo/<int:id>/',despausar_bo, name='despausar_bo'),
+    path('pausar_bo/<int:id>/',pausar_bo, name='pausar_bo'),
+    path('tempo_bo/<int:id>/',tempo_bo, name='tempo_bo'),
 ]

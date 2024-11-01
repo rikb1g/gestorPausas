@@ -14,7 +14,7 @@
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_intervalos' %}">
                 <div>
-                    <label>Máximo de intervalos: </label>
+                    <label>Máximo de intervalos ({{ num_pausa_autorizados }}): </label>
                     <select name="num" id="num" aria-label="Small select example" onchange="salvarVAlorSelecionado()"
                         class="ms-2">
                         {% for num in contador %}
@@ -34,7 +34,7 @@
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_bo_autorizados' %}">
                 <div>
-                    <label>Máximo de BO: </label>
+                    <label>Máximo de BO ({{ num_bo_autorizado }}): </label>
                     <select name="num-bo" id="num-bo" aria-label="Small select example"
                         onchange="salvarVAlorSelecionadoBO()" class="ms-2">
                         {% for num in contador %}
@@ -60,18 +60,18 @@
                         <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
                             <div class="linha mt-2">
                                 <p class="btn btn-primary">{{ pausa.funcionario}}</p>
-                                
+
                                 <a class="mb-3"  onclick="exibirPopUpConfirmacaoAutPausa('{{ pausa.funcionario }}')"><img
                                         src="{% static 'images/check.svg' %}" alt="autorizar pausa"></a>
                                 <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ pausa.funcionario }}')"><img
                                         src="{% static 'images/close.svg'%}" alt="remover pausa"></a>
-                            </div>                           
+                            </div>
                             <div class="linha mt-0-5">
                                 <div>Em fila: <b>{{ pausa.calcular_tempo_decorrido_entrada_fila }}</b></div>
                             </div>
                             <div class="linha mt-0-5">
                                 <div>Tempo total pausa: <b>{{ pausa.calcular_tempo_decorrido_pausa }}</b></div>
-                            </div>                        
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
@@ -82,14 +82,14 @@
                             <div class="linha mt-2">
                                 {% if intervalo.inicio is None %}
                                 <p class="btn btn-primary">{{ intervalo.funcionario}}</p>
-                                
+
                                 <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
                                 {% else %}
                                 <p class="btn btn-success">
                                     {{ intervalo.funcionario}}
                                 </p>
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ bo.funcionario }}')"><img
+                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
                                     src="{% static 'images/close.svg' %}" alt="remover BO"></a>
                                 {% endif %}
 
@@ -102,16 +102,17 @@
                             {% else %}
 
                             {% endif %}
-                            <div class="linha mt-0-5">
-                                <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>  
-                            </div>
+
                             {% if intervalo.inicio %}
-                            <div class="linha mt-0-5">
-                                <div>Iniciado a:
-                                    <p id="tempo-decorrido-{{ intervalo.id }}" data-inicio="{{ intervalo.inicio|date:'Y-m-d H:i:s' }}"
-                                        class="tempo-decorrido"></p></div>
-                                </div>
+                            <div class="linha mt-0-5 p-0">
+                                <div><p>Iniciado a: <span id="tempo-decorrido-pausa'" data-id="{{ intervalo.id }}" class="tempo-decorrido-pausa"></span></p>
+                            </div>
+
+                            </div>
                             {% endif %}
+                            <div class="linha mt-0-5">
+                                <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
@@ -131,18 +132,18 @@
                             <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
                                 <div class="linha mt-2">
                                     <p class="btn btn-primary">{{ bo.funcionario}}</p>
-                                    
+
                                     <a class="mb-3"  onclick="exibirPopUpconfirmacaoAutBO('{{ bo.funcionario }}')"><img
                                             src="{% static 'images/check.svg' %}" alt="autorizar bo"></a>
                                     <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                             src="{% static 'images/close.svg'%}" alt="remover bo"></a>
-                                </div>                           
+                                </div>
                                 <div class="linha mt-0-5">
                                     <div>Em fila: <b>{{ bo.calcular_tempo_decorrido_entrada_fila_bo }}</b></div>
                                 </div>
                                 <div class="linha mt-0-5">
                                     <div>Tempo total bo: <b>{{ bo.calcular_tempo_decorrido_bo }}</b></div>
-                                </div>                        
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
@@ -151,47 +152,59 @@
                             {% for bo in bo_autorizado %}
                             <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
                                 <div class="linha mt-2">
-                                    {% if bo.inicio is None %}
+                                    {% if bo.inicio is None and not bo.pausa %}
                                     <p class="btn btn-primary">{{ bo.funcionario}}</p>
                                     <a class="mb-3" onclick="exibirPopUpconfirmacaoInicioBO('{{ bo.funcionario }}')"><img
-                                        src="{% static 'images/check.svg' %}" alt="remover BO"></a>
-                                    
+                                        src="{% static 'images/check.svg' %}" alt="autorizar BO"></a>
+
                                     <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                             src="{% static 'images/close.svg' %}" alt="remover BO"></a>
-                                    {% else %}
+                                    {% elif bo.inicio and not bo.pausa %}
                                     <p class="btn btn-success">
                                         {{ bo.funcionario}}
                                     </p>
+                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}')"><img src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
+                                    <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
+                                        src="{% static 'images/close.svg' %}" alt="remover BO" ></a>
+                                    {% elif bo.pausa %}
+                                    <p class="btn btn-warning">{{ bo.funcionario}} </p>
+                                    <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
                                     <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+
                                     {% endif %}
-    
+
                                 </div>
                                 {% if bo.inicio is None %}
                                 <div class="linha mt-0-5">
-                                <div>BO aceite: <b>{{bo.calcular_tempo_decorrido_entrada_fila_bo }}</b></div>
-    
+                                <div>BO aceite: <b>{{bo.calcular_tempo_decorrido_aprovacao }}</b></div>
+
                                 </div>
-                                {% else %}
-    
-                                {% endif %}
+                                {% elif bo.inicio and bo.pausa is False %}
                                 <div class="linha mt-0-5">
-                                    <div>Total BO: <b>{{ bo.calcular_tempo_decorrido_bo  }}</b></div>  
-                                </div>
-                                {% if bo.inicio %}
-                                <div class="linha mt-0-5">
-                                    <div>Iniciado a:
-                                        <p id="tempo-decorrido-{{ bo.id }}" data-inicio="{{ bo.inicio|date:'Y-m-d H:i:s' }}"
-                                            class="tempo-decorrido"></p></div>
+                                    <div><p>Iniciado a: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
+                                        </div>
                                     </div>
+
+                                {% elif bo.pausa %}
+                                <div class="linha mt-1">
+                                    <div><p>Tempo até pausar: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
+                                        </div>
+                                    </div>
+
+
                                 {% endif %}
+                                <div class="linha">
+                                    <div>Total BO: <b>{{ bo.calcular_tempo_decorrido_bo  }}</b></div>
+                                </div>
+
                             </div>
                             {% endfor %}
                         </div>
                     </div>
-    
+
                 </div>
-    
+
             </div>
         </div>
 
@@ -217,7 +230,7 @@
 
                 <div class="text-center mt-5">
                     <p>Tempo total de pausa:</p>
-                    <p href="" class="btn btn-secondary notbtn">{{ total_pausa}}</p>
+                    <p href="#" class="btn btn-secondary">{{ total_pausa}}</p>
                 </div>
             </div>
 
@@ -231,12 +244,14 @@
 
                 <div class="text-center mt-5">
                     <p>Tempo total de BO:</p>
-                    <p href="" class="btn btn-secondary notbtn">{{ total_bo }}</p>
+                    <p href="#" class="btn btn-secondary">{{ total_bo }}</p>
 
                 </div>
                 <div class="col"></div>
             </div>
         </div>
+    </div>
+</div>
 
 
 
@@ -246,60 +261,6 @@
 
 
         {% endif %}
-        <script>
-            history.pushState(null, null, '');
-            function startTimer(startTime, displayElement) {
-                setInterval(function () {
-                    var now = new Date();
-                    var start = new Date(startTime);
-                    var diff = now - start;  // diferença em milissegundos
 
-                    // Garante que a diferença é válida antes de continuar
-                    if (isNaN(diff)) {
-                        displayElement.textContent = "Erro na data";
-                        return;
-                    }
-
-                    // Converte a diferença em horas, minutos e segundos
-                    var hours = Math.floor(diff / (1000 * 60 * 60));
-                    var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    // Garante que horas, minutos e segundos sejam válidos
-                    hours = hours >= 0 ? hours : 0;
-                    minutes = minutes >= 0 ? minutes : 0;
-                    seconds = seconds >= 0 ? seconds : 0;
-
-                    // Formata o tempo decorrido
-                    var formattedTime = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-
-                    // Atualiza o elemento HTML com o tempo decorrido
-                    displayElement.textContent = formattedTime;
-                }, 1000); // Atualiza a cada segundo
-            }
-
-            // Exemplo de como iniciar o contador
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.tempo-decorrido').forEach(function (element) {
-                    var startTime = element.getAttribute('data-inicio');
-                    if (startTime) {
-                        startTimer(startTime, element);
-                    }
-                });
-            });
-
-            ;
-
-            function exibirPopUpconfirmacaoInicioBO(nome){
-    if(confirm("Tens a certeza que pretendes iniciar o BO de "+nome+ " ?")){
-        var url = "/backoffice/iniciar_bo_supervisor?nome="+encodeURIComponent(nome);
-        window.location.href = url
-    }
-    else{
-        alert("Ação cancelada")
-    }
-}
-
-        </script>
         <script src="{% static 'js/geral.js' %}"></script>
         {% endblock %}

@@ -1,53 +1,52 @@
-document.addEventListener("DOMContentLoaded", function(){
-    
-    var select_num = document.getElementById('num')
-    var valor_selecionado_num = select_num.value
-    var select_num_bo = document.getElementById('num-bo')
-    var valor_salvo_num_bo = select_num_bo.value
 
+document.addEventListener('DOMContentLoaded',function(){
+    function atualizarTempoBO(){
+        document.querySelectorAll('.tempo-decorrido-bo').forEach(function(element){
+            const id = element.getAttribute('data-id');
+            fetch(`/backoffice/tempo_bo/${id}/`)
+                .then(response => {
+                    if (!response.ok){
+                        throw new Error('Erro na requisição: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
 
-    localStorage.setItem('select_num', valor_selecionado_num)
-    localStorage.setItem('select_num_bo', valor_selecionado_num_bo)
+                    element.innerHTML = `<b>${data.calcular_tempo_bo_ao_segundo}</b>`;
+                })
+                .catch(error => {
+                    element.textContent = "Erro ao carregar";
+                });
+        });
+    }
 
-    history.pushState(null, null, '');
-    window.onpopstate = function () {
-        history.go(1);
-    };
+    function atualizarTempoPausa(){
+        document.querySelectorAll('.tempo-decorrido-pausa').forEach(function(element){
+            const id = element.getAttribute('data-id');
 
+            fetch(`/pausas/calcular_tempo_pausa/${id}/`)
+                .then(response => {
+                    if (!response.ok){
+                        throw new Error('Erro na requisição: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
 
+                    element.innerHTML = `<b>${data.calcular_tempo_pausa_ao_segundo}</b>`;
+                })
+                .catch(error => {
+                    console.error('Erro nas pausas ', error);
+                    element.textContent = "Erro ao carregar";
+                });
+        });
+    }
+
+    // Atualiza o tempo de cada elemento a cada segundo
+    setInterval(atualizarTempoBO, 1000);
+    setInterval(atualizarTempoPausa,1000)
 })
 
-
-
-function salvarVAlorSelecionado(){
-    var select_num = document.getElementById('num')
-    
-    console.log(select_num.value)
-    var valor_selecionado_num = select_num.value
-
-    localStorage.setItem('valor_selecionado_num', valor_selecionado_num)
-}
-function salvarVAlorSelecionadoBO(){
-    var select_num = document.getElementById('num-bo')
-    
-    console.log(select_num.value)
-    var valor_selecionado_num_bo = select_num.value
-
-    localStorage.setItem('valor_selecionado_num_bo', valor_selecionado_num_bo)
-}
-
-window.onload = function() {
-    var valor_salvo_num = localStorage.getItem('valor_selecionado_num');
-    var valor_salvo_num_bo = localStorage.getItem('valor_selecionado_num_bo');
-    if (valor_salvo_num) {
-        var select_num = document.getElementById('num');
-        select_num.value = valor_salvo_num; // Aplica o valor do localStorage ao select
-    }
-    if (valor_salvo_num_bo){
-        var select_num_bo = document.getElementById('num-bo')
-        select_num_bo.value = valor_salvo_num_bo
-    }
-};
 
 
 function exibirPopUpConfirmacaoEliPAusa(nome){
@@ -61,7 +60,7 @@ function exibirPopUpConfirmacaoEliPAusa(nome){
 }
 
 function exibirPopUpConfirmacaoAutPausa(nome){
-    if(confirm("Tens a certeza que pretendes anular o intervalo de " +nome+ " ?")){
+    if(confirm("Tens a certeza que pretendes autorizar o intervalo de " +nome+ " ?")){
         var url = "/pausas/autorizar_intervalo_sup?nome="+encodeURIComponent(nome);
         window.location.href = url
     }
@@ -98,4 +97,55 @@ function exibirPopUpconfirmacaoAutBO(nome){
         alert("Ação cancelada")
     }
 }
+function exibirPopUpconfirmacaoPausarBO(id,nome){
+    if(confirm("Tens a certeza que pretendes pausar o BO de "+nome+ " ?")){
+        var url = "/backoffice/pausar_bo_sup?id="+encodeURIComponent(id);
+        window.location.href = url
+    }
+    else{
+        alert("Ação cancelada")
+    }
 
+}
+
+function exibirPopUpconfirmacaoRetomarBO(id,nome){
+    if(confirm("Tens a certeza que pretendes retomar o BO de "+nome+ " ?")){
+        var url = "/backoffice/despausar_bo_sup?id="+encodeURIComponent(id);
+        window.location.href = url
+    }
+    else{
+        alert("Ação cancelada")
+    }
+}
+
+
+function notifyUser(message) {
+    const originalTitle = document.title;
+    let isTitleModified = false
+
+    const titleInterval = setInterval(function () {
+        document.title = isTitleModified ? originalTitle : message
+        isTitleModified = !isTitleModified
+        console.log("funciona ")
+    }, 1000)
+
+    window.addEventListener("focus", function handleFocus() {
+        if (!alertTriggered) {
+            clearInterval(titleInterval)
+            document.title = originalTitle
+            alert(message)
+            alertTriggered = true
+            window.removeEventListener("focus", handleFocus)
+        }
+
+    })
+
+    setTimeout(function () {
+        if (!alertTriggered) {
+            clearInterval(titleInterval);
+            document.title = originalTitle;
+            alert(message);
+            alertTriggered = true;
+        }
+    }, 1000);
+}

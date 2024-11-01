@@ -13,21 +13,24 @@ from .models import Pausa, FilaEspera, ConfiguracaoPausa
 @receiver(post_delete, sender=FilaEspera)
 def autorizar_proximo_intervalo(sender, instance, **kwargs):
     config = ConfiguracaoPausa.objects.last()
-    
+
     if config:
         num_intervalos_maximos = config.capacidade_maxima
-    
         num_intervalos_autorizados = Pausa.objects.filter(aprovado=True).count()
         while num_intervalos_autorizados < num_intervalos_maximos:
             proximo = FilaEspera.objects.order_by('data_entrada').first()
-            if proximo:
-                # Cria uma nova pausa para o próximo da fila
+            if not proximo:
+                break
+            pausa_existente = Pausa.objects.filter(funcionario= proximo.funcionario, aprovado=True).exists()
+
+            if pausa_existente:
+                proximo.delete()
+            else:
                 Pausa.objects.create(funcionario=proximo.funcionario, aprovado=True,data_aprovacao= timezone.now())
                 proximo.delete()
-                num_intervalos_autorizados += 1  
+                num_intervalos_autorizados += 1
                 print("Pausa autorizada e removido da fila")
-            else:
-                print("Não há mais funcionários na fila de espera")
-                break
+            num_intervalos_autorizados = Pausa.objects.filter(aprovado=True).count()
+
     else:
         ConfiguracaoPausa.objects.create(capacidade_maxima=0)
