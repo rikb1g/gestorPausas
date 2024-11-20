@@ -10,10 +10,10 @@ SECRET_KEY = 'django-insecure-5*0#o3bmha(_5koh#@@b(-s6fp2g6)=rofv4zuu9jf1+fu1dqq
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True
+DEBUG = False
 
-#ALLOWED_HOSTS = ['rikb1g.pythonanywhere.com']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['altovalor-rikb1g.pythonanywhere.com']
+#ALLOWED_HOSTS = []
 
 
 
@@ -132,6 +132,7 @@ LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
 
+LOGIN_URL = '/accounts/login/'
 
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

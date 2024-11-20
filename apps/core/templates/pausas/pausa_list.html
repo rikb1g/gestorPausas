@@ -11,8 +11,18 @@
     <title>✅ Pausa Aprovada!</title>
     {% elif bo_aprovado and not bo_iniciado %}
     <title>✅ BO Aprovado!</title>
+    {% elif alerta_pausa %}
+    <title>🚨 Atenção ao tempo de Pausa</title>
+    {% elif iniciado %}
+    <title>Pausa Iniciada</title>
+    {% elif alerta_bo %}
+    <title>🚨 Atenção ao tempo de  BO</title>
+    {% elif bo_iniciado%}
+    <title>BO Iniciado</title>
     {% else %}
+
     <title>Pausas Alto Valor</title>
+    
     {% endif %}
 {% endblock %}
 
@@ -20,7 +30,7 @@
 <div class="container">
     <div class="text-center">
         {% if lista_pausas and not iniciado %}
-       
+
         <script>
             setTimeout(function () {
                 notifyUser("✅ Pausa Aprovada!");
@@ -29,8 +39,8 @@
         <div class="container ">
             <div class="row">
                 <div class="col">
-                    <p class="fs-5 text-center mt-5"><b>Pausas</b></p>
-                    <div class="text-center mt-5" >
+                    <p class="fs-2 text-center mt-5"><b>Pausas</b></p>
+                    <div class="text-center mt-5">
                         <div class="row ">
                             <div class="col-2"></div>
                             <div class="col text-5">
@@ -60,9 +70,9 @@
                 </div>
 
                 <div class="col">
-                    {% if bo_aprovado and not bo_iniciado  %}
-                      
-                    <p class="fs-5 text-center mt-5">BO</p>
+                    {% if bo_aprovado and not bo_iniciado %}
+
+                    <p class="fs-2 text-center mt-5">BO</p>
 
                     <div class="text-center mt-5">
                         <script>
@@ -100,25 +110,27 @@
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                <p class="fs-5 text-center mt-5">BO</p>
+                                <p class="fs-2 text-center mt-5">BO</p>
                                 <div class="text-center mt-5">
                                     {% for tempo in bo_iniciado %}
-                                    
+
                                     <p class="fw-bold">BO iniciado: </p>
                                     <div class="linha">
                                     <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
 
                                         {% if not tempo.pausa %}
-                                       
-                                        <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
 
-                                        {% else  %}
-                                        <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+                                        <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1"
+                                            id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+
+                                        {% else %}
+                                        <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1"
+                                            id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
 
                                         {% endif %}
 
                                     </div>
-                                   <form action="{% url 'finalizar_bo' %}" method="POST">
+                                    <form action="{% url 'finalizar_bo' %}" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                             Terminar BO
@@ -133,7 +145,7 @@
                     </div>
                     {% elif not bo_iniciado and not bo_aprovado%}
                     <div class="contaier">
-                        <p class="fs-5 text-center mt-5">BO</p>
+                        <p class="fs-2 text-center mt-5">BO</p>
                         {% if index_bo == 0 %}
                         <p class="mt-5">Está quase....</p>
                         <p class="btn btn-primary">És o proximo </p>
@@ -187,12 +199,11 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <p class="fs-2 text-center mt-5">Pausas</p> 
+                    <p class="fs-2 text-center mt-5">Pausas</p>
                     <div class="text-center mt-5">
                         {% for time in iniciado %}
                         <p class="fw-bold">Intervalo iniciado:</p>
-                        <p id="tempo-decorrido-pausa" data-id="{{ time.id }}"
-                            class="tempo-decorrido-pausa"></p>
+                        <p id="tempo-decorrido-pausa" data-id="{{ time.id }}" class="tempo-decorrido-pausa"></p>
 
                         <form action="{% url 'finalizar_intervalo' %}" method="POST">
                             {% csrf_token %}
@@ -211,7 +222,7 @@
                 </div>
                 <div class="col">
                     {% if bo_aprovado and not bo_iniciado %}
-                    <p class="fs-5 text-center mt-5">BO</p>
+                    <p class="fs-2 text-center mt-5">BO</p>
 
                     <div class="text-center mt-5">
 
@@ -250,24 +261,27 @@
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                <p class="fs-5 text-center mt-5">BO</p>
+                                <p class="fs-2 text-center mt-5">BO</p>
                                 <div class="text-center mt-5">
                                     {% for tempo in bo_iniciado %}
-                                    <div class="linha">
+
                                     <p class="fw-bold">BO iniciado: </p>
+                                    <div class="linha">
                                     <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
 
                                         {% if not tempo.pausa %}
-                                       
-                                        <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
 
-                                        {% else  %}
-                                        <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+                                        <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1"
+                                            id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+
+                                        {% else %}
+                                        <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1"
+                                            id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
 
                                         {% endif %}
 
                                     </div>
-                                   <form action="{% url 'finalizar_bo' %}" method="POST">
+                                    <form action="{% url 'finalizar_bo' %}" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                             Terminar BO
@@ -282,7 +296,7 @@
                     </div>
                     {% elif not bo_iniciado and not bo_aprovado%}
                     <div class="contaier">
-                        <p class="fs-5 text-center mt-5">BO</p>
+                        <p class="fs-2 text-center mt-5">BO</p>
                         {% if index_bo == 0 %}
                         <p class="mt-5">Está quase....</p>
                         <p class="btn btn-primary">És o proximo </p>
@@ -356,7 +370,7 @@
 
                         <div class="col">
                             {% if bo_aprovado and not bo_iniciado %}
-                            <p class="fs-5 text-center mt-5">BO</p>
+                            <p class="fs-2 text-center mt-5">BO</p>
 
                             <div class="text-center mt-5">
 
@@ -397,24 +411,30 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
-                                        <p class="fs-5 text-center mt-5">BO</p>
+                                        <p class="fs-2 text-center mt-5">BO</p>
                                         <div class="text-center mt-5">
                                             {% for tempo in bo_iniciado %}
-                                            <div class="linha">
+
                                             <p class="fw-bold">BO iniciado: </p>
-                                            <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
-        
+                                            <div class="linha">
+                                                <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}"
+                                                    class="tempo-decorrido-bo"></p>
+
                                                 {% if not tempo.pausa %}
-                                               
-                                                <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
-        
-                                                {% else  %}
-                                                <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
-        
+
+                                                <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1"
+                                                    id="btn-pause"><img src="{% static 'images/pause.svg' %}"
+                                                        alt=""></a>
+
+                                                {% else %}
+                                                <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1"
+                                                    id="btn-resume"><img src="{% static 'images/play.svg' %}"
+                                                        alt=""></a>
+
                                                 {% endif %}
-        
+
                                             </div>
-                                           <form action="{% url 'finalizar_bo' %}" method="POST">
+                                            <form action="{% url 'finalizar_bo' %}" method="POST">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                                     Terminar BO
@@ -422,7 +442,7 @@
                                             </form>
                                             <p class="mt-5 tempo-pausa">Já gozaste {{ bo_total_tempo }} de BO</p>
                                             {% endfor %}
-        
+
                                         </div>
                                     </div>
                                 </div>
@@ -500,10 +520,10 @@
                     </div>
                     <div class="col">
                         {% if bo_aprovado and not bo_iniciado %}
-                        
-                    
-                        
-                        <p class="fs-5 text-center mt-5">BO</p>
+
+
+
+                        <p class="fs-2 text-center mt-5">BO</p>
 
                         <div class="text-center mt-5">
 
@@ -544,24 +564,28 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col">
-                                    <p class="fs-5 text-center mt-5">BO</p>
+                                    <p class="fs-2 text-center mt-5">BO</p>
                                     <div class="text-center mt-5">
                                         {% for tempo in bo_iniciado %}
-                                        <div class="linha">
+
                                         <p class="fw-bold">BO iniciado: </p>
-                                        <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
-    
+                                        <div class="linha">
+                                            <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}"
+                                                class="tempo-decorrido-bo"></p>
+
                                             {% if not tempo.pausa %}
-                                           
-                                            <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
-    
-                                            {% else  %}
-                                            <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
-    
+
+                                            <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1"
+                                                id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
+
+                                            {% else %}
+                                            <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1"
+                                                id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
+
                                             {% endif %}
-    
+
                                         </div>
-                                       <form action="{% url 'finalizar_bo' %}" method="POST">
+                                        <form action="{% url 'finalizar_bo' %}" method="POST">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                                 Terminar BO
@@ -569,14 +593,14 @@
                                         </form>
                                         <p class="mt-5 tempo-pausa">Já gozaste {{ bo_total_tempo }} de BO</p>
                                         {% endfor %}
-    
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {% elif not bo_iniciado and not bo_aprovado%}
                         <div class="contaier">
-                            <p class="fs-5 text-center mt-5">BO</p>
+                            <p class="fs-2 text-center mt-5">BO</p>
                             {% if index_bo == 0 %}
                             <p class="mt-5">Está quase....</p>
                             <p class="btn btn-primary">És o proximo</p>
@@ -644,7 +668,7 @@
                             </div>
                             <div class="col">
                                 {% if bo_aprovado and not bo_iniciado %}
-                                <p class="fs-5 text-center mt-5">BO</p>
+                                <p class="fs-2 text-center mt-5">BO</p>
 
                                 <div class="text-center mt-5">
                                     <script>
@@ -683,24 +707,30 @@
                                 <div class="container">
                                     <div class="row">
                                         <div class="col">
-                                            <p class="fs-5 text-center mt-5">BO</p>
+                                            <p class="fs-2 text-center mt-5">BO</p>
                                             <div class="text-center mt-5">
                                                 {% for tempo in bo_iniciado %}
-                                                <div class="linha">
+
                                                 <p class="fw-bold">BO iniciado: </p>
-                                                <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}" class="tempo-decorrido-bo"></p>
-            
+                                                <div class="linha">
+                                                    <p id="tempo-decorrido-bo" data-id="{{ tempo.id }}"
+                                                        class="tempo-decorrido-bo"></p>
+
                                                     {% if not tempo.pausa %}
-                                                   
-                                                    <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1" id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt=""></a>
-            
-                                                    {% else  %}
-                                                    <a href="{% url 'despausar_bo' tempo.id %}" class="btn-resume mb-3 ms-1" id="btn-resume"><img src="{% static 'images/play.svg' %}" alt=""></a>
-            
+
+                                                    <a href="{% url 'pausar_bo' tempo.id %}" class="btn-pause mb-3 ms-1"
+                                                        id="btn-pause"><img src="{% static 'images/pause.svg' %}"
+                                                            alt=""></a>
+
+                                                    {% else %}
+                                                    <a href="{% url 'despausar_bo' tempo.id %}"
+                                                        class="btn-resume mb-3 ms-1" id="btn-resume"><img
+                                                            src="{% static 'images/play.svg' %}" alt=""></a>
+
                                                     {% endif %}
-            
+
                                                 </div>
-                                               <form action="{% url 'finalizar_bo' %}" method="POST">
+                                                <form action="{% url 'finalizar_bo' %}" method="POST">
                                                     {% csrf_token %}
                                                     <button type="submit" class="btn btn-danger" onclick="terminarBO()">
                                                         Terminar BO
@@ -708,14 +738,14 @@
                                                 </form>
                                                 <p class="mt-5 tempo-pausa">Já gozaste {{ bo_total_tempo }} de BO</p>
                                                 {% endfor %}
-            
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 {% elif not bo_iniciado and not bo_aprovado%}
                                 <div class="contaier">
-                                    <p class="fs-5 text-center mt-5">BO</p>
+                                    <p class="fs-2 text-center mt-5">BO</p>
                                     {% if index_bo == 0 %}
                                     <p class="mt-5">Está quase....</p>
                                     <p class="btn btn-primary">És o proximo </p>
@@ -777,5 +807,5 @@
     </div>
 </div>
 
-        <script src="{% static 'js/pausas.js' %}"></script>
-                 {% endblock %}
+<script src="{% static 'js/pausas.js' %}"></script>
+{% endblock %}

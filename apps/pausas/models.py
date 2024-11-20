@@ -14,6 +14,23 @@ class Pausa(models.Model):
     data_aprovacao = models.DateTimeField(null=True, blank=True)
     pausa = models.BooleanField(default=False)
 
+
+    @staticmethod
+    def calcular_tempo_ate_aviso(funcionario):
+        try:
+            pausa = Pausa.objects.get(funcionario=funcionario, aprovado=True)
+            print("encontrou pausa")
+            if pausa.inicio:
+                agora = timezone.now()
+                tempo_decorrido = agora - pausa.inicio
+                if tempo_decorrido > timedelta(minutes=15):
+                    print("tempo decorrido")
+                    return True
+                else:
+                    return False
+        except:
+            return False
+
     def calcular_tempo_decorrido_pausa(self):
         pausas = PausasDiarias.objects.filter(funcionario=self.funcionario)
         tempo_total = timedelta()

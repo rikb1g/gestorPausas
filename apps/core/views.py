@@ -12,15 +12,18 @@ def home(request):
     data['user'] = request.user
     pausas = Pausa.objects.filter(funcionario= request.user.usuario, aprovado=True)
     fila = FilaEspera.objects.filter(funcionario= request.user.usuario)
+    
+
+    #pausa
     data['total_pausa'] = PausasDiarias.calcular_tempo_decorrido(request.user.usuario)
     data['contador'] = range(21)
     data['pausa_autorizada'] = Pausa.objects.filter(aprovado=True)
-    print(data['pausa_autorizada'])
     data['intervalos_fila'] = FilaEspera.objects.order_by('data_entrada')
     bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
     fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
     num_pausa_autorizados = ConfiguracaoPausa.objects.last()
     data['num_pausa_autorizados'] = num_pausa_autorizados.capacidade_maxima
+    
     # BO
     data['total_bo'] = BackOfficeDiario.calcular_tempo_decorrido_bo(request.user.usuario)
     data['bo_autorizado'] = BackOffice.objects.filter(aprovado=True)

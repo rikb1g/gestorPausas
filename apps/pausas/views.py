@@ -1,19 +1,22 @@
 from typing import Any
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from django.forms import BaseModelForm
-from django.http import HttpRequest, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import  ListView
 from django.contrib import messages
+from django.db import transaction
+from apps.usuarios.decorators import user_is_assistente
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias
 from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera
 from apps.usuarios.models import Usuario
 
 
-
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_is_assistente, name='dispatch')
 class Lista_Pausas(ListView):
     model = Pausa
     context_object_name = 'lista_pausas'
@@ -41,7 +44,10 @@ class Lista_Pausas(ListView):
         total_pausa = PausasDiarias()
         tota_horas= total_pausa.calcular_tempo_decorrido(funcionario)
         context['total_pausa'] = tota_horas
-        
+        context['alerta_pausa']  = Pausa.calcular_tempo_ate_aviso(funcionario)
+        context['alerta_bo'] = BackOffice.calcular_tempo_ate_aviso(funcionario)
+
+    
         
         # BO
         
@@ -77,14 +83,19 @@ def pedir_pausa(request):
     configuracao = ConfiguracaoPausa.objects.first()
     if not configuracao:
         configuracao = ConfiguracaoPausa.objects.create(capacidade_maxima=0)
-    if pausas_aceites.count() < configuracao.capacidade_maxima:
-        Pausa.objects.create(funcionario=request.user.usuario,aprovado=True,data_aprovacao=timezone.now())
-        print("pausa aceite e nao criada fila")
-        return redirect('lista_intervalos')
-    else:
-        FilaEspera.objects.create(funcionario= request.user.usuario, data_entrada= timezone.now())
-        print("criada fila ")
-        return redirect('lista_intervalos')
+    with transaction.atomic():
+        if Pausa.objects.filter(funcionario=request.user.usuario, aprovado=True).exists() or \
+            FilaEspera.objects.filter(funcionario=request.user.usuario).exists():
+            print("Pedido duplicado evitado")
+            return redirect('lista_intervalos')
+        if pausas_aceites.count() < configuracao.capacidade_maxima:
+            Pausa.objects.create(funcionario=request.user.usuario,aprovado=True,data_aprovacao=timezone.now())
+            print("pausa aceite e nao criada fila")
+            return redirect('lista_intervalos')
+        else:
+            FilaEspera.objects.create(funcionario= request.user.usuario, data_entrada= timezone.now())
+            print("criada fila ")
+            return redirect('lista_intervalos')
 
 
 
@@ -98,7 +109,7 @@ def iniciarIntervalo(request):
             print(intervalo)
         return redirect('lista_intervalos')
     return redirect('lista_intervalos')
-   
+
 
 
 
@@ -148,13 +159,13 @@ def maximo_intervalos(request):
             config.capacidade_maxima = numero_intervalo
             config.save()
             messages.success(request,f"O número de intervalos autorizados foi alterado para {numero_intervalo}")
-            
+
         else:
             ConfiguracaoPausa.objects.create(capacidade_maxima = numero_intervalo)
             messages.error(request,"Seleção inválida ou não recebida")
 
         return redirect('home')
-        
+
     return redirect('home')
 
 def cancelar_intervalo_sup(request):
@@ -179,9 +190,9 @@ def cancelar_intervalo_sup(request):
                 arquivar = PausasDiarias(funcionario=intervalo.funcionario, inicio=intervalo.inicio, fim=intervalo.fim)
                 arquivar.save()
                 intervalo.delete()
-            
+
             return redirect('home')
-        
+
     return redirect('home')
 
 def autorizar_intervalo_sup(request):
@@ -205,4 +216,4 @@ def calcular_tempo_pausa(request, id):
 
 
 
-        
+
