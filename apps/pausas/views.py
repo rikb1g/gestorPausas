@@ -9,31 +9,21 @@ from django.utils import timezone
 from django.views.generic import  ListView
 from django.contrib import messages
 from django.db import transaction
-
-from apps.usuarios.decorators import user_is_assistente
-
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias
 from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera
 from apps.usuarios.models import Usuario
 
 
 @method_decorator(login_required, name='dispatch')
-
-@method_decorator(user_is_assistente, name='dispatch')
-
 class Lista_Pausas(ListView):
     model = Pausa
     context_object_name = 'lista_pausas'
 
     def get_queryset(self) -> QuerySet[Any]:
-        if not self.request.user.is_authenticated:
-            return redirect('login')
         funcionario = self.request.user.usuario
         return Pausa.objects.filter(funcionario=funcionario,aprovado=True)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        if not self.request.user.is_authenticated:
-            return redirect('login')
         funcionario = self.request.user.usuario
         context= super().get_context_data(**kwargs)
         context['nao_aprovado'] = Pausa.objects.filter(funcionario=funcionario,aprovado=False)
@@ -54,6 +44,8 @@ class Lista_Pausas(ListView):
         context['total_pausa'] = tota_horas
         context['alerta_pausa']  = Pausa.calcular_tempo_ate_aviso(funcionario)
         context['alerta_bo'] = BackOffice.calcular_tempo_ate_aviso(funcionario)
+
+
 
         # BO
 
@@ -219,6 +211,10 @@ def calcular_tempo_pausa(request, id):
         return JsonResponse(data)
     except Pausa.DoesNotExist:
         return JsonResponse({'error': 'Objeto não encontrado'}, status=404)
+
+
+
+
 
 
 
