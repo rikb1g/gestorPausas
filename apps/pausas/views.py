@@ -9,12 +9,18 @@ from django.utils import timezone
 from django.views.generic import  ListView
 from django.contrib import messages
 from django.db import transaction
+
+from apps.usuarios.decorators import user_is_assistente
+
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias
 from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera
 from apps.usuarios.models import Usuario
 
 
 @method_decorator(login_required, name='dispatch')
+
+@method_decorator(user_is_assistente, name='dispatch')
+
 class Lista_Pausas(ListView):
     model = Pausa
     context_object_name = 'lista_pausas'
@@ -46,7 +52,8 @@ class Lista_Pausas(ListView):
         total_pausa = PausasDiarias()
         tota_horas= total_pausa.calcular_tempo_decorrido(funcionario)
         context['total_pausa'] = tota_horas
-
+        context['alerta_pausa']  = Pausa.calcular_tempo_ate_aviso(funcionario)
+        context['alerta_bo'] = BackOffice.calcular_tempo_ate_aviso(funcionario)
 
         # BO
 

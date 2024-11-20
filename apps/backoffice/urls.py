@@ -1,8 +1,5 @@
 from django.urls import path
-from .views import (pedir_bo,iniciar_bo, finalizar_bo, cancelar_bo, maximo_bo_autorizados,
-                    cancelar_bo_supervisor, autorizar_bo_supervisor,iniciar_bo_supervisor, pausar_bo_sup, 
-                    despausar_bo_sup,despausar_bo,pausar_bo, tempo_bo
-                    )
+from .views import *
 
 
 
