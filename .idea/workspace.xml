@@ -5,23 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70222c08-fcbd-4c05-8d55-f6e11112cabd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/static/images/pause.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/play.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_aprovado.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_iniciado.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_nao_aprovado.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_aprovada.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_iniciada.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list2.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_nao_aprovada.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/usuarios/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/images/restaurant.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/Intervalos.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Intervalos.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Intervalos/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Intervalos/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backoffice/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backoffice/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backoffice/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/core/templates/core/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/core/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/core/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/registration/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/pausas/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/pausas/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/pausas/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/pausas/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/pausas/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/pausas/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/usuarios/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/usuarios/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/geral.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/geral.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/pausas.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/pausas.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/staticfiles/js/geral.js" beforeDir="false" afterPath="$PROJECT_DIR$/staticfiles/js/geral.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/staticfiles/js/pausas.js" beforeDir="false" afterPath="$PROJECT_DIR$/staticfiles/js/pausas.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,19 +96,23 @@
     &quot;Python.Runserver.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Rebasing main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ricso/OneDrive/Área de Trabalho/Django/Intervalos/Intervalos/manage.py&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ricso/OneDrive/Área de Trabalho/Django/Intervalos/Intervalos/apps/core/templates/registration&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates\registration" />
+      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\usuarios\templates\usuarios" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/static/images" />
+      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates" />
+      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates\core" />
+      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\static\images" />
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\Intervalos" />
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core" />
-      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps" />
-      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\App" />
     </key>
   </component>
   <component name="RunManager" selected="Python.Runserver">
@@ -108,7 +125,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12" />
+      <option name="SDK_NAME" value="Python 3.12 (Intervalos)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -131,7 +148,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12" />
+      <option name="SDK_NAME" value="Python 3.12 (Intervalos)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -154,13 +171,13 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12" />
+      <option name="SDK_NAME" value="Python 3.12 (Intervalos)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
-      <option name="PARAMETERS" value="runserver 8039" />
+      <option name="PARAMETERS" value="runserver" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -169,15 +186,15 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.Runserver" />
       <item itemvalue="Python.Makemigrations" />
       <item itemvalue="Python.Migrate" />
+      <item itemvalue="Python.Runserver" />
     </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-babbdf50b680-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.15989.155" />
+        <option value="bundled-python-sdk-48aec45f0201-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17011.127" />
       </set>
     </attachedChunks>
   </component>
@@ -197,21 +214,22 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Intervalos/urls.py</url>
-          <line>5</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

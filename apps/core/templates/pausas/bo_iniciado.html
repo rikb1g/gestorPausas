@@ -1,0 +1,30 @@
+{% load static %}
+{% for tempo in bo_iniciado %}
+<p>Back Office iniciado a: </p>
+<p id="tempo-decorrido-bo" data-id="{{ tempo.id }}"
+   class="tempo-decorrido-bo"></p>
+
+
+{% if not tempo.pausa %}
+
+<a href="{% url 'pausar_bo' tempo.id 'true' %}" class="btn-pause mb-3 ms-1"
+   id="btn-pause"><img src="{% static 'images/pause.svg' %}" alt="PausaAlmoço"></a>
+
+<a href="{% url 'pausar_bo' tempo.id 'false' %}" class="btn-pause mb-3 ms1" id="btn-pause">
+    <img src="{% static 'images/restaurant.svg' %}" alt="Pausa Almoço"></a>
+
+{% else %}
+<a href="{% url 'despausar_bo' tempo.id %}"
+   class="btn-resume mb-3 ms-1" id="btn-resume"><img
+        src="{% static 'images/play.svg' %}" alt=""></a>
+
+{% endif %}
+{% endfor %}
+<form action="{% url 'finalizar_bo' %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" onclick="terminarBO()">
+        Terminar BO
+    </button>
+</form>
+<p class="mt-5 tempo-pausa">Tempo de Back Office utilizado:{{ bo_total_tempo }}</p>
+

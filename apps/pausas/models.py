@@ -23,7 +23,7 @@ class Pausa(models.Model):
             if pausa.inicio:
                 agora = timezone.now()
                 tempo_decorrido = agora - pausa.inicio
-                if tempo_decorrido > timedelta(minutes=15):
+                if tempo_decorrido > timedelta(minutes=1):
                     print("tempo decorrido")
                     return True
                 else:

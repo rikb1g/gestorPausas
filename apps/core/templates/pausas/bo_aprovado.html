@@ -1,0 +1,23 @@
+{% load static %}
+<script>
+    setTimeout(function () {
+    notifyUser("✅ BO Aprovado!");
+     }, 1000);
+</script>
+
+
+<p class="fs-5">Tempo total de BO: {{ bo_total_tempo }}</p>
+
+
+<form id="boForm" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success mt-4">
+        Iniciar BO
+    </button>
+</form>
+<form action="{% url 'cancelar_bo' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger mt-4" onclick="cancelarBO()">
+        Cancelar BO
+    </button>
+</form>

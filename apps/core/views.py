@@ -37,6 +37,9 @@ def home(request):
         
     if pausas.exists() or fila.exists() or bo.exists() or fila_bo.exists():
         return redirect('lista_intervalos')
+    if request.user.usuario.tipo.tipo == "Assistente":
+        return redirect('lista_intervalos')
+
         
     return render(request=request,template_name='core/index.html',context=data)
         

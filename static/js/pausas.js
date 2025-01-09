@@ -1,22 +1,14 @@
 
+function getCSRFToken() {
+    // Acessa diretamente o cookie csrftoken
+    const csrfToken = document.cookie
+        .split(';')
+        .map(cookie => cookie.trim())
+        .find(cookie => cookie.startsWith('csrftoken='));
 
-// function getCookie(name) {
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         const cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             const cookie = cookies[i].trim();
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
-
-// const csrftoken = getCookie('csrftoken');
-
+    // Se encontrado, extrai o valor
+    return csrfToken ? csrfToken.split('=')[1] : null;
+}
 
 
 document.addEventListener('DOMContentLoaded',function(){
@@ -69,29 +61,6 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
 
-
-
-
-function pausarBO() {
-    localStorage.removeItem('hora_retoma_bo')
-    const timePause = localStorage.getItem('tempo_decorrido')
-    localStorage.setItem('tempo_antes_pausa', timePause)
-    localStorage.setItem('teve-pausa', false)
-
-}
-
-function retomarBOAposPausa() {
-    const horaRetoma = new Date()
-    localStorage.setItem('hora_retoma_bo', horaRetoma)
-    localStorage.setItem('teve-pausa', true)
-}
-
-
-
-
-
-
-
 // Desativar o botão "voltar" do navegador
 window.history.pushState(null, "", window.location.href)
 window.onpopstate = function () {
@@ -100,10 +69,80 @@ window.onpopstate = function () {
 function terminarIntervalo() {
     alert("A tua pausa terminou")
 }
-function iniciarIntervalo() {
-    alert("Boa pausa!!!")
+
+const intervaloFomrElement = document.getElementById('intervaloForm')
+
+if (intervaloFomrElement) {
+    intervaloFomrElement.addEventListener('submit', function(event) {
+        event.preventDefault();
+        document.body.classList.add('loading');
+        fetch('/pausas/iniciarIntervalo/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                alert("Erro: " + data.error);
+            } else {
+                alert(data.message);
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+        });
+        document.body.classList.remove('loading');
+    });
 
 }
+
+const boFormElement = document.getElementById('boForm')
+
+if (boFormElement){
+    boFormElement.addEventListener('submit', function(event){
+        event.preventDefault();
+        document.body.classList.add('loading');
+        fetch('/backoffice/iniciar_bo/',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        })
+        .then(response => {
+            if (!response.ok){
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error){
+                alert("Erro: "+ data.error)
+            }else {
+                alert(data.message);
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição: ', error)
+        })
+        document.body.classList.remove('loading');
+    
+    
+    })
+    
+
+}
+
 
 function canelarIntervalo() {
     alert("Intervalo cancelado!")
@@ -111,22 +150,15 @@ function canelarIntervalo() {
 
 function iniciarBO() {
     alert("BO iniciado!")
-    localStorage.removeItem('tempo_decorrido')
-    localStorage.removeItem('hora_retoma_bo')
-    localStorage.removeItem('tempo_antes_pausa')
+
 }
 
 function cancelarBO() {
-    localStorage.removeItem()
     alert("O teu pedido de BO foi cancelado.")
 }
 
 function terminarBO() {
     alert("O teu BO foi terminado com sucesso. Bom atendimento")
-    localStorage.removeItem('tempo_decorrido')
-    localStorage.removeItem('hora_retoma_bo')
-    localStorage.removeItem('tempo_antes_pausa')
-
 }
 
 let alertTriggered = false

@@ -2,82 +2,71 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=1">
+    <link href="https://fonts.cdnfonts.com/css/itc-benguiat-std" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title>Login</title>
 </head>
 <body>
 
 
-    <div class="mt-5 text-center" >
+    <div class="container">
+
+        <div class="text-center mt-5">
+        <p class="titulo-principal"><i>Alto Valor</i></p>
+        </div>
 
 
+        
+        <form class="login-form" method="post" action="{% url 'login' %}">
 
+            <p class="text-center ms-2 login-title">Login</p>
 
-
-
-    <div class="login-container mt-5">
-        <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            <div>
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div>
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            {% if messages %}
+            <div class="message message-error">
+                {% for message in messages %}
+                    <p class="message {{ message.tags }} ">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
             <button class="btn btn-primary" type="submit">Login</button>
         </form>
-    </div>
+        
+        </div>
+          
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
 
-    </div>
-
-<style>
-body{
-    height: 100%;
-    margin: 0;
-    background-color: #363535;
-    color: white;
-
-}
-
-.login-form {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 300px;
-}
-
-.login-form h2 {
-    text-align: center;
-}
-
-.login-form input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.login-form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.login-form button:hover {
-    background-color: #0056b3;
-}
+    <script>
+        const errorMensagem = document.querySelector('.message-error');
 
 
-</style>
+        if (errorMensagem) {
+
+        errorMensagem.style.opacity = 1;
+
+        setTimeout(function () {
+            errorMensagem.style.opacity = 0;
+        }, 5000);
+        }
+
+    </script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

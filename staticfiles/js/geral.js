@@ -126,7 +126,7 @@ function notifyUser(message) {
     const titleInterval = setInterval(function () {
         document.title = isTitleModified ? originalTitle : message
         isTitleModified = !isTitleModified
-        console.log("funciona ")
+
     }, 1000)
 
     window.addEventListener("focus", function handleFocus() {

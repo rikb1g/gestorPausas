@@ -163,14 +163,26 @@
                                     <p class="btn btn-success">
                                         {{ bo.funcionario}}
                                     </p>
-                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}')"><img src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
+                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'true')"><img src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
+
+                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'false')">
+                                        <img src="{% static 'images/restaurant.svg' %}" alt="Almoço BO" class="ms-1">
+                                    </a>
+
                                     <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO" ></a>
-                                    {% elif bo.pausa %}
+                                    {% elif bo.pausa and not bo.almoco %}
                                     <p class="btn btn-warning">{{ bo.funcionario}} </p>
                                     <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
                                     <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+
+                                    {% elif bo.pausa and bo.almoco %}
+                                    <p class="btn-almoco">{{ bo.funcionario }} 🍴</p>
+                                    <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
+                                    <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
+                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+
 
                                     {% endif %}
 

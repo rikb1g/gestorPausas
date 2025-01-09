@@ -1,30 +1,25 @@
 body{
     height: 100%;
     margin: 0;
-    background-color: #363535;
+    background-color: #363535 !important;
     color: white;
 
+}
+body.loading {
+    cursor: wait;
+    pointer-events: none; /* Impede interações enquanto carrega */
 }
 
 .titulo-principal{
     font-family: 'ITC Benguiat Std', sans-serif;
     font-size: 80px;
-    color: deepskyblue;
+    color: white;
     transition: all 0.2s;
+    shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
 }
 a{
     text-decoration: none;
-}
-.toogleback{
-    cursor: pointer;
-    text-decoration: none;
-}
-.titulo-principal{
-    font-family: 'ITC Benguiat Std', sans-serif;
-    font-size: 80px;
-    color: deepskyblue;
-    transition: all 0.2s;
 }
 
 
@@ -52,3 +47,23 @@ a{
 .toogleback{
     cursor: pointer;
 }
+
+.Assistente {
+    display: flex;
+    justify-content: space-between;  /* Distribui as caixas ao longo da página */
+    gap: 20px;  /* Espaçamento entre as caixas */
+}
+
+.box {
+    width: 30%;  /* Define a largura de cada caixa para 48% do tamanho do container */
+    padding: 20px;
+    background-color: #636362;  /* Cor de fundo para as caixas */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Alinha os itens verticalmente ao centro */
+    align-items: center;
+}
+

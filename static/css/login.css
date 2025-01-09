@@ -1,0 +1,69 @@
+html,body{
+    height: 100%;
+    margin: 0;
+    background-color: #363535;
+    color: white;
+
+}
+.titulo-principal{
+    font-family: 'ITC Benguiat Std', sans-serif;
+    font-size: 80px;
+    color: white;
+    transition: all 0.2s;
+    shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+}
+
+.login-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    color: black !important;
+}
+
+.login-form h2 {
+    text-align: start;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background-color: #0056b3;
+}
+.login-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  background: linear-gradient(45deg, #000000, #434343);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+
+.message-error{
+    opacity: 0;
+    color: red;
+    transition: opacity 0.5s ease-in-out;
+}

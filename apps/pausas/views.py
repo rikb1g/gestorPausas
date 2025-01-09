@@ -3,10 +3,10 @@ from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.http import JsonResponse, HttpRequest
+from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
-from django.views.generic import  ListView
+from django.views.generic import ListView
 from django.contrib import messages
 from django.db import transaction
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias
@@ -14,10 +14,19 @@ from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaE
 from apps.usuarios.models import Usuario
 
 
+
 @method_decorator(login_required, name='dispatch')
 class Lista_Pausas(ListView):
     model = Pausa
     context_object_name = 'lista_pausas'
+
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
+        # Lógica para redirecionar caso o tipo do usuário seja 'Assistente'
+        if request.user.usuario.tipo.tipo == "Supervisor":
+            return redirect('home')  # Substitua 'lista_intervalos' pela URL correta
+
+        # Se não for 'Assistente', continua com a execução normal
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self) -> QuerySet[Any]:
         funcionario = self.request.user.usuario
@@ -25,8 +34,10 @@ class Lista_Pausas(ListView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         funcionario = self.request.user.usuario
-        context= super().get_context_data(**kwargs)
-        context['nao_aprovado'] = Pausa.objects.filter(funcionario=funcionario,aprovado=False)
+        context = super().get_context_data(**kwargs)
+        context['pausa_aprovada'] = Pausa.objects.filter(funcionario=funcionario,aprovado=True)
+        context['pausa_nao_aprovada'] = FilaEspera.objects.filter(funcionario=funcionario)
+
         context['fila'] = FilaEspera.objects.order_by('data_entrada').first()
         fila_object= FilaEspera.objects.order_by('data_entrada')
         index_fila = None
@@ -37,8 +48,7 @@ class Lista_Pausas(ListView):
                 print(index)
                 break
         context['index'] = index_fila
-        print(context['index'])
-        context['iniciado'] = Pausa.objects.filter(funcionario= funcionario,inicio__isnull=False ,aprovado=True)
+        context['pausa_iniciada'] = Pausa.objects.filter(funcionario= funcionario,inicio__isnull=False ,aprovado=True)
         total_pausa = PausasDiarias()
         tota_horas= total_pausa.calcular_tempo_decorrido(funcionario)
         context['total_pausa'] = tota_horas
@@ -47,10 +57,11 @@ class Lista_Pausas(ListView):
 
 
 
+
         # BO
 
         context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True, pausa=False)
-        context['bo_nao_aprovado'] = BackOffice.objects.filter(funcionario=funcionario,aprovado=False)
+        context['bo_nao_aprovado'] = BackOfficeFilaEspera.objects.filter(funcionario=funcionario)
         context['fila_bo'] = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
         fila_bo_object = BackOfficeFilaEspera.objects.order_by('data_entrada')
         idex_fila_bo = None
@@ -67,9 +78,6 @@ class Lista_Pausas(ListView):
         total_tempo_bo = total_bo.calcular_tempo_decorrido_bo(funcionario)
         context['bo_total_tempo'] = total_tempo_bo
 
-
-        for bo in context['bo_aprovado']:
-            print(bo.pausa)
 
         return context
 
@@ -97,16 +105,19 @@ def pedir_pausa(request):
 
 
 
-
 def iniciarIntervalo(request):
     if request.method == 'POST':
-        intervalo = Pausa.objects.filter(funcionario=request.user.usuario)
-        for inter in intervalo:
-            inter.inicio = timezone.now()
-            inter.save()
-            print(intervalo)
-        return redirect('lista_intervalos')
-    return redirect('lista_intervalos')
+        try:
+            funcionario = request.user.usuario
+            intervalo = get_object_or_404(Pausa, funcionario=funcionario)
+            intervalo.inicio = timezone.now()
+            intervalo.save()
+            return JsonResponse({"message": "Boa Pausa!!!"}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"Erro interno: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método não permitido"}, status=405)
+
 
 
 

@@ -1,8 +1,10 @@
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.db import transaction
 from django.utils import timezone
 from django.contrib import messages
+import json
+
 from .models import BackOffice, BackofficeConfig, BackOfficeDiario,BackOfficeFilaEspera, parse_formatted_time, formatted_time
 from apps.usuarios.models import Usuario
 
@@ -28,13 +30,16 @@ def pedir_bo(request):
 
 def iniciar_bo(request):
     if request.method == 'POST':
-        bo_funcionario = BackOffice.objects.filter(funcionario=request.user.usuario)
-        for bo in bo_funcionario:
+        try:
+            funcionario = request.user.usuario
+            bo = get_object_or_404(BackOffice, funcionario= funcionario)
             bo.inicio = timezone.now()
             bo.save()
+            return JsonResponse({"message":"BO Iniciado"}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"Erro interno: {str(e)}"}, status=500)
 
-        return redirect('lista_intervalos')
-    return redirect('lista_intervalos')
+    return JsonResponse({"error": "Método não permitido"}, status=405)
 
 def finalizar_bo(request):
     if request.method == 'POST':
@@ -126,42 +131,83 @@ def iniciar_bo_supervisor(request):
     return redirect('home')
 
 
-def pausar_bo(request,id):
-    bo = BackOffice.objects.get(id=id)
-    bo.pausa = True
-    bo.inicio_pausa = timezone.now()
-    bo.save()
-    if bo.tempo_ate_pausar:
-        tempo_decorrido = bo.inicio_pausa - bo.inicio
-        pausa_acumulada = parse_formatted_time(bo.tempo_ate_pausar)
-        total = tempo_decorrido + pausa_acumulada
-        bo.tempo_ate_pausar = formatted_time(total)
+def pausar_bo(request,id,isPause):
+
+    try:
+        bo = get_object_or_404(BackOffice, id=id)
+        is_pause = str(isPause).lower()== 'true'
+        if is_pause:
+            bo.pausa = True
+            print("Pausa ativada")
+        else:
+            bo.almoco = True
+            bo.pausa = True
+            print("Almoço ativado")
+        
+        bo.inicio_pausa = timezone.now()
         bo.save()
-    else:
-        tempo_decorrido = bo.inicio_pausa - bo.inicio
-        bo.tempo_ate_pausar = formatted_time(tempo_decorrido)
-        bo.save()
-    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.inicio_pausa)
-    return redirect('lista_intervalos')
+        if bo.tempo_ate_pausar:
+            tempo_decorrido = bo.inicio_pausa - bo.inicio
+            pausa_acumulada = parse_formatted_time(bo.tempo_ate_pausar)
+            total = tempo_decorrido + pausa_acumulada
+            bo.tempo_ate_pausar = formatted_time(total)
+            bo.save()
+        else:
+            tempo_decorrido = bo.inicio_pausa - bo.inicio
+            bo.tempo_ate_pausar = formatted_time(tempo_decorrido)
+            bo.save()
+        BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.inicio_pausa)
+        return redirect('lista_intervalos')
+    except Exception as e:
+        print(f"erro a pausar : {e}")
+        redirect('lista_intervalos')
 
 def pausar_bo_sup(request):
-    id = request.GET.get('id')
-    bo = BackOffice.objects.get(id=id)
-    bo.pausa = True
-    bo.inicio_pausa = timezone.now()
-    bo.save()
-    if bo.tempo_ate_pausar:
-        tempo_decorrido = bo.inicio_pausa - bo.inicio
-        pausa_acumulada = parse_formatted_time(bo.tempo_ate_pausar)
-        total = tempo_decorrido + pausa_acumulada
-        bo.tempo_ate_pausar = formatted_time(total)
-        bo.save()
-    else:
-        tempo_decorrido = bo.inicio_pausa - bo.inicio
-        bo.tempo_ate_pausar = formatted_time(tempo_decorrido)
-        bo.save()
-    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.inicio_pausa)
-    return redirect('home')
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+
+            id = body.get('id')
+            is_paused = body.get('isPaused')
+
+
+            if id is None or is_paused is None:
+                return JsonResponse({"error": "Parametros inválidos"}, status=400)
+
+            is_paused = str(is_paused).lower() == 'true'
+            bo = get_object_or_404(BackOffice, id=id)
+
+            if is_paused:
+                bo.pausa = True
+                print ("Pausa Ativada")
+            else:
+                bo.almoco = True
+                bo.pausa = True
+                print("Almoço Ativado")
+            bo.inicio_pausa = timezone.now()
+            bo.save()
+            if bo.tempo_ate_pausar:
+                tempo_decorrido = bo.inicio_pausa - bo.inicio
+                pausa_acumulada = parse_formatted_time(bo.tempo_ate_pausar)
+                total = tempo_decorrido + pausa_acumulada
+                bo.tempo_ate_pausar = formatted_time(total)
+                bo.save()
+            else:
+                tempo_decorrido = bo.inicio_pausa - bo.inicio
+                bo.tempo_ate_pausar = formatted_time(tempo_decorrido)
+                bo.save()
+            BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.inicio_pausa)
+
+            return JsonResponse({"message": "Operação concluída com sucesso"},status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Erro ao decodificar JSON"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Erro interno: {str(e)}"}, status=500)
+
+
+    return JsonResponse({"error": "Método não permitido"}, status=405)
+
 
 
 def despausar_bo_sup(request):
@@ -170,6 +216,7 @@ def despausar_bo_sup(request):
     bo.inicio = timezone.now()
     bo.termo_pausa = timezone.now()
     bo.pausa = False
+    bo.almoco = False
     bo.save()
     return redirect('home')
 
@@ -179,6 +226,7 @@ def despausar_bo(request,id):
     bo.inicio = timezone.now()
     bo.termo_pausa = timezone.now()
     bo.pausa = False
+    bo.almoco = False
     bo.save()
     return redirect('lista_intervalos')
 

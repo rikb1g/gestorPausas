@@ -12,6 +12,7 @@ class BackOffice(models.Model):
     aprovado = models.BooleanField(default=False)
     data_aprovacao = models.DateTimeField(null=True, blank=True)
     pausa = models.BooleanField(default=False)
+    almoco = models.BooleanField(default=False)
     tempo_ate_pausar = models.CharField(null= True,blank=True, max_length=100)
     inicio_pausa = models.DateTimeField(null=True, blank=True)
     termo_pausa = models.DateTimeField(null=True, blank= True)

@@ -47,6 +47,16 @@ document.addEventListener('DOMContentLoaded',function(){
     setInterval(atualizarTempoPausa,1000)
 })
 
+function getCSRFToken() {
+
+    const csrfToken = document.cookie
+        .split(';')
+        .map(cookie => cookie.trim())
+        .find(cookie => cookie.startsWith('csrftoken='));
+
+
+    return csrfToken ? csrfToken.split('=')[1] : null;
+}
 
 
 function exibirPopUpConfirmacaoEliPAusa(nome){
@@ -97,16 +107,39 @@ function exibirPopUpconfirmacaoAutBO(nome){
         alert("Ação cancelada")
     }
 }
-function exibirPopUpconfirmacaoPausarBO(id,nome){
+function exibirPopUpconfirmacaoPausarBO(id,nome,isPaused){
     if(confirm("Tens a certeza que pretendes pausar o BO de "+nome+ " ?")){
-        var url = "/backoffice/pausar_bo_sup?id="+encodeURIComponent(id);
-        window.location.href = url
+        fetch('/backoffice/pausar_bo_sup/', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken(),
+    },
+    body: JSON.stringify({ id: id, isPaused: isPaused })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                alert("Erro: " + data.error);
+            } else if (data.message) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert("Erro desconhecido.");
+            }
+        })
+        .catch(error => console.error("Erro:", error));
     }
-    else{
-        alert("Ação cancelada")
-    }
+        else{
+            alert("Ação cancelada")
+        }
 
-}
+    }
 
 function exibirPopUpconfirmacaoRetomarBO(id,nome){
     if(confirm("Tens a certeza que pretendes retomar o BO de "+nome+ " ?")){

@@ -1,0 +1,14 @@
+{% load static %}
+{% for time in iniciado %}
+ <p class="fw-bold">Intervalo iniciado:</p>
+ <p id="tempo-decorrido-pausa" data-id="{{ time.id }}" class="tempo-decorrido-pausa"></p>
+
+ <form action="{% url 'finalizar_intervalo' %}" method="POST">
+     {% csrf_token %}
+     <button type="submit" class="btn btn-danger" onclick="terminarIntervalo()">
+         Terminar Intervalo
+     </button>
+ </form>
+
+ <p class="mt-5 tempo-pausa">Já gozaste {{ total_pausa }} de pausa</p>
+ {% endfor %}
