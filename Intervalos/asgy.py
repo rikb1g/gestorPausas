@@ -1,17 +1,16 @@
 import os
 from django.core.asgi import get_asgi_application
-from channels.routing import (ProtocolTypeRouter, URLRouter)
+from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from django.urls import path
-from apps.pausas.consumer import PausaCOnsumer
+import Intervalos.routing  # Substitua 'pausas' pelo nome da sua app
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'intervalos.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Intervalos.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket":AuthMiddlewareStack(
-        URLRouter([
-            path('ws/pausas/',PausaCOnsumer.as_asgi())
-        ])
-    )
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            Intervalos.routing.websocket_urlpatterns  # Definiremos isso no próximo passo
+        )
+    ),
 })

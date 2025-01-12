@@ -182,3 +182,15 @@ function notifyUser(message) {
         }
     }, 1000);
 }
+
+const socket = new WebSocket('ws://localhost:8000/ws/updates/');
+
+socket.onopen = function(event) {
+    console.log('WebSocket conectado!');
+    socket.send(JSON.stringify({ message: 'Olá, servidor!' }));
+};
+
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log('Mensagem do servidor:', data.message);
+};

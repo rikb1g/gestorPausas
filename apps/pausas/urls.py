@@ -12,6 +12,5 @@ urlpatterns = [
     path('cancelar_intervalo_sup', cancelar_intervalo_sup, name='cancelar_intervalo_sup'),
     path('autorizar_intervalo_sup', autorizar_intervalo_sup, name='autorizar_intervalo_sup'),
     path('calcular_tempo_pausa/<int:id>/', calcular_tempo_pausa, name='calcular_tempo_pausa'),
-
 ]
 

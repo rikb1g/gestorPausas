@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'apps.core',
     'apps.usuarios',
     'apps.pausas',
@@ -71,7 +72,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Intervalos.wsgi.application'
 
-
+ASGI_APPLICATION = 'Intervalos.asgi.application'
 
 DATABASES = {
     'default': {
