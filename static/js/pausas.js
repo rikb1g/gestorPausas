@@ -66,9 +66,6 @@ window.history.pushState(null, "", window.location.href)
 window.onpopstate = function () {
     window.history.pushState(null, "", window.location.href)
 }
-function terminarIntervalo() {
-    alert("A tua pausa terminou")
-}
 
 const intervaloFomrElement = document.getElementById('intervaloForm')
 
@@ -145,16 +142,75 @@ if (boFormElement){
 
 
 function canelarIntervalo() {
-    alert("Intervalo cancelado!")
+    if (confirm("Tens a certeza que pretendes cancelar o teu intervalo ?")) {
+        fetch('/pausas/cancelar_intervalo/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        })
+        .then(response => {
+            if (!response.ok){
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error){
+                alert("Erro: "+ data.error)
+            }else {
+                alert(data.message);
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição: ',error)
+        })
+
+    }else {
+
+        alert("Ação cancelada")}
+
+
 }
 
-function iniciarBO() {
-    alert("BO iniciado!")
-
+function terminarIntervalo() {
+    alert("A tua pausa terminou")
 }
+
 
 function cancelarBO() {
-    alert("O teu pedido de BO foi cancelado.")
+    if(confirm("Tens a certeza que pretendes cancelar o teu pedido de BO ?")){
+        fetch('/backoffice/cancelar_bo/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        })
+        .then(response => {
+            if (!response.ok){
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error){
+                alert("Erro: "+ data.error)
+            }else {
+                alert(data.message);
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição: ',error)
+        })
+
+    }else {
+        alert("Ação cancelada")
+    }
+
 }
 
 function terminarBO() {

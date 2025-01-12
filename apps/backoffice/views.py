@@ -55,20 +55,20 @@ def finalizar_bo(request):
 def cancelar_bo(request):
     if request.method == 'POST':
         try:
-            bo = BackOffice.objects.get(funcionario=request.user.usuario)
-            if bo:
-                bo.delete()
+            bo = BackOffice.objects.filter(funcionario=request.user.usuario)
+            for backoffice in bo:
+                backoffice.delete()
         except Exception as e:
             print(f"Back office não existente ou: {e}")
         try:
-            fila = BackOfficeFilaEspera.objects.get(funcionario = request.user.usuario)
-            if fila:
-                fila.delete()
+            fila = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
+            for bo in fila:
+                bo.delete()
         except Exception as e:
             print(f"Bo não esta na fila ou {e}")
 
-        return redirect('home')
-    return redirect('home')
+        return JsonResponse({"message":"BO Cancelado"}, status=200)
+    return JsonResponse({"error": "Método não permitido"}, status=405)
 
 
 def maximo_bo_autorizados(request):

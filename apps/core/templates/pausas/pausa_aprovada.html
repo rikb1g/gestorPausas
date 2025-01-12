@@ -2,20 +2,18 @@
 <script>
             setTimeout(function () {
                 notifyUser("✅ Pausa Aprovada!");
-            }, 1000);
+            },0500);
 </script>
 
-<p>Tempo total de pausa: {{ total_pausa}}</p>
+<p class="mt-2">Intervalo aprovado!</p>
 
 
 <form id="intervaloForm" method="POST">
     {% csrf_token %}
-    <button type="submit" class="btn btn-success mt-4">
+    <button type="submit" class="btn-verde mb-3">
         Iniciar Intervalo
     </button>
 </form>
-<form action="{% url 'cancelar_intervalo' %}" method="POST">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger mt-4" onclick="canelarIntervalo()">Cancelar Intervalo
-    </button>
-</form>
+
+<p class="mt-5 tempo-pausa">Tempo total de intervalo: <b class="tempo-total">{{ total_pausa }}</b></p>
+<a href="#" class="btn-vermelho mt-4" onclick="canelarIntervalo()">Cancelar Intervalo</a>

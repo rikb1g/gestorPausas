@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.http import JsonResponse, HttpRequest
+from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
 from django.views.generic import ListView
@@ -143,20 +143,20 @@ def cancelar_intervalo(request):
     if request.method == 'POST':
         try:
             intervalo = Pausa.objects.filter(funcionario=request.user.usuario)
+            print(intervalo)
             for pausa in intervalo:
-                if pausa:
-                    pausa.delete()
+                pausa.delete()
         except Exception as e:
             print(f"Intervalo nao existe ou: {e}")
         try:
             pausa= FilaEspera.objects.filter(funcionario=request.user.usuario)
             for fila in pausa:
-                if fila:
-                    fila.delete()
+                fila.delete()
         except Exception as e:
             print(f"Pausa nao existe ou: {e}")
 
-        return redirect('home')
+        return JsonResponse({"message": "Intervalo Cancelado."}, status=200)
+    return JsonResponse({"error": "Método não permitido"}, status=405)
 
 
 def maximo_intervalos(request):

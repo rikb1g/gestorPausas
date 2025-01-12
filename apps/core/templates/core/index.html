@@ -178,7 +178,7 @@
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
 
                                     {% elif bo.pausa and bo.almoco %}
-                                    <p class="btn-almoco">{{ bo.funcionario }} 🍴</p>
+                                    <p class="btn-laranja">{{ bo.funcionario }} <img src="{% static 'images/lunch.svg' %}" alt="almoço" class="ms-1"></p>
                                     <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
                                     <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>

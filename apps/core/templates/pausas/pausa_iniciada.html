@@ -1,14 +1,20 @@
 {% load static %}
-{% for time in iniciado %}
- <p class="fw-bold">Intervalo iniciado:</p>
- <p id="tempo-decorrido-pausa" data-id="{{ time.id }}" class="tempo-decorrido-pausa"></p>
+
+
+{% for time in pausa_iniciada %}
+ <p class="mt-2">Intervalo iniciado:</p>
+<div class="linha">
+ <p id="tempo-decorrido-pausa" data-id="{{ time.id }}" class="tempo-decorrido-pausa tempo-total"></p>
+</div>
 
  <form action="{% url 'finalizar_intervalo' %}" method="POST">
      {% csrf_token %}
-     <button type="submit" class="btn btn-danger" onclick="terminarIntervalo()">
+     <button type="submit" class="btn-vermelho mt-4" onclick="terminarIntervalo()">
          Terminar Intervalo
      </button>
  </form>
 
- <p class="mt-5 tempo-pausa">Já gozaste {{ total_pausa }} de pausa</p>
+
+
+<p class="mt-5 tempo-pausa">Tempo total de intervalo: <b class="tempo-total">{{ total_pausa }}</b></p>
  {% endfor %}

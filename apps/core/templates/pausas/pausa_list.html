@@ -7,10 +7,10 @@
 <link href="https://fonts.cdnfonts.com/css/itc-benguiat-std" rel="stylesheet">
 
 {% block title %}
-    <title>{% if lista_pausas and not iniciado %}✅ Pausa Aprovada!
+    <title>{% if pausa_aprovada and not pausa_iniciada %}✅ Pausa Aprovada!
            {% elif bo_aprovado and not bo_iniciado %}✅ BO Aprovado!
            {% elif alerta_pausa %}🚨 Atenção ao tempo de Pausa
-           {% elif iniciado %}Pausa Iniciada
+           {% elif pausa_iniciada %}Pausa Iniciada
            {% elif alerta_bo %}🚨 Atenção ao tempo de BO
            {% elif bo_iniciado %}BO Iniciado
            {% else %}Pausas Alto Valor
@@ -29,16 +29,16 @@
             {% elif pausa_nao_aprovada %}
             {% include 'pausas/pausa_nao_aprovada.html' %}
             {% else %}
-            <a href="{% url 'nova_pausa' %}" class="btn btn-primary" type="submit">Pedir Pausa</a>
+            <a href="{% url 'nova_pausa' %}" class="btn-azul" type="submit">Pedir Pausa</a>
 
                 <div class="text-center mt-5">
                     <p>Tempo total de pausa:</p>
-                    <p href="#" class="btn btn-secondary">{{ total_pausa}}</p>
+                    <p class="tempo-total">{{ total_pausa}}</p>
                 </div>
         {% endif %}
         </div>
 
-        <div class="box box-bo mt-5">
+        <div class="box box-pausa mt-5">
             <h2 class="text-center mb-5">Back Office</h2>
             {% if bo_aprovado and not bo_iniciado %}
             {% include 'pausas/bo_aprovado.html' %}
@@ -47,11 +47,11 @@
             {% elif bo_nao_aprovado %}
             {% include 'pausas/bo_nao_aprovado.html' %}
             {% else %}
+                <a href="{% url 'pedir_bo' %}" class="btn-azul" type="submit">Pedir BO</a>
 
-                <div class="text-center mt-5">
-                    <a href="{% url 'pedir_bo' %}" class="btn btn-primary" type="submit">Pedir BO</a>
+            <div class="text-center mt-5">
                     <p>Tempo total de BO:</p>
-                    <p href="#" class="btn btn-secondary">{{ bo_total_tempo }}</p>
+                    <p class="tempo-total">{{ bo_total_tempo }}</p>
 
                 </div>
 
@@ -61,5 +61,5 @@
 
 
     </div>
-<script src="{% static 'js/pausas.js' %}"></script>
+<script src="{% static 'js/pausas.js' %?v=1.1"></script>
 {% endblock %}

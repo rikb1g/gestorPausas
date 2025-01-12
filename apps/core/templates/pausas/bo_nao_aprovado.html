@@ -1,17 +1,15 @@
 {% load static %}
 {% if index_bo == 0 %}
 
-<p class="mt-5">Está quase....</p>
-<p class="btn btn-primary">És o proximo </p>
+<p class="mt-1">Está quase....</p>
+<p class="btn-amarelo">És o proximo </p>
 
 {% else %}
 <p>O teu BO está em fila de espera</p>
-<p class="btn btn-primary">Tens {{ index_bo }} a tua frente</p>
+<p class="btn-roxo">Tens {{ index_bo }} a tua frente</p>
 
 {% endif %}
 
-<p class="mt-3 tempo-pausa">Back office utilizado: {{ bo_total_tempo }}</p>
- <form action="{% url  'cancelar_bo'%}" method="post">
-     {% csrf_token %}
-     <button class="btn btn-danger" type="submit">Cancelar BO</button>
- </form>
+<p class="mt-5 tempo-pausa">Back office utilizado: <b class="tempo-total">{{ bo_total_tempo }}</b></p>
+
+<a href="#" onclick="cancelarBO()" class="btn-vermelho mt-4">Cancelar BO</a>
