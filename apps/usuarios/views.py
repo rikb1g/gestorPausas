@@ -2,7 +2,9 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from .models import Usuario
 
 
 class CustomLoginView(LoginView):
@@ -42,29 +44,11 @@ class CustomLoginView(LoginView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-"""def custom_login(request):
-    if request.method == 'POST':
-        form = CustomLoginForm(data=request.POST)
-        if form.is_valid():
-            username= form.cleaned_data.get('username')
-            password= form.cleaned_data.get('password')
-
-            if not User.objects.filter(username=username).exists():
-                messages.error(request, 'O nome de usuário não existe.')
-            else:
-                user = authenticate(request,username=username,
-                                    password=password)
-                if user is not None:
-                    login(request, user)
-                    if user.usuario.tipo.tipo == "Supervisor":
-                        redirect('home')
-                    elif user.usuario.tipo.tipo == "Assistente":
-                        redirect('lista_intervalos')
-                else:
-                    messages.error(request,"A palavra pass está incorreta!")
-
-        else:
-            messages.error(request, "Erro no formulário")
+def turno_funcionario(request):
+    usuaruio = get_object_or_404(Usuario, user=request.user)
+    data = {}
+    if usuaruio.turno_manha:
+        data['turno'] = 'manha'
     else:
-        form = CustomLoginForm()
-    return render(request, 'login.html', {'form': form})"""
+        data['turno'] = 'tarde'
+    return JsonResponse(data)

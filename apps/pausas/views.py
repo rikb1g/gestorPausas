@@ -110,8 +110,7 @@ def iniciarIntervalo(request):
         try:
             funcionario = request.user.usuario
             intervalo = get_object_or_404(Pausa, funcionario=funcionario)
-            intervalo.inicio = timezone.now()
-            intervalo.save()
+            intervalo.iniciar_pausa()
             return JsonResponse({"message": "Boa Pausa!!!"}, status=200)
         except Exception as e:
             return JsonResponse({"error": f"Erro interno: {str(e)}"}, status=500)
@@ -126,13 +125,9 @@ def iniciarIntervalo(request):
 def finalizarIntervalo(request):
     if request.method == 'POST':
         print("aqui")
-        intervalo = Pausa.objects.get(funcionario=request.user.usuario)
+        intervalo = get_object_or_404(Pausa,funcionario=request.user.usuario)
         if intervalo:
-            intervalo.fim = timezone.now()
-            intervalo.save()
-            arquivar = PausasDiarias(funcionario=intervalo.funcionario, inicio=intervalo.inicio, fim=intervalo.fim)
-            arquivar.save()
-            intervalo.delete()
+            intervalo.terminar_intervalo()
         return redirect('home')
 
     return redirect('home')

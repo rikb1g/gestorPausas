@@ -5,24 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70222c08-fcbd-4c05-8d55-f6e11112cabd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/static/images/lunch.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Intervalos.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Intervalos.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backoffice/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backoffice/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backoffice/signals.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/signals.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backoffice/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backoffice/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/core/templates/core/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/core/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/bo_aprovado.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_aprovado.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/bo_iniciado.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_iniciado.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/bo_nao_aprovado.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_nao_aprovado.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_aprovada.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_aprovada.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_iniciada.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_iniciada.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_nao_aprovada.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_nao_aprovada.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/pausas/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/pausas/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/pausas/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/pausas/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/usuarios/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/usuarios/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/pausas.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/pausas.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +60,9 @@
       </RecentBranches>
     </option>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/django/core/management/__init__.py" root0="SKIP_INSPECTION" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -96,11 +95,11 @@
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\usuarios\templates\usuarios" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\static\images" />
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates" />
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates\core" />
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\Intervalos" />
-      <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core" />
     </key>
   </component>
   <component name="RunManager" selected="Python.Runserver">
@@ -113,7 +112,6 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (Intervalos)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -136,7 +134,6 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (Intervalos)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -159,7 +156,6 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (Intervalos)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -182,7 +178,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-48aec45f0201-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17011.127" />
+        <option value="bundled-python-sdk-babbdf50b680-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.15989.155" />
       </set>
     </attachedChunks>
   </component>

@@ -15,7 +15,10 @@ class BackOffice(models.Model):
     almoco = models.BooleanField(default=False)
     tempo_ate_pausar = models.CharField(null= True,blank=True, max_length=100)
     inicio_pausa = models.DateTimeField(null=True, blank=True)
-    termo_pausa = models.DateTimeField(null=True, blank= True)
+    termo_pausa = models.DateTimeField(null=True, blank=True)
+    bo_ja_em_pausa = models.BooleanField(default=False)
+    turno_manha = models.BooleanField(default=True)
+
     
 
     def calcular_tempo_decorrido_bo(self):
@@ -68,7 +71,50 @@ class BackOffice(models.Model):
             agora = timezone.now()
             tempo_decorrido = agora - self.data_aprovacao  
             return formatted_time(tempo_decorrido)
-        
+
+    def pausar_bo(self,isPAuse):
+        is_pause = str(isPAuse).lower() == 'true'
+        if is_pause:
+            self.pausa = True
+            print(f"{self.funcionario.nome} pausou back office")
+        else:
+            self.almoco = True
+            self.pausa = True
+            print(f"{self.funcionario.nome} pausou back office para almoço")
+        self.inicio_pausa = timezone.now()
+        self.save()
+        if self.tempo_ate_pausar:
+            tempo_decorrido = self.inicio_pausa - self.inicio
+            pausa_acumulada = parse_formatted_time(self.tempo_ate_pausar)
+            total = tempo_decorrido + pausa_acumulada
+            self.tempo_ate_pausar = formatted_time(total)
+            self.save()
+        else:
+            tempo_decorrido = self.inicio_pausa - self.inicio
+            self.tempo_ate_pausar = formatted_time(tempo_decorrido)
+            self.save()
+        BackOfficeDiario.objects.create(funcionario=self.funcionario, inicio=self.inicio,
+                                        fim=self.inicio_pausa)
+
+    def despausar_bo(self):
+        if not self.bo_ja_em_pausa:
+            self.inicio = timezone.now()
+            self.termo_pausa = timezone.now()
+            self.pausa = False
+            self.bo_ja_em_pausa = False
+            self.almoco = False
+            self.save()
+        else:
+            self.bo_ja_em_pausa = False
+            self.save()
+
+    
+
+
+
+
+
+
 
 
     
@@ -102,6 +148,7 @@ class BackOfficeFilaEspera(models.Model):
     funcionario = models.ForeignKey(Usuario,on_delete=models.CASCADE)
     data_entrada = models.DateTimeField(default=timezone.now)
 
+
     def calcular_tempo_decorrido_entrada_fila_bo(self):
         pausas = BackOfficeFilaEspera.objects.filter(funcionario=self.funcionario)
         tempo_total = timedelta()
@@ -128,10 +175,18 @@ class BackOfficeFilaEspera(models.Model):
         return f'BO-{self.funcionario.nome} - Entrada na fila: {self.data_entrada}'
     
 class BackofficeConfig(models.Model):
-    capacidade_maxima= models.IntegerField()
+    capacidade_maxima = models.IntegerField()
 
     def __str__(self):
         return f"Capacidade_maxima_BO = {self.capacidade_maxima}"
+
+
+
+class BackofficeConfigTarde_BO(models.Model):
+    capacidade_maxima = models.IntegerField()
+
+    def __str__(self):
+        return f"Capacidade_maxima_BO_tarde = {self.capacidade_maxima}"
     
 
 

@@ -3,7 +3,7 @@ from django.urls import reverse
 from apps.usuarios.models import Usuario
 from django.utils import timezone
 from datetime import timedelta
-from apps.backoffice.models import formatted_time
+from apps.backoffice.models import formatted_time, BackOffice
 
 
 class Pausa(models.Model):
@@ -53,6 +53,43 @@ class Pausa(models.Model):
         if self.inicio and self.aprovado:
             tempo_decorrido = timezone.now() - self.inicio
             return formatted_time(tempo_decorrido)
+        
+    def iniciar_pausa(self):
+        try:
+            bo_funcionario = BackOffice.objects.get(funcionario=self.funcionario)
+            if bo_funcionario.inicio and not bo_funcionario.pausa:
+                bo_funcionario.pausa = True
+                bo_funcionario.inicio_pausa = timezone.now()
+                bo_funcionario.save()
+                print(f"{bo_funcionario.funcionario} pediu pausa!")
+            elif bo_funcionario.inicio and bo_funcionario.pausa and bo_funcionario.bo_ja_em_pausa:
+                bo_funcionario.bo_ja_em_pausa = True
+                bo_funcionario.save()
+                print(f"{bo_funcionario.funcionario} pediu pausa e ja estava em com BO em pausa!")
+        except:
+            print(f"{self.funcionario} Pediu Pausa e não está em BO! ")
+        self.inicio = timezone.now()
+        self.save()
+
+    def terminar_intervalo(self):
+        try:
+            bo_funcionario = BackOffice.objects.get(funcionario=self.funcionario)
+            if bo_funcionario.inicio and bo_funcionario.pausa and not bo_funcionario.bo_ja_em_pausa:
+                bo_funcionario.despausar_bo()
+        except:
+            print("Sem BO para despausar!")
+        self.fim = timezone.now()
+        self.save()
+        PausasDiarias.objects.create(funcionario=self.funcionario, inicio=self.inicio, fim=self.fim)
+             
+        self.delete()
+
+    
+
+
+        
+        
+
 
 
     def get_absolute_url(self):

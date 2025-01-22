@@ -1,0 +1,39 @@
+{% load static %}
+{% for intervalo in pausa_autorizada %}
+                        <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
+                            <div class="linha mt-2">
+                                {% if intervalo.inicio is None %}
+                                <p class="btn btn-primary">{{ intervalo.funcionario}}</p>
+
+                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
+                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+                                {% else %}
+                                <p class="btn btn-success">
+                                    {{ intervalo.funcionario}}
+                                </p>
+                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
+                                    src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+                                {% endif %}
+
+                            </div>
+                            {% if intervalo.inicio is None %}
+                            <div class="linha mt-0-5">
+                            <div>Pausa aceite: <b>{{intervalo.calcular_tempo_desde_aprovacao }}</b></div>
+
+                            </div>
+                            {% else %}
+
+                            {% endif %}
+
+                            {% if intervalo.inicio %}
+                            <div class="linha mt-0-5 p-0">
+                                <div><p>Iniciado a: <span id="tempo-decorrido-pausa'" data-id="{{ intervalo.id }}" class="tempo-decorrido-pausa"></span></p>
+                            </div>
+
+                            </div>
+                            {% endif %}
+                            <div class="linha mt-0-5">
+                                <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>
+                            </div>
+                        </div>
+                        {% endfor %}

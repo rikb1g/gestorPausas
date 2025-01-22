@@ -249,3 +249,66 @@ function notifyUser(message) {
         }
     }, 1000);
 }
+const pedirPausaBtn = document.getElementById('pedir-pausa-btn')
+
+if (pedirPausaBtn){
+    pedirPausaBtn.addEventListener('click', function (event) {
+        event.preventDefault(); // Previne o comportamento padrão do link
+
+    const spinner = document.getElementById('spinner');
+    spinner.style.display = 'block'; // Mostra o spinner
+
+    // Executa a requisição
+    fetch(this.href)
+        .then(response => {
+            if (response.ok) {
+                window.location.href = response.url; // Redireciona após a resposta bem-sucedida
+            } else {
+                alert('Erro ao processar a pausa.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao processar a pausa.');
+        })
+        .finally(() => {
+            spinner.style.display = 'none'; // Esconde o spinner após a conclusão
+        });
+});
+}
+
+const filterTurno = document.getElementById('filterTurno')
+
+if (filterTurno){
+    fetch(`/usuarios/turno_funcionario/`)
+    .then(response => response.json())
+    .then(data => {
+        const turnoFuncionario = data.turno;
+        console.log(turnoFuncionario)
+        const select = document.getElementById('filterTurno');
+        if (turnoFuncionario === 'manha') {
+            select.value = 'True';
+        }else {
+            select.value = 'False';
+        }
+    })
+        
+}
+
+function pedirBO() {
+    turno = document.getElementById('filterTurno').value
+    fetch(`/backoffice/pedir_bo/?turno=${turno}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.error){
+            alert("Erro: "+ data.error)
+        }else {
+            alert(data.message);
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição: ',error)
+    })
+
+}

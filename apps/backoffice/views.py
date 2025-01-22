@@ -5,28 +5,67 @@ from django.utils import timezone
 from django.contrib import messages
 import json
 
-from .models import BackOffice, BackofficeConfig, BackOfficeDiario,BackOfficeFilaEspera, parse_formatted_time, formatted_time
+from .models import (BackOffice, BackofficeConfig,BackofficeConfigTarde_BO,
+                     BackOfficeDiario,BackOfficeFilaEspera, parse_formatted_time, formatted_time)
 from apps.usuarios.models import Usuario
 
 
 
 def pedir_bo(request):
-    bo_aceites = BackOffice.objects.filter(aprovado=True)
-    configuracao = BackofficeConfig.objects.first()
-    if not configuracao:
-        configuracao = BackofficeConfig.objects.create(capacidade_maxima=0)
-    with transaction.atomic():
-        if BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True).exists() or \
-        BackOfficeFilaEspera.objects.filter(funcionario= request.user.usuario).exists():
-            print("Pedido duplicado evitado")
-            return redirect('lista_intervalos')
+    if request.method == 'POST':
+        turno = str(request.POST.get('turno')).lower()
+        usuario = get_object_or_404(Usuario, user=request.user)
+        if turno == "true":
+            usuario.turno_manha = True
+            usuario_turno = True
+        elif turno == "false":
+            usuario.turno_manha = False
+            usuario_turno = False
+        usuario.save()
 
-        if bo_aceites.count() < configuracao.capacidade_maxima:
-            BackOffice.objects.create(funcionario=request.user.usuario, aprovado=True,data_aprovacao=timezone.now())
-            return redirect('lista_intervalos')
+        bo_aceites_manha = BackOffice.objects.filter(aprovado=True,turno_manha=True)
+        bo_aceites_tarde = BackOffice.objects.filter(aprovado=True,turno_manha=False)
+        print(request.user)
+
+        if usuario_turno:
+            configuracao = BackofficeConfig.objects.first()
         else:
-            BackOfficeFilaEspera.objects.create(funcionario=request.user.usuario, data_entrada= timezone.now())
-            return redirect('lista_intervalos')
+            configuracao = BackofficeConfigTarde_BO.objects.first()
+        if not configuracao:
+            configuracao = BackofficeConfig.objects.create(capacidade_maxima=0)
+            configuracao = BackofficeConfigTarde_BO.objects.create(capacidade_maxima=0)
+
+        if usuario_turno:
+            with transaction.atomic():
+                if BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True,turno_manha=True).exists() or \
+                BackOfficeFilaEspera.objects.filter(funcionario= request.user.usuario).exists():
+                    print("Pedido duplicado evitado")
+                    return redirect('lista_intervalos')
+
+                if bo_aceites_manha.count() < configuracao.capacidade_maxima:
+                    BackOffice.objects.create(funcionario=request.user.usuario,
+                                            aprovado=True,data_aprovacao=timezone.now(),turno_manha= True)
+                    return redirect('lista_intervalos')
+                else:
+                    BackOfficeFilaEspera.objects.create(funcionario=request.user.usuario, data_entrada= timezone.now())
+                    return redirect('lista_intervalos')
+        else:
+            with transaction.atomic():
+                if BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True,turno_manha=False).exists() or \
+                        BackOfficeFilaEspera.objects.filter(funcionario=request.user.usuario).exists():
+                    print("Pedido duplicado evitado")
+                    return redirect('lista_intervalos')
+
+                if bo_aceites_tarde.count() < configuracao.capacidade_maxima:
+                    BackOffice.objects.create(funcionario=request.user.usuario, aprovado=True,
+                                            data_aprovacao=timezone.now(),turno_manha=False)
+                    return redirect('lista_intervalos')
+                else:
+                    BackOfficeFilaEspera.objects.create(funcionario=request.user.usuario, data_entrada=timezone.now())
+                    return redirect('lista_intervalos')
+
+    return JsonResponse({"error": "Método não permitido"}, status=405)
+
 
 def iniciar_bo(request):
     if request.method == 'POST':
@@ -58,11 +97,13 @@ def cancelar_bo(request):
             bo = BackOffice.objects.filter(funcionario=request.user.usuario)
             for backoffice in bo:
                 backoffice.delete()
+                print(f"{backoffice.funcionario} teve BO cancelado por {request.user.usuario}")
         except Exception as e:
             print(f"Back office não existente ou: {e}")
         try:
-            fila = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
+            fila = BackOfficeFilaEspera.objects.filter(funcionario= request.user.usuario)
             for bo in fila:
+                print(f"{bo.funcionario} teve BO cancelado por {request.user.usuario}")
                 bo.delete()
         except Exception as e:
             print(f"Bo não esta na fila ou {e}")
@@ -73,14 +114,23 @@ def cancelar_bo(request):
 
 def maximo_bo_autorizados(request):
     numero_bo_aceite = request.GET.get('num-bo')
+    bo_turno = str(request.GET.get('turno')).lower()
+
+    if bo_turno == "true":
+        bo_turno = True
+    elif bo_turno == "false":
+        bo_turno = False  
 
     if numero_bo_aceite:
-        config = BackofficeConfig.objects.last()
+        if bo_turno:
+            config = BackofficeConfig.objects.last()
+        else:
+            config = BackofficeConfigTarde_BO.objects.last()
         if config:
             config.capacidade_maxima = numero_bo_aceite
-            print(f"alterado num de bo:{config.capacidade_maxima}")
+            print(f"alterado num de bo:{config.capacidade_maxima}, turno:{bo_turno}, por: {request.user.usuario}")
             config.save()
-            messages.success(request,f"O número de intervalos autorizados foi alterado para {numero_bo_aceite}")
+            return redirect('home')
 
         else:
             numero_bo_aceite.objects.create(capacidade_maxima= numero_bo_aceite)
@@ -213,7 +263,7 @@ def pausar_bo_sup(request):
 def despausar_bo_sup(request):
     id = request.GET.get('id')
     bo = BackOffice.objects.get(id=id)
-    bo.inicio = timezone.now()
+    bo.inicio = timezone.now()  
     bo.termo_pausa = timezone.now()
     bo.pausa = False
     bo.almoco = False

@@ -162,3 +162,44 @@ a{
     font-size: 16px;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.select-turno {
+    background-color: #636362!important; /* Usa a mesma cor de fundo da página */
+    color: white !important; /* Herda a cor do texto do elemento pai */
+    border: none; /* Remove borda */
+    padding: 5px; /* Espaçamento interno */
+    font-size: 1rem; /* Ajusta tamanho da fonte */
+    border-radius: 5px; /* Deixa as bordas arredondadas (opcional) */
+}
+.select-turno:focus {
+    background-color: #363535;
+    outline: none;
+    border: none;
+    color: white;
+}
+.select-turno:hover {
+    cursor: pointer;
+}
+

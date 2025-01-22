@@ -1,0 +1,72 @@
+{% load static %}
+
+{% for bo in bo_autorizado_manha %}
+<div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
+    <div class="linha mt-2">
+        {% if bo.inicio is None and not bo.pausa %}
+        <p class="btn btn-primary">{{ bo.funcionario}}</p>
+        <a class="mb-3" onclick="exibirPopUpconfirmacaoInicioBO('{{ bo.funcionario }}')"><img
+                src="{% static 'images/check.svg' %}" alt="autorizar BO"></a>
+
+        <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
+                src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+        {% elif bo.inicio and not bo.pausa %}
+        <p class="btn btn-success">
+            {{ bo.funcionario}}
+        </p>
+        <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'true')"><img
+                src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
+
+        <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'false')">
+            <img src="{% static 'images/restaurant.svg' %}" alt="Almoço BO" class="ms-1">
+        </a>
+
+        <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img src="{% static 'images/close.svg' %}"
+                alt="remover BO"></a>
+        {% elif bo.pausa and not bo.almoco %}
+        <p class="btn btn-warning">{{ bo.funcionario}} </p>
+        <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img
+                src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
+        <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img src="{% static 'images/close.svg' %}"
+                alt="remover BO"></a>
+
+        {% elif bo.pausa and bo.almoco %}
+        <p class="btn-laranja">{{ bo.funcionario }} <img src="{% static 'images/lunch.svg' %}" alt="almoço"
+                class="ms-1"></p>
+        <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img
+                src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
+        <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img src="{% static 'images/close.svg' %}"
+                alt="remover BO"></a>
+
+
+        {% endif %}
+
+    </div>
+    {% if bo.inicio is None %}
+    <div class="linha mt-0-5">
+        <div>BO aceite: <b>{{bo.calcular_tempo_decorrido_aprovacao }}</b></div>
+
+    </div>
+    {% elif bo.inicio and bo.pausa is False %}
+    <div class="linha mt-0-5">
+        <div>
+            <p>Iniciado a: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
+        </div>
+    </div>
+
+    {% elif bo.pausa %}
+    <div class="linha mt-1">
+        <div>
+            <p>Tempo até pausar: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span>
+            </p>
+        </div>
+    </div>
+
+
+    {% endif %}
+    <div class="linha">
+        <div>Total BO: <b>{{ bo.calcular_tempo_decorrido_bo }}</b></div>
+    </div>
+
+</div>
+{% endfor %}
