@@ -3,7 +3,7 @@
 {% for pausa in intervalos_fila %}
 <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
     <div class="linha mt-2">
-        <p class="btn btn-primary">{{ pausa.funcionario}}</p>
+        <p class="btn-azul-claro">{{ pausa.funcionario}}</p>
 
         <a class="mb-3"  onclick="exibirPopUpConfirmacaoAutPausa('{{ pausa.funcionario }}')"><img
                 src="{% static 'images/check.svg' %}" alt="autorizar pausa"></a>

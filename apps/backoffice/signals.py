@@ -6,56 +6,62 @@ from .models import BackOffice, BackofficeConfig, BackOfficeFilaEspera, Backoffi
 
 @receiver(post_save, sender=BackOffice)
 @receiver(post_save, sender=BackofficeConfig)
+@receiver(post_save, sender=BackofficeConfigTarde_BO)
 @receiver(post_delete, sender=BackOffice)
 @receiver(post_delete, sender=BackOfficeFilaEspera)
 def autorizar_proximo_bo(sender, instance, **kwargs):
     config_manha = BackofficeConfig.objects.last()
     config_tarde = BackofficeConfigTarde_BO.objects.last()
-    try:
-        turno = instance.funcionario.turno_manha
-    except:
-        print("não encontrou funcionario")
 
     funcionarios_manha = Usuario.objects.filter(turno_manha=True)
     funcionarios_tarde = Usuario.objects.filter(turno_manha=False)
-    if turno:
-        if not config_manha:
-            BackofficeConfig.objects.create(capacidade_maxima=0)
-            config_manha = BackofficeConfig.objects.last()
-
+    if config_manha:
         num_maximo_bo_manha = config_manha.capacidade_maxima
-        num_bo_manha_autorizado = BackOffice.objects.filter(aprovado=True, turno_manha=True).count()
-        while num_bo_manha_autorizado < num_maximo_bo_manha:
-            proximo = BackOfficeFilaEspera.objects.filter(fucionario__in=
-                                                          funcionarios_manha).order_by('data_entrada').first()
+        num_bo_autorizado_manha = BackOffice.objects.filter(funcionario__in=funcionarios_manha, aprovado=True).count()
+        print(f"Nº máximo de manha autorizados: {num_maximo_bo_manha}")
+        print(f"Nº de BO manha aprovados: {num_bo_autorizado_manha}")
+        while num_bo_autorizado_manha < num_maximo_bo_manha:
+            proximo = BackOfficeFilaEspera.objects.filter(
+                funcionario__in=funcionarios_manha).order_by('data_entrada').first()
             if not proximo:
                 break
-            bo_existente = BackOffice.objects.filter(funcionario = proximo.funcionario, aprovado=True).exists()
+            bo_existente = BackOffice.objects.filter(funcionario= proximo.funcionario,aprovado=True).exists()
             if bo_existente:
                 proximo.delete()
             else:
-                BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True,data_aprovacao=timezone.now()
-                                          ,turno_manha=True)
+                BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True,
+                                          data_aprovacao=timezone.now(),turno_manha=True)
                 proximo.delete()
-            num_bo_manha_autorizado = BackOffice.objects.filter(aprovado=True, turno_manha=True).count()
-
+            num_bo_autorizado_manha = BackOffice.objects.filter(funcionario__in=funcionarios_manha, aprovado=True).count()
+            
     else:
-        if not config_tarde:
-            BackofficeConfigTarde_BO.objects.create(capacidade_maxima=0)
-            config_tarde = BackofficeConfigTarde_BO.objects.last()
+        BackofficeConfig.objects.create(capacidade_maxima=0)
 
-        num_maximo_bo_tarde = config_tarde.capacidade_maxima
-        num_bo_tarde_autorizado = BackOffice.objects.filter(aprovado=True, turno_manha=False).count()
-        while num_bo_tarde_autorizado < num_maximo_bo_tarde:
+    if config_tarde:
+        print("aqui o erro")
+        num_maximo_bo_tarde= config_tarde.capacidade_maxima
+        num_bo_autorizado_tarde= BackOffice.objects.filter(funcionario__in=funcionarios_tarde,
+                                                           aprovado=True).count()
+        print(f"Nº máximo de BO tarde autorizados: {num_maximo_bo_tarde}")
+        print(f"Nº de BO tarde autorizados: {num_bo_autorizado_tarde}")
+        while num_bo_autorizado_tarde < num_maximo_bo_tarde:
+            print("aqui o erro")
             proximo_tarde = BackOfficeFilaEspera.objects.filter(
                 funcionario__in=funcionarios_tarde).order_by('data_entrada').first()
             if not proximo_tarde:
-                break
-            bo_existente_tarde = BackOffice.objects.filter(funcionario=proximo_tarde.funcionario, aprovado=True).exists()
+                 break
+            bo_existente_tarde= BackOffice.objects.filter(funcionario=proximo_tarde.funcionario, 
+                                                          aprovado=True).exists()
             if bo_existente_tarde:
                 proximo_tarde.delete()
             else:
-                BackOffice.objects.create(funcionario=proximo_tarde.funcionario, aprovado=True,
-                                          data_aprovacao=timezone.now(),turno_manha=False)
+                BackOffice.objects.create(funcionario=proximo_tarde.funcionario,
+                                          aprovado=True,data_aprovacao=timezone.now(),turno_manha=False)
                 proximo_tarde.delete()
-            num_bo_tarde_autorizado = BackOffice.objects.filter(aprovado=True,turno_manha=False).count()
+            
+            num_bo_autorizado_tarde = BackOffice.objects.filter(funcionario__in=funcionarios_tarde,
+                                                           aprovado=True).count()
+    else:
+        BackofficeConfigTarde_BO.objects.create(capacidade_maxima=0)
+
+

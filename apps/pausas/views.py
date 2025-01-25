@@ -39,10 +39,10 @@ class Lista_Pausas(ListView):
         context['pausa_nao_aprovada'] = FilaEspera.objects.filter(funcionario=funcionario)
 
         context['fila'] = FilaEspera.objects.order_by('data_entrada').first()
+        context['fila_total'] = FilaEspera.objects.count()
         fila_object= FilaEspera.objects.order_by('data_entrada')
-        index_fila = None
+        index_fila = None       
         for index, fila in enumerate(fila_object):
-            print(fila.funcionario)
             if fila.funcionario == self.request.user.usuario:
                 index_fila = index
                 print(index)
@@ -63,7 +63,14 @@ class Lista_Pausas(ListView):
         context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True, pausa=False)
         context['bo_nao_aprovado'] = BackOfficeFilaEspera.objects.filter(funcionario=funcionario)
         context['fila_bo'] = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
-        fila_bo_object = BackOfficeFilaEspera.objects.order_by('data_entrada')
+        if self.request.user.usuario.turno_manha:
+            usuarios_manha = Usuario.objects.filter(turno_manha=True)
+            fila_bo_object = BackOfficeFilaEspera.objects.filter(funcionario__in=usuarios_manha).order_by('data_entrada')
+        elif not self.request.user.usuario.turno_manha:
+            usuarios_tarde = Usuario.objects.filter(turno_manha=False)
+            fila_bo_object = BackOfficeFilaEspera.objects.filter(funcionario__in=usuarios_tarde).order_by('data_entrada')
+
+        
         idex_fila_bo = None
         for index_bo, fila_bo in enumerate(fila_bo_object):
             if fila_bo.funcionario == self.request.user.usuario:
@@ -162,11 +169,11 @@ def maximo_intervalos(request):
         if config:
             config.capacidade_maxima = numero_intervalo
             config.save()
-            messages.success(request,f"O número de intervalos autorizados foi alterado para {numero_intervalo}")
+            
 
         else:
             ConfiguracaoPausa.objects.create(capacidade_maxima = numero_intervalo)
-            messages.error(request,"Seleção inválida ou não recebida")
+            
 
         return redirect('home')
 

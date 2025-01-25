@@ -10,7 +10,8 @@
 
 <div class="container">
     <div class="row text-center">
-        <div class="col col-intervalos">
+        <div class="col-12 col-intervalos">
+            <p class="fs-3"><b>Intervalos</b></p>
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_intervalos' %}">
                 <div>
@@ -26,28 +27,31 @@
                     <button type="submit" class="btn btn-info ms-3">Alterar</button>
                 </div>
             </form>
-            <div class="d-flex justify-content-between mt-4">
-                <p><b>Fila Pausas</b></p>
-                <p><b>Pausas Autorizadas</b></p>
-            </div>
-            <div class="d-flex justify-content-between mt-1">
-                <div class="fila me-4">
+            <div class="d-flex justify-content-evenly mt-4 text-center">
+                <div class="d-flex flex-column mb-3 text-center">
+                    <p class="text-center"><b>Fila Pausas</b></p>
                     {% include 'core/fila_intervalos.html' %}
                 </div>
-                <div class="intervalos">
+
+                <div class="d-flex flex-column mb-3">
+                    <p class=""><b>Pausas Autorizadas</b></p>
                     {% include 'core/aut_intervalos.html' %}
                 </div>
-
             </div>
 
+
         </div>
+    </div>
+    <div class="row text-center mt-5">
         <div class="col col-bo-manha">
-            <form id="form-filter" method="GET" class="form-container align-items-center">
+            <p class="fs-3"><b>BO Manhã</b></p>
+            <form id="form-filter" method="GET" class="form-container align-items-center"
+                action="{% url 'maximo_bo_autorizados' 'true' %}">
                 <div>
-                    <label>Máximo de BO Manha ({{ num_bo_autorizado }}): </label>
-                    <select name="num-bo-manha" id="num-bo-manha" aria-label="Small select example" class="ms-2">
+                    <label>Máximo de BO Manha ({{ num_bo_autorizado_manha }}): </label>
+                    <select name="num-bo" id="num-bo" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
-                        <option value="{{ num }}" id="num-bo-manha">{{ num }}</option>
+                        <option value="{{ num }}">{{ num }}</option>
 
                         {% endfor %}
                     </select>
@@ -55,31 +59,32 @@
                 </div>
 
             </form>
-            <div class="d-flex justify-content-between mt-4">
-                <p><b>Fila Manhã</b><img src="{% static 'images/arrowUp.svg' %}" alt="up" class="ms-1 fila-manha"></p>
-                <p><b>BO Autorizados</b><img src="{% static 'images/arrowUp.svg' %}" alt="up" class="ms-1 aut-manha">
-                </p>
-            </div>
-            <div class="d-flex justify-content-between mt-1">
-                <div class="fila-manha">
+            <div class="d-flex justify-content-between mt-4 text-center">
+                <div class="d-flex flex-column mb-3 text-center">
+                    <p><b>Fila Manhã</b></p>
                     {% include 'core/fila_manha.html' %}
                 </div>
-                <div class="bo-manha">
+                <div class="d-flex flex-column mb-3 text-center me-4">
+                    <p><b>BO Autorizados</b></p>
                     {% include 'core/aut_manha.html' %}
                 </div>
-
+               
             </div>
+           
 
 
 
         </div>
-        <div class="col col-bo-manha">
-            <form id="form-filter" method="GET" class="form-container align-items-center">
+        <div class="col col-bo-tarde">
+            <p class="fs-3"><b>BO Tarde</b></p>
+            <form id="form-filter" method="GET" class="form-container align-items-center"
+                action="{% url 'maximo_bo_autorizados' 'false' %}">
+
                 <div>
-                    <label>Máximo de BO Tarde({{ num_bo_autorizado }}): </label>
-                    <select name="num-bo-tarde" id="num-bo-tarde" aria-label="Small select example" class="ms-2">
+                    <label>Máximo de BO Tarde({{ num_bo_autorizado_tarde }}): </label>
+                    <select name="num-bo" id="num-bo-tarde" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
-                        <option value="{{ num }}" id="num-bo-tarde">{{ num }}</option>
+                        <option value="{{ num }}">{{ num }}</option>
 
                         {% endfor %}
                     </select>
@@ -88,23 +93,22 @@
                 </div>
 
             </form>
-            <div class="d-flex justify-content-between mt-4">
-                <p><b>Fila Tarde</b></p>
-                <p><b>BO Autorizados</b></p>
-            </div>
-            <div class="d-flex justify-content-between mt-1">
-                <div class="fila-tarde">
+            <div class="d-flex justify-content-between mt-4 text-center">
+                <div class="d-flex flex-column mb-3 text-center">
+                    <p><b>Fila Tarde</b></p>
                     {% include 'core/fila_tarde.html' %}
                 </div>
-                <div class="bo-manha">
+                <div class="d-flex flex-column mb-3 text-center me-4">
+                    <p><b>BO Autorizados</b></p>
                     {% include 'core/aut_tarde.html' %}
                 </div>
-
+               
             </div>
 
         </div>
 
     </div>
+</div>
 
 
 

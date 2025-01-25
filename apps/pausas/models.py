@@ -58,14 +58,12 @@ class Pausa(models.Model):
         try:
             bo_funcionario = BackOffice.objects.get(funcionario=self.funcionario)
             if bo_funcionario.inicio and not bo_funcionario.pausa:
-                bo_funcionario.pausa = True
-                bo_funcionario.inicio_pausa = timezone.now()
-                bo_funcionario.save()
-                print(f"{bo_funcionario.funcionario} pediu pausa!")
-            elif bo_funcionario.inicio and bo_funcionario.pausa and bo_funcionario.bo_ja_em_pausa:
+                bo_funcionario.pausar_bo('true')
+                print(f"{bo_funcionario.funcionario} pediu pausa e bo foi pausado")
+            elif bo_funcionario.inicio and bo_funcionario.pausa:
                 bo_funcionario.bo_ja_em_pausa = True
                 bo_funcionario.save()
-                print(f"{bo_funcionario.funcionario} pediu pausa e ja estava em com BO em pausa!")
+                print(f"{bo_funcionario.funcionario} pediu pausa e ja estava com BO em pausa!")
         except:
             print(f"{self.funcionario} Pediu Pausa e não está em BO! ")
         self.inicio = timezone.now()
@@ -74,8 +72,7 @@ class Pausa(models.Model):
     def terminar_intervalo(self):
         try:
             bo_funcionario = BackOffice.objects.get(funcionario=self.funcionario)
-            if bo_funcionario.inicio and bo_funcionario.pausa and not bo_funcionario.bo_ja_em_pausa:
-                bo_funcionario.despausar_bo()
+            bo_funcionario.despausar_bo()
         except:
             print("Sem BO para despausar!")
         self.fim = timezone.now()

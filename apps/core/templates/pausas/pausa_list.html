@@ -29,6 +29,16 @@
             {% elif pausa_nao_aprovada %}
             {% include 'pausas/pausa_nao_aprovada.html' %}
             {% else %}
+            <div class="div m-3">
+            {% if  fila_total == 0  %}
+            <p>Sem fila de espera para intervalo</p>
+            {% elif fila_total == 1  %}
+            <p>Está {{fila_total }} pessoa em fila de espera.</p>
+            {% elif fila_total > 1 %}
+            <p>Estão {{fila_total }} pessoas em fila de espera.</p>
+            {% endif %}
+            </div>
+
             <a href="{% url 'nova_pausa' %}" class="btn-azul" type="submit">Pedir Pausa</a>
             <div class="spinner" id="spinner" style="display: none;"></div>
                 <div class="text-center mt-5">

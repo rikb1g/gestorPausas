@@ -3,12 +3,12 @@
                         <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
                             <div class="linha mt-2">
                                 {% if intervalo.inicio is None %}
-                                <p class="btn btn-primary">{{ intervalo.funcionario}}</p>
+                                <p class="btn-azul-claro">{{ intervalo.funcionario}}</p>
 
                                 <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
                                 {% else %}
-                                <p class="btn btn-success">
+                                <p class="btn-verde">
                                     {{ intervalo.funcionario}}
                                 </p>
                                 <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img

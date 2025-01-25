@@ -90,6 +90,34 @@ a{
     transform: scale(1.05);
 }
 
+.btn-azul-claro{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #B2EBF2;
+    color: #01579B;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn-azul-claro:hover{
+    background-color: #B2EBF2;
+    color: #01579B;
+}
+.btn-azul-escuro{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #01579B;
+    color: white;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn-azul-escuro:hover{
+    background-color: #B2EBF2;
+    color: #014377;
+}
+
+
 .btn-amarelo{
     padding: 10px 20px;
     border: none;
@@ -203,3 +231,11 @@ a{
     cursor: pointer;
 }
 
+.container{
+    width: 100%;
+}
+
+.col-intervalos{
+    max-height: 400px;
+    overflow-y: auto;
+}

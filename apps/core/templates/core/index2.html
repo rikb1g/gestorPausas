@@ -10,13 +10,12 @@
 
 <div class="container">
     <div class="row text-center">
-        <div class="col">
+        <div class="col col-intervalos">
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_intervalos' %}">
                 <div>
                     <label>Máximo de intervalos ({{ num_pausa_autorizados }}): </label>
-                    <select name="num" id="num" aria-label="Small select example" onchange="salvarVAlorSelecionado()"
-                        class="ms-2">
+                    <select name="num" id="num" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
                         <option value="{{ num }}" id="num">{{ num }}</option>
 
@@ -26,203 +25,88 @@
 
                     <button type="submit" class="btn btn-info ms-3">Alterar</button>
                 </div>
-
-
             </form>
+            <div class="d-flex justify-content-between mt-4">
+                <p><b>Fila Pausas</b></p>
+                <p><b>Pausas Autorizadas</b></p>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <div class="fila me-4">
+                    {% include 'core/fila_intervalos.html' %}
+                </div>
+                <div class="intervalos">
+                    {% include 'core/aut_intervalos.html' %}
+                </div>
+
+            </div>
+
         </div>
-        <div class="col">
-            <form id="form-filter" method="GET" class="form-container align-items-center"
-                action="{% url 'maximo_bo_autorizados' %}">
+        <div class="col col-bo-manha">
+            <form id="form-filter" method="GET" class="form-container align-items-center">
                 <div>
-                    <label>Máximo de BO ({{ num_bo_autorizado }}): </label>
-                    <select name="num-bo" id="num-bo" aria-label="Small select example"
-                        onchange="salvarVAlorSelecionadoBO()" class="ms-2">
+                    <label>Máximo de BO Manha ({{ num_bo_autorizado }}): </label>
+                    <select name="num-bo-manha" id="num-bo-manha" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
-                        <option value="{{ num }}" id="num-bo">{{ num }}</option>
+                        <option value="{{ num }}" id="num-bo-manha">{{ num }}</option>
 
                         {% endfor %}
                     </select>
-                    <button type="submit" class="btn btn-info ms-3">Alterar</button>
+                    <button onclick="alterarMaximoBO('true')" type="submit" class="btn btn-info ms-3">Alterar</button>
                 </div>
 
             </form>
+            <div class="d-flex justify-content-between mt-4">
+                <p><b>Fila Manhã</b><img src="{% static 'images/arrowUp.svg' %}" alt="up" class="ms-1 fila-manha"></p>
+                <p><b>BO Autorizados</b><img src="{% static 'images/arrowUp.svg' %}" alt="up" class="ms-1 aut-manha">
+                </p>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <div class="fila-manha me-4">
+                    {% include 'core/fila_manha.html' %}
+                </div>
+                <div class="bo-manha">
+                    {% include 'core/aut_manha.html' %}
+                </div>
+
+            </div>
+
+
+
         </div>
+        <div class="col col-bo-manha">
+            <form id="form-filter" method="GET" class="form-container align-items-center">
+                <div>
+                    <label>Máximo de BO Tarde({{ num_bo_autorizado }}): </label>
+                    <select name="num-bo-tarde" id="num-bo-tarde" aria-label="Small select example" class="ms-2">
+                        {% for num in contador %}
+                        <option value="{{ num }}" id="num-bo-tarde">{{ num }}</option>
 
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="container">
-                <div class="row">
-                    <div class="col text-center">
-                        <p class="text-center m-3 mb-3 fs-5 mt-4"><b>Fila pausas</b></p>
-                        {% for pausa in intervalos_fila %}
-                        <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
-                            <div class="linha mt-2">
-                                <p class="btn btn-primary">{{ pausa.funcionario}}</p>
-
-                                <a class="mb-3"  onclick="exibirPopUpConfirmacaoAutPausa('{{ pausa.funcionario }}')"><img
-                                        src="{% static 'images/check.svg' %}" alt="autorizar pausa"></a>
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ pausa.funcionario }}')"><img
-                                        src="{% static 'images/close.svg'%}" alt="remover pausa"></a>
-                            </div>
-                            <div class="linha mt-0-5">
-                                <div>Em fila: <b>{{ pausa.calcular_tempo_decorrido_entrada_fila }}</b></div>
-                            </div>
-                            <div class="linha mt-0-5">
-                                <div>Tempo total pausa: <b>{{ pausa.calcular_tempo_decorrido_pausa }}</b></div>
-                            </div>
-                        </div>
                         {% endfor %}
-                    </div>
-                    <div class="col">
-                        <p class="text-center m-3 fs-5 mt-4"><b>Pausas Autorizadas</b></p>
-                        {% for intervalo in pausa_autorizada %}
-                        <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
-                            <div class="linha mt-2">
-                                {% if intervalo.inicio is None %}
-                                <p class="btn btn-primary">{{ intervalo.funcionario}}</p>
+                    </select>
+                    <button type="submit" onclick="alterarMaximoBO('false')" class="btn btn-info ms-3">Alterar
+                    </button>
+                </div>
 
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
-                                {% else %}
-                                <p class="btn btn-success">
-                                    {{ intervalo.funcionario}}
-                                </p>
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
-                                    src="{% static 'images/close.svg' %}" alt="remover BO"></a>
-                                {% endif %}
-
-                            </div>
-                            {% if intervalo.inicio is None %}
-                            <div class="linha mt-0-5">
-                            <div>Pausa aceite: <b>{{intervalo.calcular_tempo_desde_aprovacao }}</b></div>
-
-                            </div>
-                            {% else %}
-
-                            {% endif %}
-
-                            {% if intervalo.inicio %}
-                            <div class="linha mt-0-5 p-0">
-                                <div><p>Iniciado a: <span id="tempo-decorrido-pausa'" data-id="{{ intervalo.id }}" class="tempo-decorrido-pausa"></span></p>
-                            </div>
-
-                            </div>
-                            {% endif %}
-                            <div class="linha mt-0-5">
-                                <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
+            </form>
+            <div class="d-flex justify-content-between mt-4">
+                <p><b>Fila Tarde</b></p>
+                <p><b>BO Autorizados</b></p>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <div class="fila-tarde me-4">
+                    {% include 'core/fila_tarde.html' %}
+                </div>
+                <div class="bo-manha">
+                    {% include 'core/aut_tarde.html' %}
                 </div>
 
             </div>
 
         </div>
 
-        <div class="col">
-            <div class="col">
-                <div class="container">
-                    <div class="row">
-                        <div class="col text-center">
-                            <p class="text-center m-3 mb-3 fs-5 mt-4"><b>Fila BO</b></p>
-                            {% for bo in bo_fila %}
-                            <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
-                                <div class="linha mt-2">
-                                    <p class="btn btn-primary">{{ bo.funcionario}}</p>
-
-                                    <a class="mb-3"  onclick="exibirPopUpconfirmacaoAutBO('{{ bo.funcionario }}')"><img
-                                            src="{% static 'images/check.svg' %}" alt="autorizar bo"></a>
-                                    <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                                            src="{% static 'images/close.svg'%}" alt="remover bo"></a>
-                                </div>
-                                <div class="linha mt-0-5">
-                                    <div>Em fila: <b>{{ bo.calcular_tempo_decorrido_entrada_fila_bo }}</b></div>
-                                </div>
-                                <div class="linha mt-0-5">
-                                    <div>Tempo total bo: <b>{{ bo.calcular_tempo_decorrido_bo }}</b></div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="col">
-                            <p class="text-center m-3 fs-5 mt-4"><b>BO Autorizado</b></p>
-                            {% for bo in bo_autorizado %}
-                            <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
-                                <div class="linha mt-2">
-                                    {% if bo.inicio is None and not bo.pausa %}
-                                    <p class="btn btn-primary">{{ bo.funcionario}}</p>
-                                    <a class="mb-3" onclick="exibirPopUpconfirmacaoInicioBO('{{ bo.funcionario }}')"><img
-                                        src="{% static 'images/check.svg' %}" alt="autorizar BO"></a>
-
-                                    <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                                            src="{% static 'images/close.svg' %}" alt="remover BO"></a>
-                                    {% elif bo.inicio and not bo.pausa %}
-                                    <p class="btn btn-success">
-                                        {{ bo.funcionario}}
-                                    </p>
-                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'true')"><img src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
-
-                                    <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'false')">
-                                        <img src="{% static 'images/restaurant.svg' %}" alt="Almoço BO" class="ms-1">
-                                    </a>
-
-                                    <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO" ></a>
-                                    {% elif bo.pausa and not bo.almoco %}
-                                    <p class="btn btn-warning">{{ bo.funcionario}} </p>
-                                    <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
-                                    <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
-
-                                    {% elif bo.pausa and bo.almoco %}
-                                    <p class="btn-laranja">{{ bo.funcionario }} <img src="{% static 'images/lunch.svg' %}" alt="almoço" class="ms-1"></p>
-                                    <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
-                                    <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
-
-
-                                    {% endif %}
-
-                                </div>
-                                {% if bo.inicio is None %}
-                                <div class="linha mt-0-5">
-                                <div>BO aceite: <b>{{bo.calcular_tempo_decorrido_aprovacao }}</b></div>
-
-                                </div>
-                                {% elif bo.inicio and bo.pausa is False %}
-                                <div class="linha mt-0-5">
-                                    <div><p>Iniciado a: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
-                                        </div>
-                                    </div>
-
-                                {% elif bo.pausa %}
-                                <div class="linha mt-1">
-                                    <div><p>Tempo até pausar: <span id="tempo-decorrido-bo" data-id="{{ bo.id }}" class="tempo-decorrido-bo"></span></p>
-                                        </div>
-                                    </div>
-
-
-                                {% endif %}
-                                <div class="linha">
-                                    <div>Total BO: <b>{{ bo.calcular_tempo_decorrido_bo  }}</b></div>
-                                </div>
-
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-
-
     </div>
+
+
 
 
 </div>

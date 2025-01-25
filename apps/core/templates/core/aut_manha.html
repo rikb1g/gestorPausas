@@ -4,7 +4,7 @@
 <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
     <div class="linha mt-2">
         {% if bo.inicio is None and not bo.pausa %}
-        <p class="btn btn-primary">{{ bo.funcionario}}</p>
+        <p class="btn-azul-escuro">{{ bo.funcionario}}</p>
         <a class="mb-3" onclick="exibirPopUpconfirmacaoInicioBO('{{ bo.funcionario }}')"><img
                 src="{% static 'images/check.svg' %}" alt="autorizar BO"></a>
 
@@ -14,17 +14,17 @@
         <p class="btn btn-success">
             {{ bo.funcionario}}
         </p>
-        <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'true')"><img
-                src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
+        <a href="{% url 'pausar_bo' bo.id 'true' %}"><img
+                src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1 btn-pause" ></a>
 
-        <a onclick="exibirPopUpconfirmacaoPausarBO('{{ bo.id }}','{{bo.funcionario}}', 'false')">
-            <img src="{% static 'images/restaurant.svg' %}" alt="Almoço BO" class="ms-1">
+        <a href="{% url 'pausar_bo' bo.id 'false' %}">
+            <img src="{% static 'images/restaurant.svg' %}" alt="Almoço BO" class="ms-1 btn-pause">
         </a>
 
         <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img src="{% static 'images/close.svg' %}"
                 alt="remover BO"></a>
         {% elif bo.pausa and not bo.almoco %}
-        <p class="btn btn-warning">{{ bo.funcionario}} </p>
+        <p class="btn-amarelo">{{ bo.funcionario}} </p>
         <a onclick="exibirPopUpconfirmacaoRetomarBO('{{ bo.id }}','{{ bo.funcionario }}')"><img
                 src="{% static 'images/play.svg' %}" alt="Retomar BO BO" class="ms-1"></a>
         <a onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img src="{% static 'images/close.svg' %}"

@@ -3,7 +3,7 @@
 {% for bo in bo_fila_manha %}
 <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
     <div class="linha mt-2">
-        <p class="btn btn-primary">{{ bo.funcionario}}</p>
+        <p class="btn-azul">{{ bo.funcionario}}</p>
 
         <a class="mb-3" onclick="exibirPopUpconfirmacaoAutBO('{{ bo.funcionario }}')"><img
                 src="{% static 'images/check.svg' %}" alt="autorizar bo"></a>
