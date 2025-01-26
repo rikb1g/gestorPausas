@@ -81,7 +81,7 @@
                 action="{% url 'maximo_bo_autorizados' 'false' %}">
 
                 <div>
-                    <label>Máximo de BO Tarde({{ num_bo_autorizado_tarde }}): </label>
+                    <label>Máximo de BO Tarde ({{ num_bo_autorizado_tarde }}): </label>
                     <select name="num-bo" id="num-bo-tarde" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
                         <option value="{{ num }}">{{ num }}</option>

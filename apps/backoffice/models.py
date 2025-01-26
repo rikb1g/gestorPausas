@@ -35,7 +35,7 @@ class BackOffice(models.Model):
             bo = BackOffice.objects.get(funcionario=self.funcionario, aprovado=True)
             if bo.inicio and not bo.pausa and not bo.inicio_pausa:
                 tempo_decorrido = timezone.now() - bo.inicio
-                if tempo_decorrido > timedelta(minutes=1):
+                if tempo_decorrido > timedelta(minutes=45):
                     return True
                 else:
                     return False
