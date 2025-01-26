@@ -52,8 +52,18 @@ class Lista_Pausas(ListView):
         total_pausa = PausasDiarias()
         tota_horas= total_pausa.calcular_tempo_decorrido(funcionario)
         context['total_pausa'] = tota_horas
-        context['alerta_pausa']  = Pausa.calcular_tempo_ate_aviso(funcionario)
-        context['alerta_bo'] = BackOffice.calcular_tempo_ate_aviso(funcionario)
+        try:
+            pausa_object = get_object_or_404(Pausa,funcionario=funcionario)
+            context['alerta_pausa']  = pausa_object.calcular_tempo_ate_aviso()
+        except:
+            context['alerta_pausa'] = False
+        try:
+            bo_object = get_object_or_404(BackOffice,funcionario=funcionario)
+            context['alerta_bo'] = bo_object.calcular_tempo_ate_aviso()
+        except:
+            context['alerta_bo'] = False
+        
+        
 
 
 

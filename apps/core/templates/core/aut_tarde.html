@@ -11,9 +11,15 @@
         <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
                 src="{% static 'images/close.svg' %}" alt="remover BO"></a>
         {% elif bo.inicio and not bo.pausa %}
+        {% if bo.calcular_tempo_ate_aviso %}
+        <p class="btn-vermelho">
+            {{ bo.funcionario}}
+        </p>
+        {% else  %}
         <p class="btn-verde">
             {{ bo.funcionario}}
         </p>
+        {% endif %}
         <a href="{% url 'pausar_bo' bo.id 'true' %}"><img
                 src="{% static 'images/pause.svg' %}" alt="Pausar BO" class="ms-1"></a>
 

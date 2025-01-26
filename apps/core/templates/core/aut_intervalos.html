@@ -1,17 +1,23 @@
 {% load static %}
 {% for intervalo in pausa_autorizada %}
-                        <div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
+                        <div class="dados bg-secondary text-white rounded m-3" style="--bs-bg-opacity: .5;">
                             <div class="linha mt-2">
                                 {% if intervalo.inicio is None %}
                                 <p class="btn-azul-claro">{{ intervalo.funcionario}}</p>
 
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
+                                <a class="mb-3 ms-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
                                         src="{% static 'images/close.svg' %}" alt="remover BO"></a>
                                 {% else %}
+                                {% if intervalo.calcular_tempo_ate_aviso %}
+                                <p class="btn-vermelho">
+                                    {{ intervalo.funcionario}}
+                                </p>
+                                {% else %}                                
                                 <p class="btn-verde">
                                     {{ intervalo.funcionario}}
                                 </p>
-                                <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
+                                {% endif %}
+                                <a class="mb-3 ms-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
                                     src="{% static 'images/close.svg' %}" alt="remover BO"></a>
                                 {% endif %}
 

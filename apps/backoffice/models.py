@@ -29,10 +29,10 @@ class BackOffice(models.Model):
                 tempo_total += (bo.fim - bo.inicio)      
         return formatted_time(tempo_total)
     
-    @staticmethod
-    def calcular_tempo_ate_aviso(funcionario):
+    
+    def calcular_tempo_ate_aviso(self): 
         try:
-            bo = BackOffice.objects.get(funcionario=funcionario, aprovado=True)
+            bo = BackOffice.objects.get(funcionario=self.funcionario, aprovado=True)
             if bo.inicio and not bo.pausa and not bo.inicio_pausa:
                 tempo_decorrido = timezone.now() - bo.inicio
                 if tempo_decorrido > timedelta(minutes=1):
@@ -43,7 +43,7 @@ class BackOffice(models.Model):
                 tempo_acumulado = bo.tempo_ate_pausar
                 tempo_acumulado_formated = parse_formatted_time(tempo_acumulado)
                 tempo_decorrido = (timezone.now() - bo.inicio) + tempo_acumulado_formated
-                if tempo_decorrido > timedelta(minutes=45):
+                if tempo_decorrido > timedelta(minutes=1):
                     return True
                 else:
                     return False

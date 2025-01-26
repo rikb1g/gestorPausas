@@ -15,10 +15,10 @@ class Pausa(models.Model):
     pausa = models.BooleanField(default=False)
 
 
-    @staticmethod
-    def calcular_tempo_ate_aviso(funcionario):
+    
+    def calcular_tempo_ate_aviso(self):
         try:
-            pausa = Pausa.objects.get(funcionario=funcionario, aprovado=True)
+            pausa = Pausa.objects.get(funcionario=self.funcionario, aprovado=True)
             print("encontrou pausa")
             if pausa.inicio:
                 agora = timezone.now()

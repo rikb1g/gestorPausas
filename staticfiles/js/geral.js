@@ -97,16 +97,6 @@ function exibirPopUpconfirmacaoAutBO(nome){
         alert("Ação cancelada")
     }
 }
-function exibirPopUpconfirmacaoPausarBO(id,nome){
-    if(confirm("Tens a certeza que pretendes pausar o BO de "+nome+ " ?")){
-        var url = "/backoffice/pausar_bo_sup?id="+encodeURIComponent(id);
-        window.location.href = url
-    }
-    else{
-        alert("Ação cancelada")
-    }
-
-}
 
 function exibirPopUpconfirmacaoRetomarBO(id,nome){
     if(confirm("Tens a certeza que pretendes retomar o BO de "+nome+ " ?")){
@@ -126,7 +116,7 @@ function notifyUser(message) {
     const titleInterval = setInterval(function () {
         document.title = isTitleModified ? originalTitle : message
         isTitleModified = !isTitleModified
-
+        console.log("funciona ")
     }, 1000)
 
     window.addEventListener("focus", function handleFocus() {
@@ -149,3 +139,32 @@ function notifyUser(message) {
         }
     }, 1000);
 }
+
+
+function atualizarSelectMaximo(){
+    const intervalos = document.getElementById('num')
+    const boManha = document.getElementById('num-bo')
+    const  boTarde= document.getElementById('num-bo-tarde')
+
+    fetch(`/backoffice/maximos_autorizados/`)
+    .then(response => response.json())
+    .then(data => {
+        intervalos.value= data.maximo_intervalos,
+        boManha.value =data.maximo_bo_manha,
+        boTarde.value = data.maximo_bo_tarde
+    })
+
+}
+
+atualizarSelectMaximo()
+
+window.addEventListener("beforeunload", function () {
+    localStorage.setItem("scrollPosition", window.scrollY);
+});
+
+window.addEventListener("load", function () {
+    const scrollPosition = localStorage.getItem("scrollPosition");
+    if (scrollPosition) {
+        window.scrollTo(0, scrollPosition);
+    }
+});

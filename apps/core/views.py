@@ -26,6 +26,7 @@ def home(request):
     num_pausa_autorizados = ConfiguracaoPausa.objects.last()
     data['num_pausa_autorizados'] = num_pausa_autorizados.capacidade_maxima
     
+    
     # BO
     funcionarios_manha = Usuario.objects.filter(turno_manha=True)
     funcionarios_tarde = Usuario.objects.filter(turno_manha= False)

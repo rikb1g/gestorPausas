@@ -22,18 +22,18 @@ def pedir_bo(request):
             usuario.turno_manha = False
             usuario_turno = False
         usuario.save()
+        print(f"turno: {turno}")
 
         bo_aceites_manha = BackOffice.objects.filter(aprovado=True,turno_manha=True)
         bo_aceites_tarde = BackOffice.objects.filter(aprovado=True,turno_manha=False)
-        print(request.user)
-
+        print(f"pediu bo: {request.user} turno: {usuario_turno}")
         if usuario_turno:
-            configuracao = BackofficeConfig.objects.first()
+            configuracao_manha = BackofficeConfig.objects.first()
         else:
-            configuracao = BackofficeConfigTarde_BO.objects.first()
-        if not configuracao:
-            configuracao = BackofficeConfig.objects.create(capacidade_maxima=0)
-            configuracao = BackofficeConfigTarde_BO.objects.create(capacidade_maxima=0)
+            configuracao_tarde = BackofficeConfigTarde_BO.objects.first()
+        
+        
+        
 
         if usuario_turno:
             with transaction.atomic():
@@ -42,7 +42,7 @@ def pedir_bo(request):
                     print("Pedido duplicado evitado")
                     
 
-                if bo_aceites_manha.count() < configuracao.capacidade_maxima:
+                if bo_aceites_manha.count() < configuracao_manha.capacidade_maxima:
                     BackOffice.objects.create(funcionario=request.user.usuario,
                                             aprovado=True,data_aprovacao=timezone.now(),turno_manha= True)
                     return JsonResponse({"message":"BO aprovado!"}, status=200)
@@ -56,7 +56,7 @@ def pedir_bo(request):
                     print("Pedido duplicado evitado")
                     return redirect('lista_intervalos')
 
-                if bo_aceites_tarde.count() < configuracao.capacidade_maxima:
+                if bo_aceites_tarde.count() < configuracao_tarde.capacidade_maxima:
                     print(f"boa aceites de tarde: {bo_aceites_tarde.count()}")
                     BackOffice.objects.create(funcionario=request.user.usuario, aprovado=True,
                                             data_aprovacao=timezone.now(),turno_manha=False)
@@ -76,6 +76,7 @@ def iniciar_bo(request):
             bo = get_object_or_404(BackOffice, funcionario= funcionario)
             bo.inicio = timezone.now()
             bo.save()
+            print(f"BO iniciado {funcionario} por {request.user.usuario}")
             return JsonResponse({"message":"BO Iniciado"}, status=200)
         except Exception as e:
             return JsonResponse({"error": f"Erro interno: {str(e)}"}, status=500)
@@ -90,6 +91,7 @@ def finalizar_bo(request):
             bo_funcionario.save()
             BackOfficeDiario.objects.create(funcionario=bo_funcionario.funcionario, inicio=bo_funcionario.inicio,fim=bo_funcionario.fim)
             bo_funcionario.delete()
+            print(f"{bo_funcionario.funcionario} Finalizou BO")
     return redirect('home')
 
 
@@ -164,6 +166,8 @@ def cancelar_bo_supervisor(request):
                 bo.save()
                 BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio=bo.inicio, fim=bo.fim)
                 bo.delete()
+                print(f"BO cancelado de {bo.funcionario} por {request.user.usuario}")
+        
 
     return redirect('home')
 
@@ -173,7 +177,11 @@ def autorizar_bo_supervisor(request):
     funcionario = Usuario.objects.get(nome=nome)
     fila = BackOfficeFilaEspera.objects.get(funcionario=funcionario)
     fila.delete()
-    BackOffice.objects.create(funcionario=funcionario,aprovado=True, data_aprovacao=timezone.now())
+    if funcionario.turno_manha:
+        BackOffice.objects.create(funcionario=funcionario,aprovado=True,turno_manha=True, data_aprovacao=timezone.now())
+    else:
+        BackOffice.objects.create(funcionario=funcionario,aprovado=True,turno_manha=False, data_aprovacao=timezone.now())
+    print(f"BO autorizado de {funcionario} turno:{funcionario.turno_manha} por :{request.user.usuario}")
     return redirect('home')
 
 def iniciar_bo_supervisor(request):
@@ -183,6 +191,8 @@ def iniciar_bo_supervisor(request):
     if bo:
         bo.inicio= timezone.now()
         bo.save()
+        print(f"Bo de {bo.funcionario} foi iniciado por {request.user.usuario}.")
+    
     return redirect('home')
 
 
