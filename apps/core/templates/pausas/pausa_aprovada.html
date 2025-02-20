@@ -2,8 +2,17 @@
 <script>
             setTimeout(function () {
                 notifyUser("✅ Pausa Aprovada!");
-            },0500);
+            },1000);
 </script>
+<div class="div m-3">
+    {% if  fila_total == 0  %}
+    <p>Sem fila de espera para intervalo</p>
+    {% elif fila_total == 1  %}
+    <p>Está {{fila_total }} pessoa em fila de espera.</p>
+    {% elif fila_total > 1 %}
+    <p>Estão {{fila_total }} pessoas em fila de espera.</p>
+    {% endif %}
+</div>
 
 <p class="mt-2">Intervalo aprovado!</p>
 

@@ -1,0 +1,66 @@
+{% extends 'base.html'  %}
+{% load static %}
+
+{% block main %}
+
+{% if messages %}
+    <div class="message">
+        {% for message in messages %}
+        <p class="message {{ message.tags }}">{{ message }}</p>    
+            
+        
+    {% endfor %}
+
+    </div>
+           
+    {% endif %}
+
+<div class="container">
+
+    <form  method="post" enctype="multipart/form-data" action="{% url 'upload_view' %}">
+        {% csrf_token %}
+        <h2>Upload Ficheiro NPS Mensal</h2>
+        {{ form_NpsFileUploadForm.as_p }}
+        <input type="hidden" name="form_type" value="nps">
+        <button class="btn-azul">Enviar</button>
+    </form>
+
+
+    <form  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Upload Ficheiro Rechamada</h2>
+        {{ form_RechamadaUploadForm.as_p }}
+        <input type="hidden" name="form_type" value="rechamada">
+        <button class="btn-azul">Enviar</button>
+
+    </form>
+
+    <form  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Upload Provisorios</h2>
+        {{ form_ProvisoriosUploadForm.as_p }}
+        <input type="hidden" name="form_type" value="provisorios">
+        <button class="btn-azul">Enviar</button>
+    </form>
+
+
+</div>
+
+
+
+{% endblock %}
+
+<script>
+    const message = document.querySelector('.message');
+
+
+    if (message) {
+
+        message.style.opacity = 1;
+
+    setTimeout(function () {
+        message.style.opacity = 0;
+    }, 5000);
+    }
+
+</script>

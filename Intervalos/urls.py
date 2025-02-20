@@ -11,4 +11,5 @@ urlpatterns = [
     path('home/', include('apps.core.urls')),
     path('backoffice/', include('apps.backoffice.urls')),
     path('usuarios/', include('apps.usuarios.urls')),
+    path('indicadores/', include('apps.indicador.urls')),
 ]

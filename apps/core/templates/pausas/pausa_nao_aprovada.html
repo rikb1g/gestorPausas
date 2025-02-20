@@ -1,12 +1,12 @@
 {% load static %}
 
-{% if index == 0 %}
+{% if index_pausa == 0 %}
     <p class="mt-1">Está quase....</p>
 <p class="btn btn-primary">És o proximo </p>
 
 {% else %}
 <p>O teu intervalo está em fila de espera</p>
-<p class="btn-roxo">Tens {{ index }} a tua frente</p>
+<p class="btn-roxo">Tens {{ index_pausa }} a tua frente</p>
 
 
 {% endif %}

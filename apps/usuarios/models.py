@@ -12,12 +12,24 @@ class TipoUsuario(models.Model):
 
 class Usuario(models.Model):
     nome = models.CharField(max_length=100)
-    user = models.OneToOneField(User,on_delete=models.PROTECT)
+    user = models.OneToOneField(User,on_delete=models.PROTECT,null=True,blank=True)
+    identificador = models.CharField(max_length=50,blank=True,null=True)
     tipo = models.ForeignKey(TipoUsuario, on_delete=models.PROTECT)
     turno_manha = models.BooleanField(default=True)
+    ja_utilizou_pausa = models.BooleanField(default=False)
+    equipa = models.ForeignKey('Equipas',on_delete=models.PROTECT,blank=True,null=True)
 
     def __str__(self):
         return self.nome
+    
+
+class Equipas(models.Model):
+    nome = models.CharField(max_length=100)
+    lider = models.ForeignKey(Usuario, on_delete=models.PROTECT,limit_choices_to={'tipo__tipo': "Supervisor"})
+
+    def __str__(self):
+        return self.nome
+    
 
 
 

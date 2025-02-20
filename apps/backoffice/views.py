@@ -2,12 +2,10 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.db import transaction
 from django.utils import timezone
-from django.contrib import messages
-import json
 from .models import (BackOffice, BackofficeConfig,BackofficeConfigTarde_BO,
                      BackOfficeDiario,BackOfficeFilaEspera, parse_formatted_time, formatted_time)
 from apps.usuarios.models import Usuario
-from apps.pausas.models import ConfiguracaoPausa
+from apps.pausas.models import ConfiguracaoPausa, ConfiguracaoPausa2
 
 
 
@@ -266,11 +264,14 @@ def tempo_bo(request, id):
     
 def maximos_autorizados(request):
     maximo_intervalos = ConfiguracaoPausa.objects.last()
+    maximo_intervalos2= ConfiguracaoPausa2.objects.last()
     maximo_bo_manha = BackofficeConfig.objects.last()
     maximo_bo_tarde = BackofficeConfigTarde_BO.objects.last()
 
+
     data = {
-        'maximo_intervalos': maximo_intervalos.capacidade_maxima,
+        'maximo_intervalos1': maximo_intervalos.capacidade_maxima,
+        'maximo_intervalos2': maximo_intervalos2.capacidade_maxima,
         'maximo_bo_manha': maximo_bo_manha.capacidade_maxima,
         'maximo_bo_tarde': maximo_bo_tarde.capacidade_maxima,
     }

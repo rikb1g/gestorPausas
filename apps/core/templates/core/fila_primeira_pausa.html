@@ -1,0 +1,20 @@
+{% load static %}
+
+{% for pausa in pausas_fila_1 %}
+<div class="dados bg-secondary text-white rounded m-2 p-2" style="--bs-bg-opacity: .5;">
+    <div class="linha mt-2">
+        <p class="btn-azul-claro">{{ pausa.funcionario}}</p>
+
+        <a class="mb-3 ms-2"  onclick="exibirPopUpConfirmacaoAutPausa('{{ pausa.funcionario }}')"><img
+                src="{% static 'images/check.svg' %}" alt="autorizar pausa"></a>
+        <a class="mb-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ pausa.funcionario }}')"><img
+                src="{% static 'images/close.svg'%}" alt="remover pausa"></a>
+    </div>
+    <div class="linha mt-0-5 int">
+        <div>Em fila: <b>{{ pausa.calcular_tempo_decorrido_entrada_fila }}</b></div>
+    </div>
+    <div class="linha mt-0-5">
+        <div>Tempo total pausa: <b>{{ pausa.calcular_tempo_decorrido_pausa }}</b></div>
+    </div>
+</div>
+{% endfor %}

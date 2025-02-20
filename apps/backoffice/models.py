@@ -43,7 +43,7 @@ class BackOffice(models.Model):
                 tempo_acumulado = bo.tempo_ate_pausar
                 tempo_acumulado_formated = parse_formatted_time(tempo_acumulado)
                 tempo_decorrido = (timezone.now() - bo.inicio) + tempo_acumulado_formated
-                if tempo_decorrido > timedelta(minutes=1):
+                if tempo_decorrido > timedelta(minutes=45):
                     return True
                 else:
                     return False
@@ -205,3 +205,6 @@ def parse_formatted_time(formatted_time):
     hours, minutes, seconds = map(int, formatted_time.split(":"))
     time_delta = timedelta(hours=hours, minutes=minutes,seconds=seconds)
     return time_delta
+
+
+

@@ -232,10 +232,20 @@ a{
 }
 
 .container{
-    width: 100%;
+    width: 90%;
+    
 }
 
 .col-intervalos{
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
+}
+
+input{
+    background-color: #636362 !important;
+    padding: 10px 15px;
+    border: solid 1px white;
+    border-radius: 20px;
+    color: white;
+    outline: none;
 }

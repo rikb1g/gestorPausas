@@ -1,0 +1,45 @@
+{% load static %}
+{% for intervalo in pausa_autorizada_2 %}
+                        <div class="dados bg-secondary text-white rounded m-3" style="--bs-bg-opacity: .5;">
+                            <div class="linha mt-2">
+                                {% if intervalo.inicio is None %}
+                                <p class="btn-azul-claro">{{ intervalo.funcionario}}</p>
+
+                                <a class="mb-3 ms-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')" ><img
+                                        src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+                                {% else %}
+                                {% if intervalo.calcular_tempo_ate_aviso %}
+                                <p class="btn-vermelho">
+                                    {{ intervalo.funcionario}}
+                                </p>
+                                {% else %}                                
+                                <p class="btn-verde">
+                                    {{ intervalo.funcionario}}
+                                </p>
+                                {% endif %}
+                                <a class="mb-3 ms-3" onclick="exibirPopUpConfirmacaoEliPAusa('{{ intervalo.funcionario }}')"><img
+                                    src="{% static 'images/close.svg' %}" alt="remover BO"></a>
+                                {% endif %}
+
+                            </div>
+                            {% if intervalo.inicio is None %}
+                            <div class="linha mt-0-5">
+                            <div>Pausa aceite: <b>{{intervalo.calcular_tempo_desde_aprovacao }}</b></div>
+
+                            </div>
+                            {% else %}
+
+                            {% endif %}
+
+                            {% if intervalo.inicio %}
+                            <div class="linha mt-0-5 p-0">
+                                <div><p>Iniciado a: <span id="tempo-decorrido-pausa'" data-id="{{ intervalo.id }}" class="tempo-decorrido-pausa"></span></p>
+                            </div>
+
+                            </div>
+                            {% endif %}
+                            <div class="linha mt-0-5">
+                                <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>
+                            </div>
+                        </div>
+{% endfor %}

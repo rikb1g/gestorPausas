@@ -1,7 +1,7 @@
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from apps.pausas.models import Pausa,FilaEspera,PausasDiarias, ConfiguracaoPausa
+from apps.pausas.models import Pausa,FilaEspera,PausasDiarias, ConfiguracaoPausa,ConfiguracaoPausa2
 from apps.backoffice.models import (BackOffice, BackOfficeDiario, BackOfficeFilaEspera, BackofficeConfig,
                                     BackofficeConfigTarde_BO)
 from apps.usuarios.models import Usuario
@@ -14,20 +14,28 @@ def home(request):
     data['user'] = request.user
     pausas = Pausa.objects.filter(funcionario= request.user.usuario, aprovado=True)
     fila = FilaEspera.objects.filter(funcionario= request.user.usuario)
+    funcionarios_primeira_pausa  = Usuario.objects.filter(ja_utilizou_pausa=False)
+    funcionarios_segunda_pausa = Usuario.objects.filter(ja_utilizou_pausa=True)
     
 
     #pausa
     data['total_pausa'] = PausasDiarias.calcular_tempo_decorrido(request.user.usuario)
     data['contador'] = range(21)
-    data['pausa_autorizada'] = Pausa.objects.filter(aprovado=True)
-    data['intervalos_fila'] = FilaEspera.objects.order_by('data_entrada')
-    bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
-    fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
-    num_pausa_autorizados = ConfiguracaoPausa.objects.last()
-    data['num_pausa_autorizados'] = num_pausa_autorizados.capacidade_maxima
+    data['pausa_autorizada_1'] = Pausa.objects.filter(aprovado=True,ja_utilizou_pausa=False)
+    data['pausa_autorizada_2'] = Pausa.objects.filter(aprovado=True,ja_utilizou_pausa=True)
+    data['pausas_fila_1'] = FilaEspera.objects.filter(funcionario__in=funcionarios_primeira_pausa).order_by('data_entrada')
+    data['pausas_fila_2'] = FilaEspera.objects.filter(funcionario__in=funcionarios_segunda_pausa).order_by('data_entrada')
+    
+    #config_pausas_autorizadas
+    num_pausa_autorizados_1 = ConfiguracaoPausa.objects.last()
+    num_pausa_autorizados_2 = ConfiguracaoPausa2.objects.last()
+    data['num_pausa_autorizados_1'] = num_pausa_autorizados_1.capacidade_maxima
+    data['num_pausa_autorizados_2'] = num_pausa_autorizados_2.capacidade_maxima
     
     
     # BO
+    bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
+    fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
     funcionarios_manha = Usuario.objects.filter(turno_manha=True)
     funcionarios_tarde = Usuario.objects.filter(turno_manha= False)
     data['total_bo'] = BackOfficeDiario.calcular_tempo_decorrido_bo(request.user.usuario)

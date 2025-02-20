@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block indicadores %}
+{% if user.usuario.tipo.tipo == "Supervisor" %}
+<a href="{% url 'upload_view' %}">Atualizar Indicadores</a>
+<a href="">Indicadores</a>
+{% endif %}
+
+{% endblock %}
+
+
+
 
 
 {% block main %}
@@ -9,39 +19,76 @@
 {% if user.usuario.tipo.tipo == "Supervisor" %}
 
 <div class="container">
-    <div class="row text-center">
-        <div class="col-12 col-intervalos">
-            <p class="fs-3"><b>Intervalos</b></p>
+    <div class="row text-center mt-5">
+        <div class="col col-intervalos">
+            <p class="fs-3"><b>Primeira Pausa</b></p>
             <form id="form-filter" method="GET" class="form-container align-items-center"
-                action="{% url 'maximo_intervalos' %}">
+                action="{% url 'maximo_intervalos_intervalos' 'true' %}">
                 <div>
-                    <label>Máximo de intervalos ({{ num_pausa_autorizados }}): </label>
-                    <select name="num" id="num" aria-label="Small select example" class="ms-2">
+                    <label>Máximo para primeira pausa ({{ num_pausa_autorizados_1 }}): </label>
+                    <select name="num" id="num-1" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
-                        <option value="{{ num }}" id="num">{{ num }}</option>
+                        <option value="{{ num }}">{{ num }}</option>
 
                         {% endfor %}
                     </select>
-
-
                     <button type="submit" class="btn btn-info ms-3">Alterar</button>
                 </div>
+
             </form>
-            <div class="d-flex justify-content-evenly mt-4 text-center">
+            <div class="d-flex justify-content-between mt-4 text-center">
                 <div class="d-flex flex-column mb-3 text-center">
-                    <p class="text-center"><b>Fila Pausas</b></p>
-                    {% include 'core/fila_intervalos.html' %}
+                    <p><b>Fila Primeira Pausa</b></p>
+                    {% include 'core/fila_primeira_pausa.html' %}
+                </div>
+                <div class="d-flex flex-column mb-3 text-center me-4">
+                    <p><b>Autorizados Primeira Pausa</b></p>
+                    {% include 'core/aut_primeira_pausa.html' %}
                 </div>
 
-                <div class="d-flex flex-column mb-3">
-                    <p class="intervalos"><b>Pausas Autorizadas</b></p>
-                    {% include 'core/aut_intervalos.html' %}
-                </div>
             </div>
 
 
+
+
         </div>
+        <div class="col col-intervalos">
+            <p class="fs-3"><b>Segunda Pausa</b></p>
+            <form id="form-filter" method="GET" class="form-container align-items-center"
+                action="{% url 'maximo_intervalos_intervalos' 'false' %}">
+
+                <div>
+                    <label>Máximo para segunda pausa({{ num_pausa_autorizados_2 }}): </label>
+                    <select name="num" id="num-2" aria-label="Small select example" class="ms-2">
+                        {% for num in contador %}
+                        <option value="{{ num }}">{{ num }}</option>
+
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-info ms-3">Alterar
+                    </button>
+                </div>
+
+            </form>
+            <div class="d-flex justify-content-between mt-4 text-center">
+                <div class="d-flex flex-column mb-3 text-center">
+                    <p><b>Fila Segunda Pausa</b></p>
+                    {% include 'core/fila_segunda_pausa.html' %}
+                </div>
+                <div class="d-flex flex-column mb-3 text-center me-4">
+                    <p><b>Autorizados Segunda Pausa</b></p>
+                    {% include 'core/autorizados_segunda_pausa.html' %}
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+
+
+
     <div class="row text-center mt-5">
         <div class="col col-bo-manha">
             <p class="fs-3"><b>BO Manhã</b></p>
@@ -68,9 +115,9 @@
                     <p><b>BO Autorizados</b></p>
                     {% include 'core/aut_manha.html' %}
                 </div>
-               
+
             </div>
-           
+
 
 
 
@@ -88,7 +135,7 @@
 
                         {% endfor %}
                     </select>
-                    <button type="submit" onclick="alterarMaximoBO('false')" class="btn btn-info ms-3">Alterar
+                    <button type="submit"  class="btn btn-info ms-3">Alterar
                     </button>
                 </div>
 
@@ -102,7 +149,7 @@
                     <p><b>BO Autorizados</b></p>
                     {% include 'core/aut_tarde.html' %}
                 </div>
-               
+
             </div>
 
         </div>
