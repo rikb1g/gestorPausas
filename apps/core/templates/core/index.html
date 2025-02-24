@@ -1,14 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block indicadores %}
-{% if user.usuario.tipo.tipo == "Supervisor" %}
-<a href="{% url 'upload_view' %}">Atualizar Indicadores</a>
-<a href="">Indicadores</a>
-{% endif %}
-
-{% endblock %}
-
 
 
 
@@ -180,6 +172,6 @@
 
 {% endif %}
 
-<script src="{% static 'js/geral.js' %}"></script>
+<script src="{% static 'js/geral.js' %}?v=1.2"></script>
 
 {% endblock %}
