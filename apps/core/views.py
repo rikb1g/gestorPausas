@@ -25,6 +25,8 @@ def home(request):
     data['pausa_autorizada_2'] = Pausa.objects.filter(aprovado=True,ja_utilizou_pausa=True)
     data['pausas_fila_1'] = FilaEspera.objects.filter(funcionario__in=funcionarios_primeira_pausa).order_by('data_entrada')
     data['pausas_fila_2'] = FilaEspera.objects.filter(funcionario__in=funcionarios_segunda_pausa).order_by('data_entrada')
+    data['num_pausa_autorizada_1'] = data['pausas_fila_1'].count()
+    data['num_pausa_autorizada_2'] = data['pausas_fila_2'].count()
     
     #config_pausas_autorizadas
     num_pausa_autorizados_1 = ConfiguracaoPausa.objects.last()

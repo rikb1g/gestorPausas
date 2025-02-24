@@ -21,7 +21,8 @@
 <div class="container">
     <div class="row text-center mt-5">
         <div class="col col-intervalos">
-            <p class="fs-3"><b>Primeira Pausa</b></p>
+            <p class="fs-2"><b>Primeira Pausa</b></p>
+            <p>Pessoas em fila de espera <b>({{ num_pausa_autorizada_1 }})</b></p>
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_intervalos_intervalos' 'true' %}">
                 <div>
@@ -53,12 +54,14 @@
 
         </div>
         <div class="col col-intervalos">
-            <p class="fs-3"><b>Segunda Pausa</b></p>
+            <p class="fs-2"><b>Segunda Pausa</b></p>
+            <p>Pessoas em fila de espera <b>({{ num_pausa_autorizada_2 }})</b></p>
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_intervalos_intervalos' 'false' %}">
 
                 <div>
                     <label>Máximo para segunda pausa({{ num_pausa_autorizados_2 }}): </label>
+                    
                     <select name="num" id="num-2" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
                         <option value="{{ num }}">{{ num }}</option>
@@ -91,7 +94,7 @@
 
     <div class="row text-center mt-5">
         <div class="col col-bo-manha">
-            <p class="fs-3"><b>BO Manhã</b></p>
+            <p class="fs-2 mt-4"><b>BO Manhã</b></p>
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_bo_autorizados' 'true' %}">
                 <div>
@@ -123,7 +126,7 @@
 
         </div>
         <div class="col col-bo-tarde">
-            <p class="fs-3"><b>BO Tarde</b></p>
+            <p class="fs-2 mt-4"><b>BO Tarde</b></p>
             <form id="form-filter" method="GET" class="form-container align-items-center"
                 action="{% url 'maximo_bo_autorizados' 'false' %}">
 
