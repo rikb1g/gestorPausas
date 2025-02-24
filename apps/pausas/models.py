@@ -25,7 +25,7 @@ class Pausa(models.Model):
                 if pausa.inicio and pausa.fim:
                     tempo_total += (pausa.fim - pausa.inicio)
                 return formatted_time(tempo_total)
-            if tempo_total > timedelta(minutes=1):
+            if tempo_total > timedelta(minutes=18):
                 self.ja_utilizou_pausa = True
             else:
                 self.ja_utilizou_pausa = False
