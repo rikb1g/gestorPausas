@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages 
 from django.shortcuts import render
-from .models import FrontOfficeNPS,BackOfficeNPS,NPS
+from .models import FrontOfficeNPS,BackOfficeNPS,NPS ,HistoricoNPS
 from .forms import RechamadaUploadForm,ProvisoriosUploadForm, NpsFileUploadForm
 from apps.usuarios.models import Usuario, TipoUsuario
 from django.contrib.auth.decorators import login_required
@@ -27,21 +27,23 @@ class frontoffice_nps(ListView):
         context= super().get_context_data(**kwargs)
         funcionario = self.request.user.usuario
         nps_intancia = NPS.objects.filter(funcionario=funcionario).first()
+        ano = datetime.now().year 
         
         
         
         meses_nomes_ajustados = {mes: nome for mes, nome in MESES_NOMES.items()}
         context['meses'] = meses_nomes_ajustados
-        context['promotores_mes'] = {mes: nps_intancia.calculo_promotores_mes(mes) for mes in range(1, 13)}
-        context['detratores_mes'] = {mes: nps_intancia.calculo_detratores_mes(mes) for mes in range(1, 13)}
-        context['neutros_mes'] = {mes: nps_intancia.calculo_neutros_mes(mes) for mes in range(1, 13)}
+        historico_nps = get_nps_context(funcionario,datetime.now().year)
+        context['promotores_mes'] = {mes: historico_nps['promotores_mes'][mes] for mes in range(1, 13)}
+        context['detratores_mes'] = {mes: historico_nps['detratores_mes'][mes] for mes in range(1, 13)}
+        context['neutros_mes'] = {mes: historico_nps['neutros_mes'][mes] for mes in range(1, 13)}
         
         if nps_intancia:
             nps_por_mes = {
-                mes: nps_intancia.calculo_nps_mes(mes) for mes in range(1,13)
+                mes: nps_intancia.calculo_nps_mes(mes,ano) for mes in range(1,13)
             }
             nps_por_mes_global = {
-                mes: nps_intancia.calculo_nps_global_mes(mes) for mes in range(1,13)
+                mes: nps_intancia.calculo_nps_global_mes(mes,ano) for mes in range(1,13)
             }
 
         else:
@@ -65,7 +67,35 @@ class frontoffice_nps(ListView):
 
         return context
     
-    
+
+def get_nps_context(funcionario, ano):
+    historico_nps ={h.data.month: h for h in HistoricoNPS.objects.filter(funcionario=funcionario, data__year=ano)}
+    promotores_mes = {}
+    detratores_mes = {}
+    neutros_mes = {}
+    for mes in range(1, 13):
+        if mes in historico_nps:
+            historico = historico_nps[mes]
+            promotores_mes[mes] = historico.promotores
+            detratores_mes[mes] = historico.detratores
+            neutros_mes[mes] = historico.neutros
+        else:
+            nps_instance = NPS.objects.filter(funcionario=funcionario, data__month=mes, data__year=ano).first()
+            if nps_instance:
+                promotores_mes[mes] = nps_instance.calculo_promotores_mes(mes,ano)
+                detratores_mes[mes] = nps_instance.calculo_detratores_mes(mes,ano)
+                neutros_mes[mes] = nps_instance.calculo_neutros_mes(mes,ano)
+            else:
+                promotores_mes[mes] = 0
+                detratores_mes[mes] = 0
+                neutros_mes[mes] = 0
+    return {
+        'promotores_mes': promotores_mes,
+        'detratores_mes': detratores_mes,
+        'neutros_mes': neutros_mes
+    }
+
+
 
 
 def pesquisar_interacoes(request):
@@ -136,7 +166,7 @@ def upload_view(request):
             
 
 def processar_nps(row, interacao_col, data_col, valioso_col, valor_col, modelo_nps):
-    """Função auxiliar para processar os dados do Excel e criar objetos NPS, evitando duplicações."""
+    
     
     valor_interacao = row.get(interacao_col)
     data_value = row.get(data_col)
@@ -182,6 +212,8 @@ def ler_excel_nps(file):
     # Processar FrontOfficeNPS
     for _, row in df.iterrows():
         processar_nps(row, 'ID_INTERACAO', 'DATA', 'Valioso', 'VALOR', FrontOfficeNPS)
+    
+
 
     # Processar BackOfficeNPS
     for _, row in df.iterrows():

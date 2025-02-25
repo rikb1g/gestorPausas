@@ -16,24 +16,6 @@ class Pausa(models.Model):
     ja_utilizou_pausa = models.BooleanField(default=False)
 
 
-    def pedir_pausa(self):
-        pausas_aceites = Pausa.objects.filter(aprovado=True)
-        ja_teve_pausa = PausasDiarias.objects.filter(funcionario=self.funcionario).exists()
-        tempo_total = timedelta()
-        if ja_teve_pausa:
-            for pausa in ja_teve_pausa:
-                if pausa.inicio and pausa.fim:
-                    tempo_total += (pausa.fim - pausa.inicio)
-                return formatted_time(tempo_total)
-            if tempo_total > timedelta(minutes=1):
-                self.ja_utilizou_pausa = True
-            else:
-                self.ja_utilizou_pausa = False
-        
-
-
-
-    
     def calcular_tempo_ate_aviso(self):
         try:
             pausa = Pausa.objects.get(funcionario=self.funcionario, aprovado=True)
