@@ -1,7 +1,8 @@
+from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count,Sum
 from django.core.validators import MinValueValidator
 from apps.usuarios.models import Usuario
 
@@ -62,6 +63,36 @@ class NPS(models.Model):
                                       data__month=mes, data__year=ano).count()
         detrator = detrator_FO + detrator_BO
         return detrator
+    
+    
+
+        
+    def atualizar_nps(self,mes,ano=None):
+        if ano is None:
+            ano = timezone.now().year
+        dados_nps = NPS.objects.filter(funcionario=self.funcionario
+                                       ,data__month=mes,data__year=ano).values("nota").annotate(total=Count("nota"))
+        if dados_nps:
+            promotores = sum(item["total"] for item in dados_nps if item["nota"] >=9)
+            neutros = sum(item["total"] for item in dados_nps if item["nota"] >6 and item["nota"] < 9)
+            detratores = sum(item["total"] for item in dados_nps if item["nota"] >=0 and item["nota"] < 7)
+            data_registo = datetime(ano, mes, 1)
+
+            historico , created = HistoricoNPS.objects.get_or_create(
+                funcionario=self.funcionario,
+                    data = data_registo,
+                    defaults={
+                        "promotores": promotores,
+                        "detratores": detratores,
+                        "neutros": neutros,
+                    },
+                )
+            if not created:
+                historico.promotores = promotores
+                historico.detratores = detratores
+                historico.neutros = neutros
+                historico.save()
+        
 
 
 
@@ -95,34 +126,68 @@ class HistoricoNPS(models.Model):
     promotores = models.IntegerField()
     detratores = models.IntegerField()
     neutros = models.IntegerField()
-    data = models.DateField(auto_now_add=True, blank=True, null=True)
+    data = models.DateField()
 
 
-
-    def atualizar_nps(self,mes,ano=None):
+    def calculo_nps_mensal(self,mes,ano=None):
         if ano is None:
             ano = timezone.now().year
-        dados_nps = NPS.objects.filter(funcionario=self.funcionario
-                                       ,data__month=mes,data__year=ano).values("nota").annotate(total=Count("nota"))
-        promotores = sum(item["total"] for item in dados_nps if item["nota"] >=9)
-        neutros = sum(item["total"] for item in dados_nps if item["nota"] >6 and item["nota"] < 9)
-        detratores = sum(item["total"] for item in dados_nps if item["nota"] >=0 and item["nota"] < 7)
+        try:
+            object_nps = HistoricoNPS.objects.get(funcionario=self.funcionario,data__month=mes,data__year=ano)
+            promotores = object_nps.promotores
+            detratores = object_nps.detratores
+            neutros = object_nps.neutros
+            return calculo_nps(promotores,detratores,neutros)
+        except:
+            return 0
+        
+    
+    def calculo_nps_global_mensal(self,mes, ano=None):
+        if ano is None:
+            ano = timezone.now().year
+        try:
+            promotores = HistoricoNPS.objects.filter(data__month=mes,data__year=ano).aggregate(promotores=Sum('promotores'))
+            detratores = HistoricoNPS.objects.filter(data__month=mes,data__year=ano).aggregate(detratores=Sum('detratores'))
+            neutros = HistoricoNPS.objects.filter(data__month=mes,data__year=ano).aggregate(neutros=Sum('neutros'))
+            promotores_total =promotores['promotores']
+            detratores_total = detratores['detratores']
+            neutros_total = neutros['neutros']
+            return calculo_nps(promotores_total,detratores_total,neutros_total)
+        except:
+            return 0
+        
+    def calculo_nps_global_equipa(self,mes,ano=None):
+        if ano is None:
+            ano = timezone.now().year
+        try:
+            elementos_equipa = Usuario.objects.filter(equipa=self.funcionario.equipa)
+            promotores = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(promotores=Sum('promotores'))
+            detratores = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(detratores=Sum('detratores'))
+            neutros = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(neutros=Sum('neutros'))
+            promotores_total =promotores['promotores']
+            detratores_total = detratores['detratores']
+            neutros_total = neutros['neutros']
+            return calculo_nps(promotores_total,detratores_total,neutros_total)
+        except:
+            return 0
+    
+    def calculo_promotores_mes(self,mes,ano=None):
+        if ano is None:
+            ano = timezone.now().year
+        return HistoricoNPS.objects.filter(funcionario=self.funcionario,data__month=mes,data__year=ano).count().promotores
+    
+    def calculo_neutros_mes(self,mes,ano=None):
+        if  ano is None:
+            ano = timezone.now().year
+        return HistoricoNPS.objects.filter(funcionario=self.funcionario,data__month=mes,data__year=ano).count().neutros
+    
+    def calculo_detratores_mes(self,mes,ano=None):
+        if ano is None:
+            ano = timezone.now().year
+        return HistoricoNPS.objects.filter(funcionario=self.funcionario,data__month=mes,data__year=ano).count().detratores
 
-        historico , created = HistoricoNPS.objects.get_or_create(
-            funcionario=self.funcionario,
-            data__month=mes,
-            data__year=ano,
-            defaults={
-                "promotores": promotores,
-                "detratores": detratores,
-                "neutros": neutros,
-            },
-        )
-        if not created:
-            historico.promotores = promotores
-            historico.detratores = detratores
-            historico.neutros = neutros
-            historico.save()
+        
+    
                          
     
 
@@ -138,7 +203,7 @@ class HistoricoNPS(models.Model):
         return round(nps * 100,2)
 
     def __str__(self):
-        return f"{self.funcionario} nps de {self.data.month}" #self.funcionario
+        return f"{self.funcionario} nps de {self.data.month} de {self.data.year}"
     
 class ExcelFile(models.Model):
     nome = models.CharField(max_length=255)
@@ -146,6 +211,15 @@ class ExcelFile(models.Model):
     data_upload = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.nome
+        return f"{self.data_upload} - {self.arquivo}" #self.nome
+    
+
+class Interlocutores(models.Model):
+    at = models.CharField(max_length=100,default="")
+    destinatarios = models.CharField(max_length=255,blank=True,null=True,default="")
+    cc = models.CharField(max_length=255,blank=True,null=True,default="")
+
+    def __str__(self):
+        return self.at
     
 

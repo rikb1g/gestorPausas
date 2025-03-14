@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+    {% if user.usuario.tipo.tipo == "Assistente" %}
+<div class="container">
+<title>Lista de Interações</title>
+
+<div class="table-container">
+    <table class="tableInteracoes">
+        <thead>
+            <tr>
+                <th>Interação</th>
+                <th>Assistente</th>
+                <th>Data</th>
+                <th>Nota</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for interacao in interacoes %}
+            <tr>
+                <td>{{ interacao.interacao }}</td>
+                <td>{{ interacao.funcionario }}</td>
+                <td>{{ interacao.data }}</td>
+                <td>{{ interacao.nota }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+
+</div>
+{% endif %}
+
+
+
+
+
+{% endblock %}
+

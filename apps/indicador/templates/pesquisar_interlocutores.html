@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block main %}
+<div class="container mt-5">
+<div>
+    <div class="d-flex justify-content-between ms-3">
+        <input type="text" id="procurarInterlocutores" name="pesquisar_at" placeholder="Procurar AT" class="ms-5">
+        {% if user.usuario.tipo.tipo == "Supervisor" %}
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <a href="{%  url 'novo_interlocutor' %}" class="text-end"><img src="{% static 'images/add_image.svg' %}" alt=""></a>
+        {% endif %}
+    <ul id="resultados"></ul>
+</div>
+<div class="table-container">
+<table class="tableInterlocutores">
+    <thead>
+        <tr>            
+            <th>AT</th>
+            <th>Destinatários</th>
+            <th>CC</th>
+            {% if user.usuario.tipo.tipo == "Supervisor" %}
+            <th>Operações</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for resultado in resultados %}
+        <tr data-id="{{resultado.id}}">
+            <td class="at">{{ resultado.at|default:"" }}</td>
+            <td class="destinatarios">{{ resultado.destinatarios|default:"" }}</td>
+            <td class="cc">{% if resultado.cc == 'nan' %}{% else %}{{ resultado.cc }}{% endif %}</td>
+            {% if user.usuario.tipo.tipo == "Supervisor" %}
+            <td>
+                <a href="#" class="edit-btn"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
+                <a href="#" class="save-btn" style="display: none;"><img src="{% static 'images/save_image.svg' %}" alt=""></a>
+                <a href="#", onclick="eliminarInterlocutores('{{ resultado.id }}', '{{ resultado.at }}')" class="remove-btn"><img src="{% static 'images/remove_image.svg' %}" alt=""></a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'js/pesquisar_interlocutores.js' %}"></script>
+<script>
+    $(document).ready(function () {
+    $('#procurarInterlocutores').on('keyup', function () {
+        let query = $(this).val().trim();
+
+        if (query.length > 1) {
+            $.ajax({
+                url: '/indicadores/pesquisar_interlocutores/',
+                data: {
+                    'pesquisar_at': query
+                },
+                dataType: 'json',
+                success: function (data) {
+                    let resultados = data.resultados;
+                    let tabelaBody = $('.tableInterlocutores tbody'); // Corrigindo a referência da tabela
+
+                    tabelaBody.empty(); // Limpa a tabela antes de adicionar novos resultados
+
+                    if (resultados.length > 0) {
+                        resultados.forEach(item => {
+                            console.log(item)
+                            let row = `<tr>
+                                <td>${item.at}</td>
+                                <td>${item.destinatarios}</td>
+                                <td>${item.cc !== 'nan' ? item.cc : ''}</td>
+                                {% if user.usuario.tipo.tipo == "Supervisor" %}
+                                <td>
+                                    <a href="#"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
+                                    <a href="#"><img src="{% static 'images/remove_image.svg' %}" alt=""></a>
+                                </td>
+                                {% endif %}
+                    
+                            </tr>`;
+                            tabelaBody.append(row);
+                        });
+                    } else {
+                       
+                    }
+                },
+                error: function () {
+                    console.error("Erro ao buscar interlocutores.");
+                }
+            });
+        } 
+    });
+});
+</script>
+{% endblock main %}

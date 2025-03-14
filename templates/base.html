@@ -26,6 +26,12 @@
                 {% endblock %}
             </div>
         </div>
+        <div class="painel linha">
+            <a href="{% url 'home' %}" class="btn btn-info ms-1">Pausas</a>
+            <a href="{% url 'frontoffice_nps' %}"class="btn btn-info ms-1">Indicadores</a>
+            <a href="{% url 'pesquisar_interlocutores' %}"class="btn btn-info ms-1">AT's e interlocutores</a>
+            <a href="{% url 'list_interacoes' %}"class="btn btn-info ms-1">Interações</a>
+        </div>
         <div class="logout">
             <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
                 {% csrf_token %}

@@ -9,10 +9,11 @@
 <div class="inputInteracoes text-end mb-4">
     <input type="text" id="procurarInteracoes" name="procurarInteracoes" placeholder="Procurar Interacoes">
 </div>
-<ul id="resultados"></ul>
-</div>
 
-<table class="table">
+<table id="resultados" class="table-container text-end" ></table>
+</div>
+<div class="table-container">
+<table>
     <thead>
         <tr>
             <th>Mês</th>
@@ -38,16 +39,21 @@
     </tbody>
 
 </table>
-<canvas id="npsChart"></canvas>
+<canvas id="npsChart" class="mt-5" width="900" height="300"></canvas>
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     const npsPorMes = JSON.parse('{{ nps_mes_json|safe }}');
     const npsPorMesGlobal = JSON.parse('{{ nps_mes_global_json|safe }}');
+    const npsPorEquipaMes = JSON.parse('{{ nps_equipa_json|safe }}');
     const mediaNPS = '{{ media_nps }}'
     const labels = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const npsData = Object.values(npsPorMes)
 const npsDataGlobal = Object.values(npsPorMesGlobal)
+const npsDataPorEquipas = Object.values(npsPorEquipaMes)
 const mediaData = new Array(12).fill(parseFloat(mediaNPS.replace(",", ".")));
 
 // criar grafico
@@ -72,11 +78,19 @@ new Chart(ctx, {
                 borderColor: "rgba(255, 99, 132, 1)",
                 borderWidth: 1,
             },
+            {
+                label: "NPS Equipa",
+                data: npsDataPorEquipas,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+            }
 
              ],
     },
     options: {
-        responsive: true,
+        responsive: false,
+        maintainAspectRatio: false,
         scales: {
             y: {
                 beginAtZero: true,
