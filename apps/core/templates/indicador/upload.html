@@ -43,6 +43,14 @@
         <button class="btn-azul">Enviar</button>
     </form>
 
+    <form  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Upload interlocutores</h2>
+        {{ form_ProvisoriosUploadForm.as_p }}
+        <input type="hidden" name="form_type" value="interlocutores">
+        <button class="btn-azul">Enviar</button>
+    </form>
+
 
 </div>
 

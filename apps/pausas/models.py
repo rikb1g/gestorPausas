@@ -16,6 +16,7 @@ class Pausa(models.Model):
     ja_utilizou_pausa = models.BooleanField(default=False)
 
 
+
     def pedir_pausa(self):
         pausas_aceites = Pausa.objects.filter(aprovado=True)
         ja_teve_pausa = PausasDiarias.objects.filter(funcionario=self.funcionario).exists()
@@ -34,6 +35,7 @@ class Pausa(models.Model):
 
 
     
+
     def calcular_tempo_ate_aviso(self):
         try:
             pausa = Pausa.objects.get(funcionario=self.funcionario, aprovado=True)

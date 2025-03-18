@@ -18,13 +18,18 @@
 
 <body>
 
-    <div class="d-flex justify-content-between m-3">
-        <div class="user">
-            <p>Olá {{ user.usuario}}
-            <div>
-                {% block indicadores %}
-                {% endblock %}
-            </div>
+    <div class="d-flex justify-content-between p-2">
+        <div class="p-2">
+            Olá {{ user.usuario}}
+        </div>
+        <div class="painel linha ms-1">
+            <a href="{% url 'home' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'lista_intervalos' %}active{% endif %}">Pausas</a>
+            <a href="{% url 'frontoffice_nps' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'frontoffice_nps' %}active{% endif %}">Indicadores</a>
+            <a href="{% url 'pesquisar_interlocutores' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'pesquisar_interlocutores' %}active{% endif %}">AT's e interlocutores</a>
+            <a href="{% url 'list_interacoes' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'list_interacoes' %}active{% endif %}">Interações</a>
+            {% if user.usuario.tipo.tipo == "Supervisor" %}
+            <a href="{% url 'upload_view' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'upload_view' %}active{% endif %}">Upload</a>
+            {% endif %}
         </div>
         <div class="logout">
             <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
@@ -53,7 +58,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+    
+
     <script src="{% static 'js/geral.js' %}?v=1.2"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         const imagem_grid = "{% static 'images/grid_view.svg' %}"
