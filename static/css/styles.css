@@ -191,6 +191,27 @@ a{
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.btn-menu {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-menu:hover {
+    background: white;
+    color: #363535;
+}
+
+.btn-menu.active {
+    background: white;
+    color: #363535;
+    font-weight: bold;
+}
+
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-top: 4px solid #007bff;

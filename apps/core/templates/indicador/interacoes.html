@@ -4,9 +4,15 @@
 {% block main %}
     {% if user.usuario.tipo.tipo == "Assistente" %}
 <div class="container">
-<title>Lista de Interações</title>
+<p class="fs-3 text-center">Lista de Interações</p>
 
-<div class="table-container">
+
+
+
+<div  class="container">
+    <div class="inputInteracoes text-start mt-3 mb-4">
+        <input type="text" id="procurarInteracoes" name="procurarInteracoes" placeholder="Procurar Interacoes">
+    </div>
     <table class="tableInteracoes">
         <thead>
             <tr>
@@ -22,7 +28,11 @@
                 <td>{{ interacao.interacao }}</td>
                 <td>{{ interacao.funcionario }}</td>
                 <td>{{ interacao.data }}</td>
-                <td>{{ interacao.nota }}</td>
+                <td  class="
+                {% if interacao.nota >= 9 %} text-success 
+                {% elif interacao.nota >= 7 %} text-warning 
+                {% else %} text-danger 
+                {% endif %}">{{ interacao.nota }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -37,6 +47,7 @@
 
 
 
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'js/interacoes.js' %}?v=1.1"></script>
 {% endblock %}
 

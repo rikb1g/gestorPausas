@@ -110,10 +110,26 @@ class List_interacoes(ListView):
         data_month = datetime.now().month
         data_year = datetime.now().year
         return NPS.objects.filter(
-    Q(funcionario=funcionario) &
-    Q(data__year=data_year) &
-    (Q(data__month=data_month) | Q(data__month=data_month - 1))
-        )
+            Q(funcionario=funcionario) &
+            Q(data__year=data_year) &
+            (Q(data__month=data_month) | Q(data__month=data_month - 1))
+                ).order_by('-data')
+    
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            data = [
+                {
+                    'interacao': interacao.interacao,
+                    'funcionario': interacao.funcionario.nome,
+                    'data': interacao.data,
+                    'nota': interacao.nota
+                }
+                for interacao in context['interacoes']
+
+            ]
+            return JsonResponse({'resultados': data})
+        return super().render_to_response(context, **response_kwargs)
+
     
 
 def get_nps_context(ano):
@@ -152,20 +168,41 @@ def get_nps_context(ano):
 
 
 def pesquisar_interacoes(request):
-    query = request.GET.get('pesquisaInteracoes').strip()
+    query = request.GET.get('pesquisaInteracoes', '').strip()
+    funcionario = request.user.usuario  # Obtém o usuário autenticado
+    data_month = datetime.now().month
+    data_year = datetime.now().year
+
     if query:
-        interacoes = NPS.objects.get(interacao__icontains=query)
-        print(interacoes)
+        # Filtrar apenas pelas interações do funcionário logado
+        interacoes = NPS.objects.filter(
+            Q(funcionario=funcionario) & Q(interacao__icontains=query)
+        )
     else:
-        interacoes = NPS.objects.none()
-    data = [{
         
-        'interacao': interacoes.interacao,
-        'nome': interacoes.funcionario.nome,
-        'data': interacoes.data,
-        'nota': interacoes.nota,
-        }]
-    return JsonResponse({'resultados': data})
+        interacoes = NPS.objects.filter(
+            Q(funcionario=funcionario) &
+            Q(data__year=data_year) &
+            (Q(data__month=data_month) | Q(data__month=data_month - 1))
+        ).order_by('-data')
+
+    
+    data = [
+        {
+            'interacao': interacao.interacao,
+            'funcionario': interacao.funcionario.nome,
+            'data': interacao.data.strftime('%d/%m/%Y'),
+            'nota': interacao.nota,  
+        }
+        for interacao in interacoes
+    ]
+
+    # Se for uma requisição AJAX, retorna JSON
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'resultados': data})
+
+    # Renderiza a página normalmente para requisições padrão
+    return render(request, 'interacoes.html', {'resultados': data})
 
 MESES_NOMES = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
