@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'apps.pausas',
     'apps.backoffice',
     'apps.indicador',
+    'apps.darkheka',
     'Intervalos',
 
 ]
