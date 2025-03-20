@@ -11,93 +11,170 @@
 
 </div>
 <div class="table-container">
-<table>
-    <thead>
-        <tr>
-            <th>Mês</th>
-            <th>Promotores</th>
-            <th>Neutros</th>
-            <th>Detratores</th>
-            <th>NPS</th>
-        </tr>
-    </thead>
-    
-    <tbody>
-        {% for mes, nps in nps_por_mes.items %}
-        <tr>
-            
-            <th>{{ meses|get_item:mes }}</th>
-            <td>{{ promotores_mes|get_item:mes }}</th>
-            <td>{{ neutros_mes|get_item:mes }}</th>
-            <td>{{ detratores_mes|get_item:mes }}</th>
-            <td>{{ nps }}</td>
-           
-        </tr>
-        {% endfor %}
-    </tbody>
+    <table>
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Promotores</th>
+                <th>Neutros</th>
+                <th>Detratores</th>
+                <th>NPS</th>
+            </tr>
+        </thead>
 
-</table>
-<canvas id="npsChart" class="mt-5" width="900" height="300"></canvas>
+        <tbody>
+            {% if request.user.usuario.tipo.tipo == "Supervisor" %}
+            {% for mes, nps in nps_sup_mes.items %}
+            <tr>
+                <th>{{ meses|get_item:mes }}</th>
+                <td>{{ promo_mes_sup|get_item:mes }}</th>
+                <td>{{ neutros_mes_sup|get_item:mes }}</td>
+                <td>{{ detratores_mes_sup|get_item:mes }}</td>
+                <td>{{ nps }}</td>
+
+
+            </tr>
+            {% endfor %}
+
+            {% elif request.user.usuario.tipo.tipo == "Assistente" %}
+
+            {% for mes, nps in nps_por_mes.items %}
+            <tr>
+
+                <th>{{ meses|get_item:mes }}</th>
+                <td>{{ promotores_mes|get_item:mes }}</th>
+                <td>{{ neutros_mes|get_item:mes }}</th>
+                <td>{{ detratores_mes|get_item:mes }}</th>
+                <td>{{ nps }}</td>
+
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+        </tbody>
+
+    </table>
+    <canvas id="npsChart" class="mt-5" width="900" height="300"></canvas>
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% if request.user.usuario.tipo.tipo == "Supervisor" %}
+<script id="equipas-data" type="application/json">
+   {{ nps_mensal_superivor|safe  }}
+</script>
 
+<script>
+    // Obtém os dados JSON do script e converte para um objeto JavaScript
+    var equipas = JSON.parse(document.getElementById('equipas-data').textContent);
+    console.log(equipas)
+
+    const labels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const npsPorMesGlobal1 = JSON.parse('{{ nps_mes_global_sup_json|safe }}');
+    const npsDataGlobal1 = Object.values(npsPorMesGlobal1)
+
+    var datasets = Object.keys(equipas).map((equipa) => {
+    return {
+        label: equipa, // Nome da equipa
+        data: Object.values(equipas[equipa]), // Valores de NPS (de 1 a 12)
+        backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`, // Cor aleatória para o fundo
+        borderColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`, // Cor aleatória para a borda
+        borderWidth: 1 // Largura da borda
+    };
+});  
+
+    datasets.push({
+        label: "NPS Global",
+        data: npsDataGlobal1,
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1
+    })
+    
+    const ctx1 = document.getElementById('npsChart').getContext('2d');
+
+    new Chart(ctx1, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+
+    })
+</script>
+
+
+
+
+{% elif request.user.usuario.tipo.tipo == "Assistente" %}
 <script>
     const npsPorMes = JSON.parse('{{ nps_mes_json|safe }}');
     const npsPorMesGlobal = JSON.parse('{{ nps_mes_global_json|safe }}');
     const npsPorEquipaMes = JSON.parse('{{ nps_equipa_json|safe }}');
     const mediaNPS = '{{ media_nps }}'
-    const labels = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-const npsData = Object.values(npsPorMes)
-const npsDataGlobal = Object.values(npsPorMesGlobal)
-const npsDataPorEquipas = Object.values(npsPorEquipaMes)
-const mediaData = new Array(12).fill(parseFloat(mediaNPS.replace(",", ".")));
 
-// criar grafico
+    const npsData = Object.values(npsPorMes)
+    const npsDataGlobal = Object.values(npsPorMesGlobal)
+    const npsDataPorEquipas = Object.values(npsPorEquipaMes)
+    const mediaData = new Array(12).fill(parseFloat(mediaNPS.replace(",", ".")));
 
-const ctx = document.getElementById('npsChart').getContext('2d');
-new Chart(ctx, {
-    type: "bar",
-    data: {
-        labels: labels,
-        datasets: [
-            {
-                label: "NPS Individual",
-                data: npsData,
-                backgroundColor: "rgba(54, 162, 235, 0.2)",
-                borderColor: "rgba(54, 162, 235, 1)",
-                borderWidth: 1,
-            }  ,
-            {   
-                label: "NPS GLobal",
-                data: npsDataGlobal,
-                backgroundColor: "rgba(255, 99, 132, 0.2)",
-                borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 1,
-            },
-            {
-                label: "NPS Equipa",
-                data: npsDataPorEquipas,
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-            }
+    // criar grafico
 
-             ],
-    },
-    options: {
-        responsive: false,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                max:100
+    const ctx = document.getElementById('npsChart').getContext('2d');
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "NPS Individual",
+                    data: npsData,
+                    backgroundColor: "rgba(54, 162, 235, 0.2)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                },
+                {
+                    label: "NPS GLobal",
+                    data: npsDataGlobal,
+                    backgroundColor: "rgba(255, 99, 132, 0.2)",
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                },
+                {
+                    label: "NPS Equipa",
+                    data: npsDataPorEquipas,
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                }
+
+            ],
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
             }
         }
-    }
-})
+    })
 </script>
+
+{% endif %}
 
 
 {% endblock %}

@@ -142,6 +142,20 @@ class HistoricoNPS(models.Model):
             return 0
         
     
+    @staticmethod
+    def calculo_nps_global_mensal_sup(mes,ano):
+        try:
+            promotores= HistoricoNPS.objects.filter(data__month=mes,data__year=ano).aggregate(promotores=Sum('promotores'))
+            detratores = HistoricoNPS.objects.filter(data__month=mes,data__year=ano).aggregate(detratores=Sum('detratores'))
+            neutros = HistoricoNPS.objects.filter(data__month=mes,data__year=ano).aggregate(neutros=Sum('neutros'))
+            promotores_total =promotores['promotores']
+            detratores_total = detratores['detratores']
+            neutros_total = neutros['neutros']
+            return calculo_nps(promotores_total,detratores_total,neutros_total)
+        except:
+            return 0
+
+
     def calculo_nps_global_mensal(self,mes, ano=None):
         if ano is None:
             ano = timezone.now().year
@@ -153,6 +167,52 @@ class HistoricoNPS(models.Model):
             detratores_total = detratores['detratores']
             neutros_total = neutros['neutros']
             return calculo_nps(promotores_total,detratores_total,neutros_total)
+        except:
+            return 0
+    @staticmethod
+    def calculo_nps_mes_supervior(mes,ano,supervisor):
+        if ano is None:
+            ano = timezone.now().year
+        try:
+            elementos_equipa = Usuario.objects.filter(equipa=supervisor.equipa)
+            promotores = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(promotores=Sum('promotores'))
+            detratores = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(detratores=Sum('detratores'))
+            neutros = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(neutros=Sum('neutros'))
+            promotores_total =promotores['promotores']
+            detratores_total = detratores['detratores']
+            neutros_total = neutros['neutros']
+            return calculo_nps(promotores_total,detratores_total,neutros_total)
+        except:
+            return 0
+    @staticmethod
+    def promotores_supervisor(mes,ano,supervisor):
+        
+        try:
+            elementos_equipa = Usuario.objects.filter(equipa=supervisor.equipa)
+            promotores = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(promotores=Sum('promotores'))
+            promotores_total =promotores['promotores']
+            return promotores_total
+        except: 
+            return 0
+        
+
+    @staticmethod
+    def neutros_supervisor(mes,ano,supervisor):
+        try:
+            elementos_equipa = Usuario.objects.filter(equipa=supervisor.equipa)
+            neutros = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(neutros=Sum('neutros'))
+            neutros_total = neutros['neutros']  
+            return neutros_total
+        except:
+            return 0
+        
+    @staticmethod
+    def detratores_supervisor(mes,ano,supervisor):
+        try:
+            elementos_equipa = Usuario.objects.filter(equipa=supervisor.equipa)
+            neutros = HistoricoNPS.objects.filter(funcionario__in=elementos_equipa,data__month=mes,data__year=ano).aggregate(detratores=Sum('detratores'))
+            detratores_total = neutros['detratores']
+            return detratores_total
         except:
             return 0
         
@@ -186,11 +246,7 @@ class HistoricoNPS(models.Model):
             ano = timezone.now().year
         return HistoricoNPS.objects.filter(funcionario=self.funcionario,data__month=mes,data__year=ano).count().detratores
 
-        
-    
-                         
-    
-
+                               
         
 
 

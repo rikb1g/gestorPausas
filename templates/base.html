@@ -17,8 +17,8 @@
 </head>
 
 <body>
-
-    <div class="d-flex justify-content-between p-2">
+    
+    <div class="d-flex justify-content-between p-2 container-fluid">
         <div class="p-2">
             Olá {{ user.usuario}}
         </div>
@@ -27,6 +27,7 @@
             <a href="{% url 'frontoffice_nps' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'frontoffice_nps' %}active{% endif %}">Indicadores</a>
             <a href="{% url 'pesquisar_interlocutores' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'pesquisar_interlocutores' %}active{% endif %}">AT's e interlocutores</a>
             <a href="{% url 'list_interacoes' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'list_interacoes' %}active{% endif %}">Interações</a>
+            <a href="#" class="btn-menu ms-2">Dark Heka</a>
             {% if user.usuario.tipo.tipo == "Supervisor" %}
             <a href="{% url 'upload_view' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'upload_view' %}active{% endif %}">Upload</a>
             {% endif %}
@@ -48,7 +49,7 @@
         <p class="titulo-principal"><i>Alto Valor</i></p>
     </div>
 
-    <div class="container-main">
+    <div class="container-main container-fluid">
         {% block main %}
         {% endblock %}
     </div>
