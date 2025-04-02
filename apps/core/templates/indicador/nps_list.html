@@ -59,6 +59,9 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+</script>
 {% if request.user.usuario.tipo.tipo == "Supervisor" %}
 <script id="equipas-data" type="application/json">
    {{ nps_mensal_superivor|safe  }}
@@ -69,7 +72,7 @@
     var equipas = JSON.parse(document.getElementById('equipas-data').textContent);
     console.log(equipas)
 
-    const labels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    
     const npsPorMesGlobal1 = JSON.parse('{{ nps_mes_global_sup_json|safe }}');
     const npsDataGlobal1 = Object.values(npsPorMesGlobal1)
 

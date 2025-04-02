@@ -5,11 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70222c08-fcbd-4c05-8d55-f6e11112cabd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/core/aut_intervalos.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/core/fila_intervalos.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/core/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/core/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/indicador/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/indicador/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Intervalos/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Intervalos/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/core/templates/indicador/nps_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/indicador/nps_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/darkheka/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/darkheka/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/darkheka/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/indicador/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/indicador/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

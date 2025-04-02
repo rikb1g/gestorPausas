@@ -1,3 +1,58 @@
 from django.shortcuts import render
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from .models import Darkheka
+from .forms import DarkHekaForm
 
-# Create your views here.
+
+
+class DarkHekaList(ListView):
+    model = Darkheka
+    template_name = 'darkheka/darkheka_list.html'
+    context_object_name = 'heka_list'
+
+
+class CreateDarkHeka(CreateView):
+    model = Darkheka
+    model_form_class = DarkHekaForm
+    success_url = '/darkheka/darkhekamain'
+    fields = ['title', 'text', 'keys']
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateDarkHeka, self).get_context_data(**kwargs)
+        context['heka_list'] = Darkheka.objects.all()
+        return context
+    
+    def form_valid(self, form):
+        form.save()
+        return super(CreateDarkHeka, self).form_valid(form) 
+    
+    def form_invalid(self, form):
+        return super(CreateDarkHeka, self).form_invalid(form)
+    
+
+class DarkhekaDetail(DetailView):
+    model = Darkheka
+    template_name = 'darkheka/darkheka_detail.html'
+    context_object_name = 'darkheka'
+
+    def get_context_data(self, **kwargs):
+        context = super(DarkhekaDetail, self).get_context_data(**kwargs)
+        context['heka_list'] = Darkheka.objects.all()
+        return context
+
+class DarkhekaUpdate(UpdateView):
+    model = Darkheka
+    fields = ['title', 'text', 'keys']
+    template_name = 'darkheka/darkheka_form.html'
+    queryset = Darkheka.objects.all()
+    success_url = '/darkheka/darkhekamain'
+
+
+
+
+
+
+def delete_darkheka(request, pk):
+    darkheka = Darkheka.objects.get(pk=pk)
+    darkheka.delete()
+    return render(request, 'darkheka/darkheka_list.html')

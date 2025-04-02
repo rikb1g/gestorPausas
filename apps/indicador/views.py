@@ -161,7 +161,7 @@ class List_interacoes(ListView):
                     Q(data__year=data_year) &
                     (Q(data__month=data_month) | Q(data__month=data_month - 1)) &
                     (Q(nota__lt=7))
-                        ).order_by('-data')[:100]
+                        ).order_by('-data')[:300]
 
         else:
             funcionario = self.request.user.usuario
@@ -171,7 +171,7 @@ class List_interacoes(ListView):
                 Q(funcionario=funcionario) &
                 Q(data__year=data_year) &
                 (Q(data__month=data_month) | Q(data__month=data_month - 1))
-                    ).order_by('-data')[:100]
+                    ).order_by('-data')[:300]
     
     def render_to_response(self, context, **response_kwargs):
         if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -239,7 +239,7 @@ def pesquisar_interacoes(request):
             Q(funcionario=funcionario) &
             Q(data__year=data_year) &
             (Q(data__month=data_month) | Q(data__month=data_month - 1))
-        ).order_by('-data')[:100]
+        ).order_by('-data')[:300]
 
     
     data = [

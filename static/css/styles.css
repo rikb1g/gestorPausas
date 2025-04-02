@@ -10,6 +10,7 @@ body.loading {
     pointer-events: none; /* Impede interações enquanto carrega */
 }
 
+
 .titulo-principal{
     font-family: 'ITC Benguiat Std', sans-serif;
     font-size: 80px;
@@ -20,6 +21,11 @@ body.loading {
 }
 a{
     text-decoration: none;
+    color: white;
+}
+a:hover{
+    text-decoration: underline;
+    color: white;
 }
 
 
@@ -322,4 +328,13 @@ td {
     width: 300px !important;
     color: white !important;
     placeholder-color: white !important;
+}
+
+
+.darkheka-container{
+    max-height: 800px;
+    overflow-y: auto;
+    background-color:  #636362;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
