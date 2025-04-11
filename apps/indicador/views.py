@@ -28,90 +28,116 @@ class frontoffice_nps(ListView):
     def get_context_data(self, **kwargs):
         context= super().get_context_data(**kwargs)
         funcionario = self.request.user.usuario
-        nps_intancia = HistoricoNPS.objects.filter(funcionario=funcionario).first()
-        ano = datetime.now().year
+
+        funcionario_filter = self.request.GET.get('utilizador')
+        if funcionario_filter:
+            funcionario = get_object_or_404(Usuario,pk=funcionario_filter)
+        is_supervisor = funcionario.is_supervisor()
+
+
+
+
         equipa_utilizador = Usuario.objects.filter(equipa=funcionario.equipa)
         nps_intancia_superivor = HistoricoNPS.objects.filter(funcionario__in=equipa_utilizador).first()
-        teste_nps = NPS.objects.filter(funcionario=funcionario, data__year=ano,data__month=datetime.now().month -1).count()
-        print(f"teste{teste_nps}")
 
-        
-        
+
+        nps_intancia = HistoricoNPS.objects.filter(funcionario=funcionario).first()
+        ano = datetime.now().year
+        utilizadores = Usuario.objects.filter().order_by('nome')
+        context['utilizadores'] = utilizadores
+
+
+
+
+
+
         
         
         meses_nomes_ajustados = {mes: nome for mes, nome in MESES_NOMES.items()}
         context['meses'] = meses_nomes_ajustados
         
+        funcionario_Certo = funcionario
+
         
-        context['promotores_mes'] = {
+
+
+
+
+        if is_supervisor:
+            print("supervisor")
+            if nps_intancia_superivor:
+                nps_por_mes_supervisor = {
+                    mes: HistoricoNPS.calculo_nps_mes_supervior(mes, ano, funcionario) for mes in range(1, 13)
+                }
+                nps_global_mes_sup = {
+                    mes: HistoricoNPS.calculo_nps_global_mensal_sup(mes, ano) for mes in range(1, 13)
+                }
+            else:
+                print("filtrado nos supervisores")
+                nps_por_mes_supervisor = {mes: "-" for mes in range(1, 13)}
+                nps_global_mes_sup = {mes: "-" for mes in range(1, 13)}
+
+            context['nps_por_mes'] = nps_por_mes_supervisor
+            context['promotores_mes'] = {mes: HistoricoNPS.promotores_supervisor(mes, ano, funcionario) or 0 for mes in
+                                        range(1, 13)}
+            context['detratores_mes'] = {mes: HistoricoNPS.detratores_supervisor(mes, ano, funcionario) or 0 for mes
+                                             in range(1, 13)}
+            context['neutros_mes'] = {mes: HistoricoNPS.neutros_supervisor(mes, ano, funcionario) or 0 for mes in
+                                          range(1, 13)}
+            context['nps_por_mes_global'] = json.dumps(nps_global_mes_sup)
+            context['nps_mes_global_sup_json'] = json.dumps(nps_global_mes_sup)
+        else:
+            print("assistente")
+
+
+            context['promotores_mes'] = {
                 mes: HistoricoNPS.objects.filter(
                     funcionario=funcionario,
                     data__month=mes,
                     data__year=ano
                 ).aggregate(total_promotores=Sum('promotores'))['total_promotores'] or 0
-                     for mes in range(1, 13)
-                            }
-        context['detratores_mes'] =  {
+                for mes in range(1, 13)
+            }
+            context['detratores_mes'] = {
                 mes: HistoricoNPS.objects.filter(
                     funcionario=funcionario,
                     data__month=mes,
                     data__year=ano
                 ).aggregate(total_detratores=Sum('detratores'))['total_detratores'] or 0
-                     for mes in range(1, 13)
-                            }
-        context['neutros_mes'] =  {
+                for mes in range(1, 13)
+            }
+            context['neutros_mes'] = {
                 mes: HistoricoNPS.objects.filter(
                     funcionario=funcionario,
                     data__month=mes,
                     data__year=ano
                 ).aggregate(total_neutros=Sum('neutros'))['total_neutros'] or 0
-                     for mes in range(1, 13)
-        }
-        
-        if nps_intancia:
-            nps_por_mes = {
-                mes: nps_intancia.calculo_nps_mensal(mes,ano) for mes in range(1,13)
+                for mes in range(1, 13)
             }
-            nps_por_mes_global = {
-                mes: nps_intancia.calculo_nps_global_mensal(mes,ano) for mes in range(1,13)
-            }
-            nps_por_equipa_mensal = {
-                mes: nps_intancia.calculo_nps_global_equipa(mes,ano) for mes in range(1,13)
-            }
-            
+            if nps_intancia:
+                nps_por_mes = {
+                    mes: nps_intancia.calculo_nps_mensal(mes, ano) for mes in range(1, 13)
+                }
+                nps_por_mes_global = {
+                    mes: nps_intancia.calculo_nps_global_mensal(mes, ano) for mes in range(1, 13)
+                }
+                nps_por_equipa_mensal = {
+                    mes: nps_intancia.calculo_nps_global_equipa(mes, ano) for mes in range(1, 13)
+                }
 
-        else:
-            nps_por_mes = { mes: "-" for mes in range(1,13)}
-            nps_por_mes_global = { mes: "-" for mes in range(1,13)}
-            nps_por_equipa_mensal = { mes: "-" for mes in range(1,13)}
 
-        if nps_intancia_superivor:
-            nps_por_mes_supervisor = {
-                mes: HistoricoNPS.calculo_nps_mes_supervior(mes,ano,funcionario) for mes in range(1,13)
-            }
-            nps_global_mes_sup = {
-                mes: HistoricoNPS.calculo_nps_global_mensal_sup(mes,ano) for mes in range(1,13)
-            }
-        else:
-            nps_por_mes_supervisor = { mes: "-" for mes in range(1,13)}
-            nps_global_mes_sup = { mes: "-" for mes in range(1,13)}
+            else:
+                nps_por_mes = {mes: "-" for mes in range(1, 13)}
+                nps_por_mes_global = {mes: "-" for mes in range(1, 13)}
+                nps_por_equipa_mensal = {mes: "-" for mes in range(1, 13)}
 
-        
-        context['nps_sup_mes'] = nps_por_mes_supervisor
-        context['promo_mes_sup'] = { mes: HistoricoNPS.promotores_supervisor(mes,ano,funcionario) or 0 for mes in range(1,13)}
-        context['detratores_mes_sup'] = {mes:HistoricoNPS.detratores_supervisor(mes,ano,funcionario) or 0 for mes in range(1,13)}
-        context['neutros_mes_sup'] = {mes: HistoricoNPS.neutros_supervisor(mes,ano,funcionario) or 0 for mes in range(1,13)}
-        context['nps_mes_global_sup_json'] = json.dumps(nps_global_mes_sup)
-        
-            
-            
+            context['nps_por_mes'] = nps_por_mes
+            context['nps_por_mes_global'] = nps_por_mes_global
+            context['nps_mes_json'] = json.dumps(nps_por_mes)
+            context['nps_mes_global_json'] = json.dumps(nps_por_mes_global)
+            context['nps_equipa_json'] = json.dumps(nps_por_equipa_mensal)
 
-        
-
-        context['nps_por_mes'] = nps_por_mes
-        context['nps_por_mes_global'] = nps_por_mes_global
-        
-        nps_values = list(nps_por_mes.values())
+        #nps_values = list(nps_por_mes.values())
         #media_nps = sum(nps_por_mes.values()) / len(nps_por_mes)
         equipa_utilizador = self.request.user.usuario.equipa
 
@@ -131,10 +157,8 @@ class frontoffice_nps(ListView):
         
 
 
-        context['nps_mes_json'] = json.dumps(nps_por_mes)
-        context['nps_mes_global_json'] = json.dumps(nps_por_mes_global)
-        context['nps_equipa_json'] = json.dumps(nps_por_equipa_mensal)
-        
+
+
 
         return context
 
@@ -144,11 +168,33 @@ class List_interacoes(ListView):
     context_object_name= 'interacoes'
     template_name = 'indicador/interacoes.html'
 
-    def get_queryset(self):
+    def get_queryset(self, **kwargs):
         is_ajax = self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+        queryset = NPS.objects.all()
 
         if is_ajax:
             return NPS.objects.all()
+
+        id_utilizador = self.request.GET.get('utilizador')
+        nota_get = self.request.GET.get('nota')
+
+
+        if id_utilizador:
+            queryset = queryset.filter(funcionario_id=id_utilizador)
+
+            if nota_get and nota_get != "0":
+                if nota_get == "1":
+                    queryset = queryset.filter(nota__gte=9)
+                elif nota_get == "2":
+                    queryset = queryset.filter(nota__gte=7, nota__lt=9)
+                elif nota_get == "3":
+                    queryset = queryset.filter(nota__lt=7)
+
+                return queryset.order_by('-data')[:300]
+
+
+
 
         if self.request.user.usuario.tipo.tipo == "Supervisor":
             supervisor = self.request.user.usuario
@@ -163,6 +209,7 @@ class List_interacoes(ListView):
                     (Q(nota__lt=7))
                         ).order_by('-data')[:300]
 
+
         else:
             funcionario = self.request.user.usuario
             data_month = datetime.now().month
@@ -172,6 +219,11 @@ class List_interacoes(ListView):
                 Q(data__year=data_year) &
                 (Q(data__month=data_month) | Q(data__month=data_month - 1))
                     ).order_by('-data')[:300]
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['utilizadores'] = Usuario.objects.filter().order_by('nome')
+        return context
     
     def render_to_response(self, context, **response_kwargs):
         if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':

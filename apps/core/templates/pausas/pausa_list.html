@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1.1">
 <link href="https://fonts.cdnfonts.com/css/itc-benguiat-std" rel="stylesheet">
 
+{% block titulo %}
+Alto Valor
+{% endblock %}
 
 {% block title %}
     <title>{% if pausa_aprovada and not pausa_iniciada %}✅ Pausa Aprovada!

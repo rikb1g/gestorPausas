@@ -1,11 +1,38 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block titulo %}
+Indicadores
+{% endblock %}
+
 {% block main %}
     
 <div class="container">
-<p class="fs-3 text-center">Lista de Interações</p>
 
+<div class="text-end mb-5">
+    <form action="{% url 'list_interacoes' %}" method="get" id="form-filter-interacoes">
+
+    <select name="utilizador" id="utilizador-select"  class="form-select-md ms-2 select-turno">
+         {% for utilizador in utilizadores%}
+        <option value="{{ utilizador.id }}" {% if request.GET.utilizador == utilizador.id|stringformat:"s" %}selected{% endif %}>{{ utilizador }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="nota" id="filtro-note" class="form-select-md ms-2 select-turno">
+        <option value="0" {% if request.GET.nota == "0" %}selected{% endif %}>Todos</option>
+        <option value="1" {% if request.GET.nota == "1" %}selected{% endif %}>Promotores</option>
+        <option value="2" {% if request.GET.nota == "2" %}selected{% endif %}>Neutros</option>
+        <option value="3" {% if request.GET.nota == "3" %}selected{% endif %}>Detratores</option>
+
+    </select>
+
+    <a href="#" onclick="document.getElementById('form-filter-interacoes').submit();" class="btn">
+            <img src="{% static 'images/filter_image.svg' %}" alt=""></a>
+
+        </form>
+
+
+</div>
 
 
 

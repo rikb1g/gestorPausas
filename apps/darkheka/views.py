@@ -1,7 +1,12 @@
+import os
+
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import Darkheka
 from .forms import DarkHekaForm
+
 
 
 
@@ -56,3 +61,25 @@ def delete_darkheka(request, pk):
     darkheka = Darkheka.objects.get(pk=pk)
     darkheka.delete()
     return render(request, 'darkheka/darkheka_list.html')
+
+@csrf_exempt
+def custom_upload_file(request):
+    if request.method == "POST" and request.FILES.get("upload"):
+        uploaded_file = request.FILES["upload"]
+        upload_dir = "media/uploads"
+
+        # Garante que o diretório existe
+        os.makedirs(upload_dir, exist_ok=True)
+
+        upload_path = os.path.join(upload_dir, uploaded_file.name)
+
+        with open(upload_path, "wb+") as destination:
+            for chunk in uploaded_file.chunks():
+                destination.write(chunk)
+
+        return JsonResponse({
+            "url": f"/media/uploads/{uploaded_file.name}",
+            "uploaded": True
+        })
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

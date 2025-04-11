@@ -44,9 +44,12 @@ def home(request):
     data['bo_autorizado_manha'] = BackOffice.objects.filter(funcionario__in=funcionarios_manha,aprovado=True)
     data['bo_autorizado_tarde'] = BackOffice.objects.filter(funcionario__in=funcionarios_tarde,aprovado=True)
     data['bo_fila_manha'] = BackOfficeFilaEspera.objects.filter(
-        funcionario__in=funcionarios_manha).order_by('data_entrada')
+                funcionario__in=funcionarios_manha
+                ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
+
     data['bo_fila_tarde'] = BackOfficeFilaEspera.objects.filter(
-        funcionario__in=funcionarios_tarde).order_by('data_entrada')
+                funcionario__in=funcionarios_tarde
+                ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
 
     num_bo_autorizado_manha = BackofficeConfig.objects.last()
     num_bo_autorizado_tarde = BackofficeConfigTarde_BO.objects.last()

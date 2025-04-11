@@ -1,5 +1,11 @@
 {% load static %}
-{% if index_bo == 0 %}
+
+{% if request.user.usuario.ultrapassou_tempo_bo %}
+
+<p class="mt-1 text-center">Já fizeste 2 vezes BO. O teu BO só será aprovado quando todos ja tiverem feito 2x!</p>
+<p class="btn-roxo">Na fila</p>
+
+{% elif index_bo == 0 %}
 
 <p class="mt-1">Está quase....</p>
 <p class="btn-amarelo">És o proximo </p>

@@ -3,7 +3,7 @@ from .views import frontoffice_nps, pesquisar_interacoes, upload_view,editar_int
 from .views import Interlocutores, InterlocutoresCreate,eliminar_interlocutores, List_interacoes
 
 urlpatterns = [
-    path('teste',frontoffice_nps.as_view(), name='frontoffice_nps'),
+    path('nps/',frontoffice_nps.as_view(), name='frontoffice_nps'),
     path('pesquisar_interacoes/',pesquisar_interacoes, name='pesquisar_interacoes'),
     path('upload_view',upload_view,name='upload_view'),
     path('pesquisar_interlocutores/',pesquisar_interlocutores, name='pesquisar_interlocutores'),
