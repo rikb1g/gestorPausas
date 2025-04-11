@@ -18,35 +18,39 @@
 
 <body>
     
-    <div class="d-flex justify-content-between p-2 container-fluid">
-        <div class="p-2">
-            Olá {{ user.usuario}}
+   <div class="container-fluid mt-2">
+    <div class="row align-items-center p-2">
+        <!-- Saudação -->
+        <div class="col-2 col-md-2 text-start mb-2 mb-md-0">
+            Olá {{ user.usuario }}
         </div>
-        <div class="painel linha ms-1">
-            <a href="{% url 'home' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'lista_intervalos' %}active{% endif %}">Pausas</a>
-            <a href="{% url 'frontoffice_nps' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'frontoffice_nps' %}active{% endif %}">Indicadores</a>
-            <a href="{% url 'pesquisar_interlocutores' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'pesquisar_interlocutores' %}active{% endif %}">AT's e interlocutores</a>
-            <a href="{% url 'list_interacoes' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'list_interacoes' %}active{% endif %}">Interações</a>
-            <a href="{% url 'dark_heka_list' %}" class="btn-menu ms-2">Dark Heka</a>
+
+        <!-- Menu -->
+        <div class="col-8 col-md-8 d-flex flex-wrap justify-content-center mb-2 mb-md-0 ">
+            <a href="{% url 'home' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'lista_intervalos' %}active{% endif %}">Pausas</a>
+            <a href="{% url 'frontoffice_nps' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'frontoffice_nps' %}active{% endif %}">Indicadores</a>
+            <a href="{% url 'pesquisar_interlocutores' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'pesquisar_interlocutores' %}active{% endif %}">AT's e interlocutores</a>
+            <a href="{% url 'list_interacoes' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'list_interacoes' %}active{% endif %}">Interações</a>
+            <a href="{% url 'dark_heka_list' %}" class="btn-menu me-2 mb-2">Dark Heka</a>
             {% if user.usuario.tipo.tipo == "Supervisor" %}
-            <a href="{% url 'upload_view' %}" class="btn-menu ms-2 {% if request.resolver_match.url_name == 'upload_view' %}active{% endif %}">Upload</a>
+                <a href="{% url 'upload_view' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'upload_view' %}active{% endif %}">Upload</a>
             {% endif %}
         </div>
-        <div class="logout">
+
+        <!-- Logout -->
+        <div class="col-2 col-md-2 text-md-end text-center">
             <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
                 {% csrf_token %}
                 <input type="submit" value="Logout">
             </form>
-            <a href="#" onclick="document.getElementById('logout-form').submit();"
-                class="btn btn-secondary me-3">Logout</a>
+            <a href="#" onclick="document.getElementById('logout-form').submit();" class="btn btn-secondary">Logout</a>
         </div>
-
     </div>
-
+</div>
 
 
     <div class="text-center mt-5">
-        <p class="titulo-principal"><i>Alto Valor</i></p>
+        <p class="titulo-principal"><i>{% block titulo %} {% endblock %}</i></p>
     </div>
 
     <div class="container-main container-fluid">

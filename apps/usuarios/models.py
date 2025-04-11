@@ -17,11 +17,29 @@ class Usuario(models.Model):
     tipo = models.ForeignKey(TipoUsuario, on_delete=models.PROTECT)
     turno_manha = models.BooleanField(default=True)
     ja_utilizou_pausa = models.BooleanField(default=False)
+    quantidade_pausas = models.IntegerField(default=0)
+    pausa_aceite = models.BooleanField(default=False)
+    ultrapassou_tempo_bo = models.BooleanField(default=False)
     equipa = models.ForeignKey('Equipas',on_delete=models.PROTECT,blank=True,null=True)
+
+
+    def is_supervisor(self):
+        if self.tipo.tipo == "Supervisor":
+            return True
+        else:
+            return False
+
+    def is_ultrapassou_tempo_bo(self):
+        if self.ultrapassou_tempo_bo:
+            return True
+        else:
+            return False
 
     def __str__(self):
         return self.nome
-    
+
+
+
 
 class Equipas(models.Model):
     nome = models.CharField(max_length=100)

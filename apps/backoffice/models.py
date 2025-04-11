@@ -28,7 +28,8 @@ class BackOffice(models.Model):
             if bo.inicio and bo.fim:
                 tempo_total += (bo.fim - bo.inicio)      
         return formatted_time(tempo_total)
-    
+
+
     
     def calcular_tempo_ate_aviso(self): 
         try:
@@ -139,7 +140,26 @@ class BackOfficeDiario(models.Model):
             if bo.inicio and bo.fim:
                 tempo_total += (bo.fim - bo.inicio) 
         return formatted_time(tempo_total)
-    
+    def ultrapassou_tempo_bo_total(self):
+        bo_funcionario = BackOfficeDiario.objects.filter(funcionario=self.funcionario)
+        print(bo_funcionario)
+        tempo_total = timedelta()
+
+        for bo in bo_funcionario:
+            if bo.inicio and bo.fim:
+                tempo_total += (bo.fim - bo.inicio)
+        user = Usuario.objects.get(nome=self.funcionario)
+        print(tempo_total)
+        if tempo_total > timedelta(minutes=90):
+            user.ultrapassou_tempo_bo = True
+            user.save()
+            print(f"{user} ultrapassou o tempo")
+            return True
+        else:
+            user.ultrapassou_tempo_bo = False
+            user.save()
+            print(f"{user} nao ultrapassou o tempo")
+            return False
     def __str__(self) -> str:
         return f"BO-{self.funcionario}- Inicio: {self.inicio} - Fim: {self.fim}"
 
@@ -189,6 +209,11 @@ class BackofficeConfigTarde_BO(models.Model):
         return f"Capacidade_maxima_BO_tarde = {self.capacidade_maxima}"
     
 
+class BackofficeConfigTerceiroBO(models.Model):
+    capacidade_maxima = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Capacidade_maxima_BO_terceiro = {self.capacidade_maxima}"
 
 
 def formatted_time(time):

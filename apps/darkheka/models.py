@@ -1,13 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from ckeditor_uploader.fields import RichTextUploadingField
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class Darkheka(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200, verbose_name="Título")
-    text = RichTextField()
+    text = CKEditor5Field('Text', config_name='extends')
     created_date = models.DateTimeField(
             default=timezone.now)
     published_date = models.DateTimeField(

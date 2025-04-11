@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block titulo %}
+<a href="{% url 'dark_heka_list' %}">Dark Heka</a>
+{% endblock %}
 
 {% block main %}
 
 <div class="container d-flex justify-content-between mb-5 mt-5">
        <div class="div"></div>
-       <div class="div"><a href="{% url 'dark_heka_list' %}" class="fs-1 text-center">DARK HEKA</a></div>
+       <div class="div"></div>
        <div class="div">
               {% if user.usuario.tipo.tipo == "Supervisor" %}
               <a href="{% url 'novo_darkheka' %}" class="text-start"><img src="{% static 'images/add_image.svg' %}" alt=""></a>

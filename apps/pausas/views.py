@@ -76,15 +76,21 @@ class Lista_Pausas(ListView):
 
         context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True, pausa=False)
         context['bo_nao_aprovado'] = BackOfficeFilaEspera.objects.filter(funcionario=funcionario)
-        context['fila_bo'] = BackOfficeFilaEspera.objects.order_by('data_entrada').first()
+
+        fila_bo_object = None
+
         if self.request.user.usuario.turno_manha:
             usuarios_manha = Usuario.objects.filter(turno_manha=True)
-            fila_bo_object = BackOfficeFilaEspera.objects.filter(funcionario__in=usuarios_manha).order_by('data_entrada')
+            fila_bo_object = BackOfficeFilaEspera.objects.filter(
+                funcionario__in=usuarios_manha
+                ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
         elif not self.request.user.usuario.turno_manha:
             usuarios_tarde = Usuario.objects.filter(turno_manha=False)
-            fila_bo_object = BackOfficeFilaEspera.objects.filter(funcionario__in=usuarios_tarde).order_by('data_entrada')
+            fila_bo_object = BackOfficeFilaEspera.objects.filter(
+                funcionario__in=usuarios_tarde
+                ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
 
-        
+        context['fila_bo'] = fila_bo_object
         idex_fila_bo = None
         for index_bo, fila_bo in enumerate(fila_bo_object):
             if fila_bo.funcionario == self.request.user.usuario:

@@ -25,22 +25,28 @@ def pedir_bo(request):
         bo_aceites_manha = BackOffice.objects.filter(aprovado=True,turno_manha=True)
         bo_aceites_tarde = BackOffice.objects.filter(aprovado=True,turno_manha=False)
         print(f"pediu bo: {request.user} turno: {usuario_turno}")
+        ultrapassou_limite = False
         if usuario_turno:
             configuracao_manha = BackofficeConfig.objects.first()
         else:
             configuracao_tarde = BackofficeConfigTarde_BO.objects.first()
-        
-        
-        
+        try:
+            limite_bo = get_object_or_404(BackOfficeDiario, funcionario=usuario)
+            print(limite_bo)
+
+            if limite_bo:
+                ultrapassou_limite = limite_bo.ultrapassou_tempo_bo_total()
+        except:
+            print("sem bo diario")
 
         if usuario_turno:
             with transaction.atomic():
-                if BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True,turno_manha=True).exists() or \
-                BackOfficeFilaEspera.objects.filter(funcionario= request.user.usuario).exists():
+                if BackOffice.objects.filter(funcionario=usuario, aprovado=True,turno_manha=True).exists() or \
+                BackOfficeFilaEspera.objects.filter(funcionario= usuario).exists():
                     print("Pedido duplicado evitado")
                     
 
-                if bo_aceites_manha.count() < configuracao_manha.capacidade_maxima:
+                if bo_aceites_manha.count() < configuracao_manha.capacidade_maxima and not ultrapassou_limite:
                     BackOffice.objects.create(funcionario=request.user.usuario,
                                             aprovado=True,data_aprovacao=timezone.now(),turno_manha= True)
                     return JsonResponse({"message":"BO aprovado!"}, status=200)
@@ -54,7 +60,7 @@ def pedir_bo(request):
                     print("Pedido duplicado evitado")
                     return redirect('lista_intervalos')
 
-                if bo_aceites_tarde.count() < configuracao_tarde.capacidade_maxima:
+                if bo_aceites_tarde.count() < configuracao_tarde.capacidade_maxima and not ultrapassou_limite:
                     print(f"boa aceites de tarde: {bo_aceites_tarde.count()}")
                     BackOffice.objects.create(funcionario=request.user.usuario, aprovado=True,
                                             data_aprovacao=timezone.now(),turno_manha=False)

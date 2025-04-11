@@ -2,10 +2,31 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block titulo %}
+Indicadores
+{% endblock %}
+
 
 {% block main %}
 
 <div class="container">
+
+<div class="text-end mb-5">
+    <form id="form-nps-filter" action="{% url 'frontoffice_nps' %}" method="get">
+    <select name="utilizador" id="utilizador-select"  class="form-select-md ms-2 select-turno">
+         {% for utilizador in utilizadores%}
+        <option value="{{ utilizador.id }}" {% if request.GET.utilizador == utilizador.id|stringformat:"s" %}selected{% endif %}>{{ utilizador }}</option>
+        {% endfor %}
+    </select>
+
+        <a href="#" onclick="document.getElementById('form-nps-filter').submit();" class="btn">
+            <img src="{% static 'images/filter_image.svg' %}" alt=""></a>
+
+
+        </form>
+
+
+</div>
 
 
 
@@ -23,20 +44,6 @@
         </thead>
 
         <tbody>
-            {% if request.user.usuario.tipo.tipo == "Supervisor" %}
-            {% for mes, nps in nps_sup_mes.items %}
-            <tr>
-                <th>{{ meses|get_item:mes }}</th>
-                <td>{{ promo_mes_sup|get_item:mes }}</th>
-                <td>{{ neutros_mes_sup|get_item:mes }}</td>
-                <td>{{ detratores_mes_sup|get_item:mes }}</td>
-                <td>{{ nps }}</td>
-
-
-            </tr>
-            {% endfor %}
-
-            {% elif request.user.usuario.tipo.tipo == "Assistente" %}
 
             {% for mes, nps in nps_por_mes.items %}
             <tr>
@@ -50,7 +57,7 @@
             </tr>
             {% endfor %}
 
-            {% endif %}
+
         </tbody>
 
     </table>
@@ -68,9 +75,9 @@
 </script>
 
 <script>
-    // Obtém os dados JSON do script e converte para um objeto JavaScript
+
     var equipas = JSON.parse(document.getElementById('equipas-data').textContent);
-    console.log(equipas)
+
 
     
     const npsPorMesGlobal1 = JSON.parse('{{ nps_mes_global_sup_json|safe }}');
