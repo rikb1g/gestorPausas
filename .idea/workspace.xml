@@ -5,35 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70222c08-fcbd-4c05-8d55-f6e11112cabd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/static/images/filter_image.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Intervalos/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Intervalos/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backoffice/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backoffice/signals.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/signals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backoffice/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/core/fila_manha.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/core/fila_manha.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/core/fila_tarde.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/core/fila_tarde.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/core/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/core/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/indicador/interacoes.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/indicador/interacoes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/indicador/interlocutores_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/indicador/interlocutores_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/indicador/nps_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/indicador/nps_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/indicador/upload.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/indicador/upload.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/bo_nao_aprovado.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/bo_nao_aprovado.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/templates/pausas/pausa_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/core/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/darkheka/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/darkheka/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/indicador/templates/pesquisar_interlocutores.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/indicador/templates/pesquisar_interlocutores.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/indicador/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/indicador/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/indicador/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/indicador/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/pausas/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/pausas/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/usuarios/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/usuarios/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,21 +67,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;Python.Makemigrations.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Migrate.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Runserver.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;NpsUpdate&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ricso/OneDrive/Área de Trabalho/Django/Intervalos/Intervalos/apps/core/templates/registration&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "Python.Makemigrations.executor": "Run",
+    "Python.Migrate.executor": "Run",
+    "Python.Runserver.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "com.codeium.enabled": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/ricso/OneDrive/Área de Trabalho/Django/Intervalos/Intervalos/apps/core/templates/registration",
+    "settings.editor.selected.configurable": "Errors"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates\registration" />
