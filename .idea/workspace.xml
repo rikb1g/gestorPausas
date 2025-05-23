@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70222c08-fcbd-4c05-8d55-f6e11112cabd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Intervalos/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Intervalos/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Intervalos/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Intervalos/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backoffice/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backoffice/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/apps/darkheka/templates/darkheka/darkheka_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,21 +75,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "Python.Makemigrations.executor": "Run",
-    "Python.Migrate.executor": "Run",
-    "Python.Runserver.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/ricso/OneDrive/Área de Trabalho/Django/Intervalos/Intervalos/apps/core/templates/registration",
-    "settings.editor.selected.configurable": "Errors"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;Python.Makemigrations.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Migrate.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Runserver.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tasks.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ricso/OneDrive/Área de Trabalho/Django/Intervalos/Intervalos/apps/core/templates/registration&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ricso\OneDrive\Área de Trabalho\Django\Intervalos\Intervalos\apps\core\templates\registration" />
@@ -162,11 +171,39 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="tasks" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Intervalos" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Intervalos" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Intervalos/tasks.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.Makemigrations" />
       <item itemvalue="Python.Migrate" />
       <item itemvalue="Python.Runserver" />
+      <item itemvalue="Python.tasks" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.tasks" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>

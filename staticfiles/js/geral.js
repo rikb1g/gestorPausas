@@ -142,16 +142,19 @@ function notifyUser(message) {
 
 
 function atualizarSelectMaximo(){
-    const intervalos = document.getElementById('num')
+    const intervalos = document.getElementById('num-1')
+    const intervalos2 = document.getElementById('num-2')
     const boManha = document.getElementById('num-bo')
     const  boTarde= document.getElementById('num-bo-tarde')
 
     fetch(`/backoffice/maximos_autorizados/`)
     .then(response => response.json())
     .then(data => {
-        intervalos.value= data.maximo_intervalos,
+        intervalos.value= data.maximo_intervalos1,
+        intervalos2.value = data.maximo_intervalos2,
         boManha.value =data.maximo_bo_manha,
         boTarde.value = data.maximo_bo_tarde
+        
     })
 
 }
@@ -161,6 +164,7 @@ atualizarSelectMaximo()
 window.addEventListener("beforeunload", function () {
     localStorage.setItem("scrollPosition", window.scrollY);
 });
+
 
 window.addEventListener("load", function () {
     const scrollPosition = localStorage.getItem("scrollPosition");

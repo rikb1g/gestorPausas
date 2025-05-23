@@ -31,7 +31,8 @@
             <a href="{% url 'frontoffice_nps' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'frontoffice_nps' %}active{% endif %}">Indicadores</a>
             <a href="{% url 'pesquisar_interlocutores' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'pesquisar_interlocutores' %}active{% endif %}">AT's e interlocutores</a>
             <a href="{% url 'list_interacoes' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'list_interacoes' %}active{% endif %}">Interações</a>
-            <a href="{% url 'dark_heka_list' %}" class="btn-menu me-2 mb-2">Dark Heka</a>
+            <a href="{% url 'dark_heka_list' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'dark_heka_list' or request.resolver_match.url_name == 'details_darkheka' %}
+            or request.resolver_match.url_name == 'novo_darkheka' or request.resolver_match.url_name == 'edit_darkheka' %}active{% endif %} ">Dark Heka</a>
             {% if user.usuario.tipo.tipo == "Supervisor" %}
                 <a href="{% url 'upload_view' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'upload_view' %}active{% endif %}">Upload</a>
             {% endif %}

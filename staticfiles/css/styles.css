@@ -10,6 +10,7 @@ body.loading {
     pointer-events: none; /* Impede interações enquanto carrega */
 }
 
+
 .titulo-principal{
     font-family: 'ITC Benguiat Std', sans-serif;
     font-size: 80px;
@@ -20,6 +21,11 @@ body.loading {
 }
 a{
     text-decoration: none;
+    color: white;
+}
+a:hover{
+    text-decoration: underline;
+    color: white;
 }
 
 
@@ -191,6 +197,27 @@ a{
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.btn-menu {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-menu:hover {
+    background: white;
+    color: #363535;
+}
+
+.btn-menu.active {
+    background: white;
+    color: #363535;
+    font-weight: bold;
+}
+
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-top: 4px solid #007bff;
@@ -232,10 +259,81 @@ a{
 }
 
 .container{
-    width: 100%;
+    width: 90%;
+    
 }
 
 .col-intervalos{
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
+}
+
+input{
+    background-color: #636362 !important;
+    padding: 10px 15px;
+    border: solid 1px white;
+    border-radius: 20px;
+    color: white;
+    outline: none;
+    width: 300px;
+}
+input::placeholder{
+    color: white;
+    opacity: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2c2c2c;
+    color: white;
+    font-family: Arial, sans-serif;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #444;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+    background-color: #3a3a3a;
+}
+
+tr:hover {
+    background-color: #555;
+    transition: background 0.3s ease;
+}
+
+td {
+    border-bottom: 1px solid #555;
+}
+
+.table-container {
+    width: 90%;
+    margin: 20px auto;
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-new{
+    width: 300px !important;
+    color: white !important;
+    placeholder-color: white !important;
+}
+
+
+.darkheka-container{
+    width: 90%;
+    background-color:  #636362;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

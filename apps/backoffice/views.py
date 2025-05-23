@@ -30,13 +30,11 @@ def pedir_bo(request):
             configuracao_manha = BackofficeConfig.objects.first()
         else:
             configuracao_tarde = BackofficeConfigTarde_BO.objects.first()
-        try:
-            limite_bo = get_object_or_404(BackOfficeDiario, funcionario=usuario)
+        limite_bo = BackOfficeDiario.objects.filter(funcionario=usuario).first()
+        if limite_bo:
             print(limite_bo)
-
-            if limite_bo:
-                ultrapassou_limite = limite_bo.ultrapassou_tempo_bo_total()
-        except:
+            ultrapassou_limite = limite_bo.ultrapassou_tempo_bo_total()
+        else:
             print("sem bo diario")
 
         if usuario_turno:

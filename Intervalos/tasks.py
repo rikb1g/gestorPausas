@@ -20,10 +20,8 @@ def delete_old_data():
     try:
         users = Usuario.objects.all()
         for user in users:
-
-            users.ja_utilizou_pausa = False
-
             user.ja_utilizou_pausa = False
+            user.ultrapassou_tempo_bo = False
 
             user.save()
     except  Exception as e:

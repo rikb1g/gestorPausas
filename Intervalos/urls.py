@@ -18,6 +18,10 @@ urlpatterns = [
     path('indicadores/', include('apps.indicador.urls')),
     path('darkheka/', include('apps.darkheka.urls')),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path("upload/", custom_upload_file, name="custom_upload_file"),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.MEDIA_ROOT)
