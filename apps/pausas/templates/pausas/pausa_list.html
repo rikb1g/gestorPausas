@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+<link href="https://fonts.cdnfonts.com/css/itc-benguiat-std" rel="stylesheet">
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>Alto Valor</i></p>
+</div>
+
+
+
+
+
+{% block title %}
+    <title>
+    {% if pausa_aprovada and not pausa_iniciada %}✅ Pausa Aprovada!
+           {% elif bo_aprovado and not bo_iniciado %}✅ BO Aprovado!
+           {% elif alerta_pausa %}🚨 Atenção ao tempo de Pausa
+           {% elif pausa_iniciada %}Pausa Iniciada
+           {% elif alerta_bo %}🚨 Atenção ao tempo de BO
+           {% elif bo_iniciado %}BO Iniciado
+           {% else %}Pausas Alto Valor
+           {% endif %}
+    </title>
+{% endblock %}
+
+{% block main %}
+    
+   {% include 'pausas/pausa_list_partial.html' %}
+{% endblock %}

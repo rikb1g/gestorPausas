@@ -1,46 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block titulo %}
+
+
+
+<div class="text-center mt-5">
+        <a href="{% url 'dark_heka_list' %}" class="titulo-principal link-ajax"><i>DArk Heka</i></a>
+</div>
 <a href="{% url 'dark_heka_list' %}">Dark Heka</a>
-{% endblock %}
+
 
 {% block main %}
 
 
-<div class="container d-flex justify-content-between mb-5 mt-5">
-       <div class="div"></div>
-       <div class="div"></div>
-       <div class="div">
-              {% if user.usuario.tipo.tipo == "Supervisor" %}
-              <a href="{% url 'novo_darkheka' %}" class="text-start"><img src="{% static 'images/add_image.svg' %}" alt=""></a>
-              {% endif %}
-       </div>
-      
-</div>
-
-
-
-
-
-<div class="container darkheka-container mb-5">
-   
-<div class="container">
-
-{% for darkheka in heka_list %}
-<ul class=" mt-5"><a href="{% url 'details_darkheka' darkheka.id %}" class="text-start fs-3">{{ darkheka.title }}</a>
-       {% if user.usuario.tipo.tipo == "Supervisor" %}
-
-       <a href="{% url 'editar_darkheka' darkheka.id %}" class="text-end"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
-       <a href=""><img src="{% static 'images/remove_image.svg' %}" alt=""></a>
-       {% endif %}
-
-</ul>
-
-
-
-{% endfor %}
-</div>
-
-</div>
+{% include 'darkheka/darkheka_list_partial.html' %}
 
 {% endblock %}

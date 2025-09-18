@@ -1,0 +1,57 @@
+{% load static %}
+{% load custom_filters %}
+
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>NPS</i></p>
+</div>
+
+<div class="container">
+
+    <!-- Formulário de filtro -->
+    <div class="text-end mb-5">
+        <form id="form-nps-filter">
+            <select name="utilizador" id="utilizador-select" class="form-select-md ms-2 select-turno" onchange="alternarNpsFilter(this)">
+                {% for utilizador in utilizadores %}
+                    <option value="{{ utilizador.id }}"
+                        {% if request.GET.utilizador == utilizador.id|stringformat:"s" %}selected{% endif %}>
+                        {{ utilizador }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+</div>
+<div class="table-container" id="nps-list">
+    <table id="nps-table" data-user-id="{{ request.user.usuario.id }}" >
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Promotores</th>
+                <th>Neutros</th>
+                <th>Detratores</th>
+                <th>NPS</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for mes, nps in nps_por_mes.items %}
+            <tr>
+
+                <th>{{ meses|get_item:mes }}</th>
+                <td>{{ promotores_mes|get_item:mes }}</td>
+                <td>{{ neutros_mes|get_item:mes }}</td>
+                <td>{{ detratores_mes|get_item:mes }}</td>
+                <td>{{ nps }}</td>
+
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+
+    </table>
+    
+    <canvas id="npsChart" class="mt-5" width="900" height="300"></canvas>
+</div>

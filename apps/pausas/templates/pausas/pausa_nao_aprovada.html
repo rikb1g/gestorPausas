@@ -1,5 +1,7 @@
 {% load static %}
 
+
+
 {% if index_pausa == 0 %}
     <p class="mt-1">Está quase....</p>
 <p class="btn btn-primary">És o proximo </p>
@@ -12,4 +14,4 @@
 {% endif %}
 <p class="mt-5 tempo-pausa">Intervalo utilizado: <b class="tempo-total">{{ total_pausa }}</b></p>
 
-<a href="#" class="btn-vermelho mt-4" onclick="canelarIntervalo()">Cancelar Intervalo</a>
+<a href="#" class="btn-vermelho mt-4 link-ajax" onclick="canelarIntervalo(event)">Cancelar Intervalo</a>

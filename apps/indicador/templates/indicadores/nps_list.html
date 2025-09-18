@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>NPS</i></p>
+</div>
+
+
+
+{% block main %}
+    
+    {% include 'indicadores/nps_list_partial.html' %}
+
+
+{% endblock %}

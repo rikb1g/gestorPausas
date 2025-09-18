@@ -1,0 +1,85 @@
+{% load static %}
+
+
+<div class="container my-3 w-100 p-0 m-0">
+  <div class="p-0 m-0" style="font-size: 0.9rem;">
+
+    <!-- FO -->
+    <h5 class="text-center mb-3">FO</h5>
+    <!-- Indicadores FO -->
+    <div class="row text-center mb-4">
+      <div class="col-6 d-flex flex-column align-items-center">
+        <button type="button" onclick="submeterIqsFO(event, 'true','{{total_dia_transferido}}')"
+          class="btn btn-outline-success btn-sm mb-3">IQS</button>
+
+        <strong class="mt-3">Hoje Transferidas:</strong>
+        <div class="linha">
+          <button type="button" onclick="anularIqsFO(event, 'true','{{total_dia_transferido}}')" class="btn-span"><span
+              class="material-symbols-outlined">undo</span></button>
+          <span id="total-dia-transferido">{{total_dia_transferido}}</span>
+        </div>
+        <strong class="mt-1">Taxa do dia:</strong>
+        <span id="taxa-dia-fo">{{taxa_dia_fo}}</span>
+        <strong class="mt-1">Taxa mês:</strong>
+        <span id="taxa-mes-fo">{{taxa_mes_fo}}</span>
+      </div>
+      <div class="col-6 d-flex flex-column align-items-center">
+        <button type="button" onclick="submeterIqsFO(event, 'false', '{{total_dia_nao_transferido_fo}}')"
+          class="btn btn-outline-danger btn-sm mb-3">Não IQS</button>
+        <strong class="mt-3">Hoje não transferidas:</strong>
+        <div class="linha text-center">
+          <button type="button" onclick="anularIqsFO(event, 'false','{{total_dia_nao_transferido_bo}}')"
+            class="btn-span"><span class="material-symbols-outlined">undo</span></button>
+          <span id="total-dia-nao-transferido">{{total_dia_nao_transferido}}</span>
+        </div>
+        <strong class="mt-1">IQS em falta:</strong>
+        <span id="iqs-falta-mes">{{iqs_falta_mes}}</span>
+        <strong class="mt-1">Taxa resposta geral:</strong>
+        <span id="taxa-resposta-geral">{{taxa_resposta_geral }}</span>
+      </div>
+
+
+
+
+    </div>
+
+    <!-- BO -->
+    <h5 class="text-center mb-3">BO</h5>
+
+  
+
+    <!-- Indicadores BO -->
+    <div class="row text-center">
+      <div class="col-6 d-flex flex-column align-items-center">
+        <button type="button" onclick="submeterIqsBO(event, 'true')" class="btn btn-outline-success btn-sm">IQS</button>
+
+        <strong class="mt-3">Hoje Transferidas:</strong>
+        <div class="linha">
+          <button type="button" onclick="anularIqsBO(event, 'true')" class="btn-span"><span class="material-symbols-outlined">undo</span></button>
+          <span id="total-dia-transferido-bo">{{total_dia_trasnferido_bo}}</span>
+
+        </div>
+        <strong class="mt-1">Taxa do dia:</strong>
+        <span id="taxa-dia-bo">{{taxa_dia_bo}}</span>
+        <strong class="mt-1">Taxa mês:</strong>
+        <span id="taxa-mes-bo">{{taxa_mes_bo}}</span>
+      </div>
+      <div class="col-6 d-flex flex-column align-items-center">
+        <button type="button" onclick="submeterIqsBO(event, 'false')" class="btn btn-outline-danger btn-sm">Não
+          IQS</button>
+        <strong class="mt-3">Hoje não transferidas:</strong>
+        <div class="linha">
+          <button type="button" onclick="anularIqsBO(event, 'false')" class="btn-span"><span class="material-symbols-outlined">undo</span></button>
+          <span" id="total-dia-nao-transferido-bo">{{total_dia_nao_transferido_bo}}</span>
+        </div>
+
+        <strong class="mt-1">IQS em falta:</strong>
+        <span id="iqs-falta-mes-bo">{{iqs_falta_mes_bo}}</span>
+        <strong class="mt-1">Taxa resposta BO:</strong>
+        <span id="taxa-resposta-geral-bo">{{taxa_resposta_bo}}</span>
+
+      </div>
+    </div>
+
+  </div>
+</div>

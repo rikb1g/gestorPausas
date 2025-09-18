@@ -1,9 +1,5 @@
 {% load static %}
-<script>
-            setTimeout(function () {
-                notifyUser("✅ Pausa Aprovada!");
-            },1000);
-</script>
+
 <div class="div m-3">
     {% if  fila_total == 0  %}
     <p>Sem fila de espera para intervalo</p>
@@ -17,12 +13,10 @@
 <p class="mt-2">Intervalo aprovado!</p>
 
 
-<form id="intervaloForm" method="POST">
-    {% csrf_token %}
-    <button type="submit" class="btn-verde mb-3">
+
+    <button id="iniciar-intervalo" type="button" class="btn-verde mb-3 " onclick="iniciarIntervalo(event)">
         Iniciar Intervalo
     </button>
-</form>
 
 <p class="mt-5 tempo-pausa">Tempo total de intervalo: <b class="tempo-total">{{ total_pausa }}</b></p>
-<a href="#" class="btn-vermelho mt-4" onclick="canelarIntervalo()">Cancelar Intervalo</a>
+<button type="button" class="btn-vermelho mt-4" onclick="canelarIntervalo(event)">Cancelar Intervalo</button>

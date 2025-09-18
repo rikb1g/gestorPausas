@@ -1,7 +1,7 @@
 {% load static %}
 
 {% for bo in bo_fila_tarde %}
-<div class="dados bg-secondary text-white rounded m-2" style="--bs-bg-opacity: .5;">
+<div class="dados rounded m-2" style="--bs-bg-opacity: .5;">
     <div class="linha mt-2">
          {% if bo.funcionario.ultrapassou_tempo_bo %}
     <p class="btn btn-danger">{{ bo.funcionario }} 3x</p>
@@ -10,10 +10,10 @@
         {% endif %}
 
 
-        <a class="mb-3" onclick="exibirPopUpconfirmacaoAutBO('{{ bo.funcionario }}')"><img
-                src="{% static 'images/check.svg' %}" alt="autorizar bo"></a>
-        <a class="mb-3" onclick="exibirPopUpconfirmacaoEliBO('{{ bo.funcionario }}')"><img
-                src="{% static 'images/close.svg'%}" alt="remover bo"></a>
+        <button type="button" class="mb-3 btn-remove" onclick="exibirPopUpconfirmacaoAutBO(event,'{{ bo.funcionario.id }}','{{ bo.funcionario }}')"><img
+                src="{% static 'images/check.svg' %}" alt="autorizar bo"></button>
+        <button type="button" class="mb-3 btn-remove" onclick="exibirPopUpconfirmacaoEliBO(event,'{{ bo.id }}','{{ bo.funcionario }}')"><img
+                src="{% static 'images/close.svg'%}" alt="remover bo"></button>
     </div>
     <div class="linha mt-0-5">
         <div>Em fila: <b>{{ bo.calcular_tempo_decorrido_entrada_fila_bo }}</b></div>

@@ -1,0 +1,77 @@
+{% load static %}
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>Alto Valor</i></p>
+</div>
+
+<div class="container Assistente d-flex flex-wrap gap-3" style="align-items: flex-start;">
+    <div class="box box-pausa mt-5" id="box-pausa">
+        <h2 class="text-center mb-5">Intervalo</h2>
+        {% if pausa_aprovada and not pausa_iniciada %}
+        {% include 'pausas/pausa_aprovada.html' %}
+        {% elif pausa_iniciada %}
+        {% include 'pausas/pausa_iniciada.html' %}
+        {% elif pausa_nao_aprovada %}
+        {% include 'pausas/pausa_nao_aprovada.html' %}
+        {% else %}
+        <div class="div m-3">
+            {% if fila_total == 0 %}
+            <p>Sem fila de espera para intervalo</p>
+            {% elif fila_total == 1 %}
+            <p>Está {{fila_total }} pessoa em fila de espera.</p>
+            {% elif fila_total > 1 %}
+            <p>Estão {{fila_total }} pessoas em fila de espera.</p>
+            {% endif %}
+        </div>
+
+        <button type="button" class="btn-azul" onclick="pedirPausa(event)">Pedir Pausa</button>
+        <div class="spinner" id="spinner" style="display: none;"></div>
+        <div class="text-center mt-5">
+            <p>Tempo total de pausa:</p>
+            <p class="tempo-total">{{ total_pausa}}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if user.usuario.beta %}
+    <div class="box mt-5 mb-5" id="box-taxa">
+        <h2 class="text-center mb-2">Taxas</h2>
+        {% include 'iqs/iqs_control.html' %}
+
+
+    </div>
+    {% endif %}
+
+    <div class="box box-pausa mt-5" id="box-backOffice">
+        <h2 class="text-center mb-5">Back Office</h2>
+        {% if bo_aprovado and not bo_iniciado %}
+        {% include 'pausas/bo_aprovado.html' %}
+        {% elif bo_iniciado %}
+        {% include 'pausas/bo_iniciado.html' %}
+        {% elif bo_nao_aprovado %}
+        {% include 'pausas/bo_nao_aprovado.html' %}
+        {% else %}
+
+        <div class="linha mb-3">
+            <label for="filterTurno" class="me-2">Fila:</label>
+            <select id="filterTurno" class="form-select-sm select-turno">
+                <option value="True">Manhã</option>
+                <option value="False">Tarde</option>
+            </select>
+
+        </div>
+
+        <button type="button" class="btn-azul link-a" onclick="pedirBO(event)">Pedir BO</button>
+        <div class="spinner" id="spinner" style="display: none;"></div>
+
+        <div class="text-center mt-5">
+            <p>Tempo total de BO:</p>
+            <p class="tempo-total">{{ bo_total_tempo }}</p>
+
+        </div>
+
+        {% endif %}
+    </div>
+
+
+
+</div>

@@ -1,0 +1,22 @@
+{% load static %}
+
+
+{% for time in pausa_iniciada %}
+ {% if time.id %}
+        <p class="mt-2">Intervalo iniciado:</p>
+        <div class="linha">
+            <p data-id="{{ time.id }}" class="tempo-decorrido-pausa tempo-total"></p>
+        </div>
+    {% endif %}
+
+
+     <button type="button" class="btn-vermelho mt-4" onclick="terminarIntervalo(event)">
+         Terminar Intervalo
+     </button>
+
+
+
+
+
+<p class="mt-5 tempo-pausa">Tempo total de intervalo: <b class="tempo-total">{{ total_pausa }}</b></p>
+ {% endfor %}

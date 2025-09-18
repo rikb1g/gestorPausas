@@ -1,16 +1,13 @@
-{% extends 'base.html' %}
 {% load static %}
 
-{% block titulo %}
-Indicadores
-{% endblock %}
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>Interações</i></p>
+    </div>
 
-{% block main %}
-    
 <div class="container">
 
 <div class="text-end mb-5">
-    <form action="{% url 'list_interacoes' %}" method="get" id="form-filter-interacoes">
+    <form  method="get" id="form-filter-interacoes">
 
     <select name="utilizador" id="utilizador-select"  class="form-select-md ms-2 select-turno">
          {% for utilizador in utilizadores%}
@@ -26,10 +23,10 @@ Indicadores
 
     </select>
 
-    <a href="#" onclick="document.getElementById('form-filter-interacoes').submit();" class="btn">
+    <button type="button"  onclick="procurarInteracoesSelect(event)" class="btn-remove">
             <img src="{% static 'images/filter_image.svg' %}" alt=""></a>
 
-        </form>
+    </button>
 
 
 </div>
@@ -69,12 +66,3 @@ Indicadores
 
 
 </div>
-
-
-
-
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="{% static 'js/interacoes.js' %}?v=1.1"></script>
-{% endblock %}
-

@@ -1,0 +1,23 @@
+{% load static %}
+
+<div class="text-center mt-5">
+        <a href="{% url 'dark_heka_list' %}" class="titulo-principal link-ajax"><i>DArk Heka</i></a>
+</div>
+
+
+<div class="container d-flex justify-content-between mb-5 mt-5 mb-5">
+       <div class="div"></div>
+       <div class="div"></div>
+       <div class="div">
+              {% if user.usuario.user.supervisor %}
+              <a href="{% url 'novo_darkheka' %}" class="text-start link-ajax"><img src="{% static 'images/add_image.svg' %}" alt=""></a>
+              {% endif %}
+       </div>
+
+</div>
+
+
+    <div class="container darkheka-container mt-5">
+        <p class="mt-5 fs-1 text-center"><b>{{ darkheka.title }}</b></p>
+        <p class="text-start">{{ darkheka.text|safe }}</p>
+    </div>

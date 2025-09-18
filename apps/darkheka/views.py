@@ -15,6 +15,13 @@ class DarkHekaList(ListView):
     template_name = 'darkheka/darkheka_list.html'
     context_object_name = 'heka_list'
 
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['darkheka/darkheka_list_partial.html']
+        return ['darkheka/darkheka_list.html']
+
+    
+
 
 class CreateDarkHeka(CreateView):
     model = Darkheka
@@ -34,6 +41,11 @@ class CreateDarkHeka(CreateView):
     def form_invalid(self, form):
         return super(CreateDarkHeka, self).form_invalid(form)
     
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['darkheka/darkheka_form_partial.html']
+        return ['darkheka/darkheka_form.html']
+    
 
 class DarkhekaDetail(DetailView):
     model = Darkheka
@@ -44,6 +56,10 @@ class DarkhekaDetail(DetailView):
         context = super(DarkhekaDetail, self).get_context_data(**kwargs)
         context['heka_list'] = Darkheka.objects.all()
         return context
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['darkheka/darkheka_detail_partial.html']
+        return ['darkheka/darkheka_detail.html']
 
 class DarkhekaUpdate(UpdateView):
     model = Darkheka
@@ -51,6 +67,11 @@ class DarkhekaUpdate(UpdateView):
     template_name = 'darkheka/darkheka_form.html'
     queryset = Darkheka.objects.all()
     success_url = '/darkheka/darkhekamain'
+
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['darkheka/darkheka_form_partial.html']
+        return ['darkheka/darkheka_form.html']
 
 
 

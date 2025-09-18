@@ -1,5 +1,11 @@
+from datetime import datetime
+from django.db.models import Count
+from django.db import transaction
 import sys
 import os
+from django.utils import timezone
+
+
 
 
 sys.path.append('/home/rikb1g/gestorPausas')
@@ -14,6 +20,7 @@ django.setup()
 from apps.pausas.models import Pausa, PausasDiarias,ConfiguracaoPausa, FilaEspera, ConfiguracaoPausa2
 from apps.backoffice.models import BackOffice, BackofficeConfig, BackOfficeDiario, BackOfficeFilaEspera,BackofficeConfigTarde_BO
 from apps.usuarios.models import Usuario
+from apps.indicador.models import NPS, FrontOfficeNPS,BackOfficeNPS,Interlocutores,HistoricoNPS
 
 
 def delete_old_data():
@@ -112,3 +119,115 @@ def delete_old_data():
 
 
 delete_old_data()
+
+def eliminar_interacoes_duplicadas(
+    confirm=False,
+    dry_run=True,
+    keep='first',
+    chunk_size=1000,
+    ignore_null_interacao=False
+):
+    """
+    Identifica duplicados de NPS (funcionario, data, nota, interacao).
+    
+    - dry_run=True: apenas lista o que seria apagado.
+    - confirm=True e dry_run=False: apaga realmente.
+    - keep: 'first' (mantém id menor) ou 'last' (mantém id maior).
+    - ignore_null_interacao: se True ignora grupos com interacao isnull.
+    """
+    qs_values = ["funcionario", "data", "nota", "interacao"]
+    qs = (
+        NPS.objects
+        .values(*qs_values)
+        .annotate(total=Count("id"))
+        .filter(total__gt=1)
+    )
+
+    if ignore_null_interacao:
+        qs = qs.exclude(interacao__isnull=True)
+
+    total_a_apagar = 0
+    to_delete_ids = []
+
+    for d in qs:
+        filtro = {
+            "funcionario": d["funcionario"],
+            "data": d["data"],
+            "nota": d["nota"],
+            "interacao": d["interacao"],
+        }
+        order = "id" if keep == "first" else "-id"
+        group_qs = NPS.objects.filter(**filtro).order_by(order)
+        ids = list(group_qs.values_list("id", flat=True))
+        ids_para_apagar = ids[1:]  # mantém o primeiro ou último
+
+        if ids_para_apagar:
+            print(
+                f"Grupo: {filtro} -> apagaria {len(ids_para_apagar)} ids: "
+                f"{ids_para_apagar[:10]}{'...' if len(ids_para_apagar) > 10 else ''}"
+            )
+            if confirm and not dry_run:
+                NPS.objects.filter(id__in=ids_para_apagar).delete()
+                print(
+                    f"Grupo: {filtro} -> apagou {len(ids_para_apagar)} ids: "
+                    f"{ids_para_apagar[:10]}{'...' if len(ids_para_apagar) > 10 else ''}"
+                )
+            total_a_apagar += len(ids_para_apagar)
+            to_delete_ids.extend(ids_para_apagar)
+
+    print(f"Total a apagar (estimado): {total_a_apagar}")
+
+    if dry_run:
+        print("Dry run ativo — nada foi apagado.")
+        return total_a_apagar
+
+    if not confirm:
+        print("Passa confirm=True e dry_run=False para apagar de verdade.")
+        return total_a_apagar
+
+    # efetuar as deleções em transação e em chunks
+    with transaction.atomic():
+        deleted = 0
+        for i in range(0, len(to_delete_ids), chunk_size):
+            chunk = to_delete_ids[i:i + chunk_size]
+            NPS.objects.filter(id__in=chunk).delete()
+            deleted += len(chunk)
+        print(f"Foram apagados aproximadamente {deleted} registos.")
+    return deleted
+
+
+eliminar_interacoes_duplicadas(confirm=True, dry_run=True)
+from datetime import datetime, date
+
+def limpar_nps_mes_atual():
+    hoje = date.today()
+    primeiro_dia = hoje.replace(day=1)
+
+    # Próximo mês
+    if hoje.month == 12:
+        primeiro_dia_mes_seguinte = hoje.replace(year=hoje.year+1, month=1, day=1)
+    else:
+        primeiro_dia_mes_seguinte = hoje.replace(month=hoje.month+1, day=1)
+
+    # FrontOffice
+    front_qs = NPS.objects.filter(
+        data__gte=primeiro_dia,
+        data__lt=primeiro_dia_mes_seguinte
+    )
+    count_front = front_qs.count()
+    front_qs.delete()
+
+    # Historico
+    historico_qs = HistoricoNPS.objects.filter(
+        data__gte=primeiro_dia,
+        data__lt=primeiro_dia_mes_seguinte
+    )
+    count_historico = historico_qs.count()
+    historico_qs.delete()
+
+    print("at")
+
+    print(f"FrontOffice deletados: {count_front}")
+    print(f"Historico deletados: {count_historico}")
+
+ 

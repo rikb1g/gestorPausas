@@ -1,0 +1,59 @@
+{% load static %}
+
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>Interlocutores</i></p>
+</div>
+
+<div class="container mt-5">
+    <div>
+        <div class="d-flex justify-content-between ms-3">
+            <input type="text" id="procurarInterlocutores" name="pesquisar_at" placeholder="Procurar AT" class="ms-5" data-supervisor="{{ user.usuario.supervisor }}">
+            {% if user.usuario.supervisor %}
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <a href="{%  url 'novo_interlocutor' %}" class="text-end"><img src="{% static 'images/add_image.svg' %}"
+                    alt=""></a>
+            {% endif %}
+            <ul id="resultados"></ul>
+        </div>
+        <div class="table-container">
+            <table class="tableInterlocutores">
+                <thead>
+                    <tr>
+                        <th>AT</th>
+                        <th>Destinatários</th>
+                        <th>CC</th>
+                        {% if user.usuario.supervisor %}
+                        <th>Operações</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resultado in resultados %}
+                    <tr data-id="{{resultado.id}}">
+                        <td class="at">{{ resultado.at|default:"" }}</td>
+                        <td class="destinatarios">{{ resultado.destinatarios|default:"" }}</td>
+                        <td class="cc">{% if resultado.cc == 'nan' %}{% else %}{{ resultado.cc }}{% endif %}</td>
+                        {% if user.usuario.supervisor %}
+                        <td>
+                            <a href="#" class="edit-btn"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
+                            <a href="#" class="save-btn" style="display: none;"><img
+                                    src="{% static 'images/save_image.svg' %}" alt=""></a>
+                            <a href="#" , onclick="eliminarInterlocutores('{{ resultado.id }}', '{{ resultado.at }}')"
+                                class="remove-btn"><img src="{% static 'images/remove_image.svg' %}" alt=""></a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+   
+   

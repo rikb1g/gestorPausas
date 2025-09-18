@@ -1,12 +1,8 @@
-{% extends 'base.html'  %}
 {% load static %}
 
-{% block titulo %}
-Uploads
-{% endblock %}
-
-
-{% block main %}
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>Upload</i></p>
+</div>
 
 {% if messages %}
     <div class="message">
@@ -33,23 +29,6 @@ Uploads
 
     <form  method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h2>Upload Ficheiro Rechamada</h2>
-        {{ form_RechamadaUploadForm.as_p }}
-        <input type="hidden" name="form_type" value="rechamada">
-        <button class="btn-azul">Enviar</button>
-
-    </form>
-
-    <form  method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <h2>Upload Provisorios</h2>
-        {{ form_ProvisoriosUploadForm.as_p }}
-        <input type="hidden" name="form_type" value="provisorios">
-        <button class="btn-azul">Enviar</button>
-    </form>
-
-    <form  method="post" enctype="multipart/form-data">
-        {% csrf_token %}
         <h2>Upload interlocutores</h2>
         {{ form_ProvisoriosUploadForm.as_p }}
         <input type="hidden" name="form_type" value="interlocutores">
@@ -58,10 +37,6 @@ Uploads
 
 
 </div>
-
-
-
-{% endblock %}
 
 <script>
     const message = document.querySelector('.message');

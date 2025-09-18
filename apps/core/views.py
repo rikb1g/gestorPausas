@@ -5,6 +5,7 @@ from apps.pausas.models import Pausa,FilaEspera,PausasDiarias, ConfiguracaoPausa
 from apps.backoffice.models import (BackOffice, BackOfficeDiario, BackOfficeFilaEspera, BackofficeConfig,
                                     BackofficeConfigTarde_BO)
 from apps.usuarios.models import Usuario
+from apps.pausas.utils import montar_contexto_home
 
 # Create your views here.
 
@@ -12,10 +13,13 @@ from apps.usuarios.models import Usuario
 def home(request):
     data = {}
     data['user'] = request.user
+    data['supervisor'] = request.user.usuario.supervisor
     pausas = Pausa.objects.filter(funcionario= request.user.usuario, aprovado=True)
     fila = FilaEspera.objects.filter(funcionario= request.user.usuario)
     funcionarios_primeira_pausa  = Usuario.objects.filter(ja_utilizou_pausa=False)
     funcionarios_segunda_pausa = Usuario.objects.filter(ja_utilizou_pausa=True)
+    
+   
     
 
     #pausa
@@ -60,11 +64,34 @@ def home(request):
 
 
         
-    if pausas.exists() or fila.exists() or bo.exists() or fila_bo.exists():
+    if (pausas.exists() or fila.exists() or bo.exists() or fila_bo.exists()) and  not request.user.usuario.supervisor:
+        print("redirect pausas")
         return redirect('lista_intervalos')
-    if request.user.usuario.tipo.tipo == "Assistente":
+    
+    if not request.user.usuario.supervisor:
+        print("redirect assistente")
         return redirect('lista_intervalos')
 
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('HX-Request') == 'true':
+        if  request.user.usuario.supervisor:
+            print("core/index_partial.html")
+            return render(request,template_name='core/index_partial.html',context=data)
+        else:
+            context = {}
+            context = montar_contexto_home(request.user.usuario)
+            print("pausas/pausa_list_partial.html")
+            return render(request,template_name='pausas/pausa_list_partial.html',context=context)
+    else:
+        if request.user.usuario.supervisor:
+            print("core/index.html")
+            return render(request,template_name='core/index.html',context=data)
+        else:
+            context = {}
+            context = montar_contexto_home(request.user.usuario)
+            print("pausas/pausa_list.html")
+            return render(request,template_name='pausas/pausa_list.html',context=context)
         
-    return render(request=request,template_name='core/index.html',context=data)
+        
+    
         

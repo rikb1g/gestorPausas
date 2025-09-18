@@ -16,9 +16,9 @@ class CustomLoginView(LoginView):
         login(self.request, user)
 
         # Lógica de redirecionamento baseada no tipo de usuário
-        if hasattr(user, 'usuario') and user.usuario.tipo.tipo == "Supervisor":
+        if hasattr(user, 'usuario') and user.usuario.supervisor:
             return redirect('home')
-        elif hasattr(user, 'usuario') and user.usuario.tipo.tipo == "Assistente":
+        elif hasattr(user, 'usuario') and  not user.usuario.supervisor:
             return redirect('lista_intervalos')
         else:
             messages.error(self.request, "Tipo de usuário desconhecido.")

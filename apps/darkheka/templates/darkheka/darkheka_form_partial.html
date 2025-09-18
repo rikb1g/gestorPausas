@@ -1,0 +1,28 @@
+{% load static %}
+
+<div class="text-center mt-5">
+        <a href="{% url 'dark_heka_list' %}" class="titulo-principal link-ajax"><i>DArk Heka</i></a>
+</div>
+
+<div class="container d-flex justify-content-between mb-5 mt-5">
+       <div class="div"></div>
+       <div class="div"></div>
+       <div class="div">
+              {% if user.usuario.tipo.tipo == "Supervisor" %}
+              <a href="{% url 'novo_darkheka' %}" class="text-start"><img src="{% static 'images/add_image.svg' %}" alt=""></a>
+              {% endif %}
+       </div>
+
+</div>
+   
+</div>
+    <div class="container darkheka-container text-center mt-5" enctype="multipart/form-data">
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+        {{ form.media }} 
+        {{ form.as_p }} 
+            <button type="submit" class="btn-azul text-center">Salvar</button>    
+        </form>     
+
+
+    </div>

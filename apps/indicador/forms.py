@@ -11,7 +11,7 @@ class NpsFileUploadForm(forms.ModelForm):
     }
     
     def clean_arquivo(self):
-        arquivo = self.cleaned_data["arquivo"]  # Aqui está a correção, sem o "_get"
+        arquivo = self.cleaned_data["arquivo"]  
         if not arquivo.name.endswith('.xlsx') and not arquivo.name.endswith('.xls'):
             raise forms.ValidationError('Apenas ficheiros Excel (.xlsx, .xls) são permitidos')
         return arquivo

@@ -9,14 +9,9 @@
 
 
 
-
-<form id="boForm" method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn-verde mb-3">
-        Iniciar BO
-    </button>
-</form>
+<button type="button" class="btn-verde mb-3" onclick="iniciarBo(event)">Iniciar BO</button>
 
 <p class="mt-5 tempo-pausa">Tempo total de BO: <b class="tempo-total">{{ bo_total_tempo }}</b></p>
 
-<a href="#" onclick="cancelarBO()" class="btn-vermelho mt-4">Cancelar BO</a>
+
+<button type="button" class="btn-vermelho mt-4" onclick="cancelarBO(event)">Cancelar BO</button>

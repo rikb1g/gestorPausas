@@ -1,50 +1,64 @@
 
-$(document).ready(function() {
-    $('#procurarInteracoes').on('keyup', function() {
-        let query = $(this).val().trim();
+function procurarInteracoesSelect(event) {
+    event.preventDefault();
+    let utilizador = $('#utilizador-select').val();
+    let nota = $('#filtro-note').val();
 
-        if (query.length > 1) {
-            $.ajax({
-                url: '/indicadores/pesquisar_interacoes/',
-                data: {
-                    'pesquisaInteracoes': query
-                },
-                dataType: 'json',
-                success: function (data) {
-                    let resultados = data.resultados;
-                    let tabelaBody = $('.tableInteracoes tbody'); 
+    console.log(utilizador);
+    console.log(nota);
+    
 
-                    tabelaBody.empty();
-                    
-                    if (resultados.length > 0) {
-                        
-                        resultados.forEach(item => {
-                            let corClasse = "";
-                                    if (item.nota >= 9) {
-                                        corClasse = "text-success"; // Verde
-                                    } else if (item.nota >= 7) {
-                                        corClasse = "text-warning"; // Amarelo
-                                    } else {
-                                        corClasse = "text-danger"; // Vermelho
-                                    }
-                            let row = `<tr>
+
+}
+
+function atualizarTabelaInteracoes(resultados){
+            let tabelaBody = $('.tableInteracoes tbody'); 
+            tabelaBody.empty();
+                
+                if (resultados.length > 0) {
+                    resultados.forEach(item => {
+                        let corClasse = "";
+                        if (item.nota >= 9) {
+                            corClasse = "text-success";
+                        } else if (item.nota >= 7) {
+                            corClasse = "text-warning";
+                        } else {
+                            corClasse = "text-danger";
+                        }
+                        let row = `
+                            <tr>
                                 <td>${item.interacao}</td>
                                 <td>${item.funcionario}</td>
                                 <td>${item.data}</td>
                                 <td class="${corClasse}">${item.nota}</td>
                             </tr>`;
-                            tabelaBody.append(row);
-                        });
-                    }
-                    else {
+                        tabelaBody.append(row);
+                    });
                 }
-            },
-            error: function () {
-                console.error("Erro ao buscar interlocutores.");
             }
-           
-        });
-        }
-    });       
 
+
+let tabelaOriginal = $('.tableInteracoes tbody').html();
+
+$(document).on('keyup', '#procurarInteracoes', function() {
+    let query = $(this).val().trim();
+    console.log(query);
+    console.log("asadss")
+
+    if (query.length > 1) {
+        $.ajax({
+            url: '/indicadores/pesquisar_interacoes/',
+            data: { 'pesquisaInteracoes': query },
+            dataType: 'json',
+            success: function (data) {
+            atualizarTabelaInteracoes(data.resultados);
+            },
+                
+            error: function () {
+                console.error("Erro ao buscar interações.");
+            }
+        });
+    } else if (query.length === 0) {
+        $('.tableInteracoes tbody').html(tabelaOriginal)
+    }
 });

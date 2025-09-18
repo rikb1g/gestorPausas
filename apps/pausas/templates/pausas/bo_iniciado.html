@@ -1,0 +1,36 @@
+{% load static %}
+{% for tempo in bo_iniciado %}
+<p class="mt-2">Back Office iniciado: </p>
+
+<div class="linha">
+<p id="tempo-decorrido-bo" data-id="{{ tempo.id }}"
+   class="tempo-decorrido-bo tempo-total"></p>
+
+
+{% if not tempo.pausa %}
+
+
+<button type="button" class="btn-pause mb-3 ms-1 p-1 btn-remove" onclick="pausarBo(event, '{{tempo.id}}', 'true')">
+    <img src="{% static 'images/pause.svg' %}" alt="PausaAlmoço"></button>
+
+
+
+<button type="button" class="btn-pause mb-3 ms1 btn-remove" onclick="pausarBo(event, '{{tempo.id}}', 'false')">
+    <img src="{% static 'images/restaurant.svg' %}" alt="PausaAlmoço"></button>
+
+{% else %}
+
+<button type="button" class="btn-resume mb-3 ms-1 btn-remove" onclick="retomarBo(event, '{{tempo.id}}')"><img
+        src="{% static 'images/play.svg' %}" alt="Retomar"></button>
+
+{% endif %}
+</div>
+{% endfor %}
+
+
+    <button type="button" class="btn-vermelho mt-4" onclick="terminarBO(event)">
+        Terminar BO
+    </button>
+
+<p class="mt-5 tempo-pausa">Tempo total de BO: <b class="tempo-total">{{ bo_total_tempo }}</b></p>
+

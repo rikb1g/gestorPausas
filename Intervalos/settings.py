@@ -10,10 +10,10 @@ SECRET_KEY = 'django-insecure-5*0#o3bmha(_5koh#@@b(-s6fp2g6)=rofv4zuu9jf1+fu1dqq
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['altovalor-rikb1g.pythonanywhere.com']
-#ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = ['altovalor-rikb1g.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apps.backoffice',
     'apps.indicador',
     'apps.darkheka',
+    'apps.iqs',
     'Intervalos',
 
 ]
@@ -234,14 +235,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
 
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'home'
 
 LOGIN_URL = '/accounts/login/'
 
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# Intervalos/settings.py
+
 """
 CELERY_BEAT_SCHEDULE = {
     'delete_old_data_daily': {

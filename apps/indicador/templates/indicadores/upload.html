@@ -1,0 +1,27 @@
+{% extends 'base.html'  %}
+{% load static %}
+
+<div class="text-center mt-5">
+        <p class="titulo-principal"><i>Upload</i></p>
+</div>
+
+{% block main %}
+
+{% include 'indicadores/upload_partial.html' %}
+
+{% endblock %}
+
+<script>
+    const message = document.querySelector('.message');
+
+
+    if (message) {
+
+        message.style.opacity = 1;
+
+    setTimeout(function () {
+        message.style.opacity = 0;
+    }, 5000);
+    }
+
+</script>

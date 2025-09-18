@@ -7,12 +7,14 @@ from django.db.models import Q, Sum
 from django.urls import reverse_lazy
 from .models import FrontOfficeNPS,BackOfficeNPS,NPS ,HistoricoNPS, Interlocutores
 from .forms import RechamadaUploadForm,ProvisoriosUploadForm, NpsFileUploadForm, InterlocutoresUploadForm, InterlocutoresForm
-from apps.usuarios.models import Usuario, TipoUsuario, Equipas
+from apps.usuarios.models import Usuario, Equipas
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView
 from datetime import datetime
 import pandas as pd
+from django.db import transaction
+
 
 
 
@@ -20,10 +22,20 @@ import pandas as pd
 class frontoffice_nps(ListView):
     model = NPS
     context_object_name= 'nps_individual'
+    template_name = 'indicadores/nps_list.html'
 
     def get_queryset(self):
-        funcionario = self.request.user.usuario
+        funcionario_filter = self.request.GET.get('utilizador')
+        if funcionario_filter:
+            funcionario = get_object_or_404(Usuario, pk=funcionario_filter)
+        else:
+            funcionario = self.request.user.usuario
         return NPS.objects.filter(funcionario=funcionario)
+    
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['indicadores/nps_list_partial.html']
+        return ['indicadores/nps_list.html']     
     
     def get_context_data(self, **kwargs):
         context= super().get_context_data(**kwargs)
@@ -32,36 +44,23 @@ class frontoffice_nps(ListView):
         funcionario_filter = self.request.GET.get('utilizador')
         if funcionario_filter:
             funcionario = get_object_or_404(Usuario,pk=funcionario_filter)
-        is_supervisor = funcionario.is_supervisor()
+        is_supervisor = funcionario.supervisor
+        print(is_supervisor)
+        print("superivor ")
 
 
 
 
         equipa_utilizador = Usuario.objects.filter(equipa=funcionario.equipa)
         nps_intancia_superivor = HistoricoNPS.objects.filter(funcionario__in=equipa_utilizador).first()
-
-
+    
         nps_intancia = HistoricoNPS.objects.filter(funcionario=funcionario).first()
+        nps_instanca_superisor = HistoricoNPS.objects.filter().first()
         ano = datetime.now().year
         utilizadores = Usuario.objects.filter().order_by('nome')
-        context['utilizadores'] = utilizadores
-
-
-
-
-
-
-        
-        
+        context['utilizadores'] = utilizadores     
         meses_nomes_ajustados = {mes: nome for mes, nome in MESES_NOMES.items()}
         context['meses'] = meses_nomes_ajustados
-        
-        funcionario_Certo = funcionario
-
-        
-
-
-
 
         if is_supervisor:
             print("supervisor")
@@ -71,6 +70,9 @@ class frontoffice_nps(ListView):
                 }
                 nps_global_mes_sup = {
                     mes: HistoricoNPS.calculo_nps_global_mensal_sup(mes, ano) for mes in range(1, 13)
+                }
+                nps_por_equipa_mensal = {
+                    mes: HistoricoNPS.calculo_nps_global_equipa(mes, ano) for mes in range(1, 13)
                 }
             else:
                 print("filtrado nos supervisores")
@@ -84,12 +86,12 @@ class frontoffice_nps(ListView):
                                              in range(1, 13)}
             context['neutros_mes'] = {mes: HistoricoNPS.neutros_supervisor(mes, ano, funcionario) or 0 for mes in
                                           range(1, 13)}
-            context['nps_por_mes_global'] = json.dumps(nps_global_mes_sup)
-            context['nps_mes_global_sup_json'] = json.dumps(nps_global_mes_sup)
+            context['nps_mes_json'] = json.dumps(nps_por_mes_supervisor)
+            context['nps_mes_global_json'] = json.dumps(nps_global_mes_sup)
+            context['nps_equipa_json'] = json.dumps(nps_por_equipa_mensal)
+            
+           
         else:
-            print("assistente")
-
-
             context['promotores_mes'] = {
                 mes: HistoricoNPS.objects.filter(
                     funcionario=funcionario,
@@ -125,7 +127,6 @@ class frontoffice_nps(ListView):
                     mes: nps_intancia.calculo_nps_global_equipa(mes, ano) for mes in range(1, 13)
                 }
 
-
             else:
                 nps_por_mes = {mes: "-" for mes in range(1, 13)}
                 nps_por_mes_global = {mes: "-" for mes in range(1, 13)}
@@ -137,8 +138,6 @@ class frontoffice_nps(ListView):
             context['nps_mes_global_json'] = json.dumps(nps_por_mes_global)
             context['nps_equipa_json'] = json.dumps(nps_por_equipa_mensal)
 
-        #nps_values = list(nps_por_mes.values())
-        #media_nps = sum(nps_por_mes.values()) / len(nps_por_mes)
         equipa_utilizador = self.request.user.usuario.equipa
 
         equipas = Equipas.objects.all()
@@ -154,32 +153,69 @@ class frontoffice_nps(ListView):
             
         
         context['nps_mensal_superivor'] = json.dumps(dados_nps)
-        
-
-
-
-
 
         return context
+    
+
+def frontoffice_nps_json(request):
+    funcionario_filter = request.GET.get('utilizador')
+    print(funcionario_filter)
+    if funcionario_filter:
+        funcionario = get_object_or_404(Usuario, pk=funcionario_filter)
+    else:
+        funcionario = request.user.usuario
+
+    ano = datetime.now().year
+    meses_nomes_ajustados = {mes: nome for mes, nome in MESES_NOMES.items()}
+
+    promotores_mes = {
+        mes: HistoricoNPS.objects.filter(funcionario=funcionario, data__month=mes, data__year=ano)
+            .aggregate(total_promotores=Sum('promotores'))['total_promotores'] or 0
+        for mes in range(1, 13)
+    }
+    neutros_mes = {
+        mes: HistoricoNPS.objects.filter(funcionario=funcionario, data__month=mes, data__year=ano)
+            .aggregate(total_neutros=Sum('neutros'))['total_neutros'] or 0
+        for mes in range(1, 13)
+    }
+    detratores_mes = {
+        mes: HistoricoNPS.objects.filter(funcionario=funcionario, data__month=mes, data__year=ano)
+            .aggregate(total_detratores=Sum('detratores'))['total_detratores'] or 0
+        for mes in range(1, 13)
+    }
+    nps_por_mes = {}
+    nps_intancia = HistoricoNPS.objects.filter(funcionario=funcionario).first()
+    if nps_intancia:
+        nps_por_mes = {mes: nps_intancia.calculo_nps_mensal(mes, ano) for mes in range(1, 13)}
+        nps_por_mes_global = {mes: nps_intancia.calculo_nps_global_mensal(mes, ano) for mes in range(1, 13)}
+        nps_equipa_por_mes = {mes: nps_intancia.calculo_nps_global_equipa(mes, ano) for mes in range(1, 13)}
+    else:
+        nps_por_mes = {mes: "-" for mes in range(1, 13)}
+        nps_por_mes_global = {mes: "-" for mes in range(1, 13)}
+        nps_equipa_por_mes = {mes: "-" for mes in range(1, 13)}
+    
+   
+    return JsonResponse({
+        "meses": meses_nomes_ajustados,
+        "promotores_mes": promotores_mes,
+        "neutros_mes": neutros_mes,
+        "detratores_mes": detratores_mes,
+        "nps_por_mes": nps_por_mes,
+        "nps_global_por_mes": nps_por_mes_global,
+        "nps_equipa_por_mes": nps_equipa_por_mes,
+
+    })
 
 @method_decorator(login_required, name='dispatch')   
 class List_interacoes(ListView):
     model = NPS
     context_object_name= 'interacoes'
-    template_name = 'indicador/interacoes.html'
+    template_name = 'indicadores/interacoes.html'
 
     def get_queryset(self, **kwargs):
-        is_ajax = self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
         queryset = NPS.objects.all()
-
-        if is_ajax:
-            return NPS.objects.all()
-
         id_utilizador = self.request.GET.get('utilizador')
         nota_get = self.request.GET.get('nota')
-
-
         if id_utilizador:
             queryset = queryset.filter(funcionario_id=id_utilizador)
 
@@ -196,7 +232,7 @@ class List_interacoes(ListView):
 
 
 
-        if self.request.user.usuario.tipo.tipo == "Supervisor":
+        if self.request.user.usuario.supervisor:
             supervisor = self.request.user.usuario
             equipa = Usuario.objects.filter(equipa=supervisor.equipa)
             data_month = datetime.now().month
@@ -208,8 +244,6 @@ class List_interacoes(ListView):
                     (Q(data__month=data_month) | Q(data__month=data_month - 1)) &
                     (Q(nota__lt=7))
                         ).order_by('-data')[:300]
-
-
         else:
             funcionario = self.request.user.usuario
             data_month = datetime.now().month
@@ -218,29 +252,19 @@ class List_interacoes(ListView):
                 Q(funcionario=funcionario) &
                 Q(data__year=data_year) &
                 (Q(data__month=data_month) | Q(data__month=data_month - 1))
-                    ).order_by('-data')[:300]
+                     ).order_by('-data')[:300]
+    
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['indicadores/interacoes_partial.html']
+        return ['indicadores/interacoes.html']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['utilizadores'] = Usuario.objects.filter().order_by('nome')
         return context
     
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            data = [
-                {
-                    'interacao': interacao.interacao,
-                    'funcionario': interacao.funcionario.nome,
-                    'data': interacao.data,
-                    'nota': interacao.nota
-                }
-                for interacao in context['interacoes']
-
-            ]
-            return JsonResponse({'resultados': data})
-        return super().render_to_response(context, **response_kwargs)
-
-    
+      
 
 def get_nps_context(ano):
     for funcionario in Usuario.objects.all():
@@ -323,8 +347,6 @@ def ler_excel_interlucutores(file):
 
 def pesquisar_interlocutores(request):
     query_at = request.GET.get('pesquisar_at','').strip()
-    
-
     if query_at:
         interlocutores = Interlocutores.objects.filter(
             at__icontains=query_at)
@@ -340,10 +362,12 @@ def pesquisar_interlocutores(request):
             'destinatarios': interlocutor.destinatarios,
             'cc': interlocutor.cc
         })
-        
+    
+    if query_at:
+        return JsonResponse({"success": True ,'resultados': data})
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'resultados': data})
-    return render(request, 'pesquisar_interlocutores.html',context={'resultados':data})
+        return render(request, 'indicadores/pesquisar_interlocutores_partial.html',context={'resultados':data})
+    return render(request, 'indicadores/pesquisar_interlocutores.html',context={'resultados':data})
 
 
 
@@ -405,67 +429,126 @@ def upload_view(request):
         "form_RechamadaUploadForm": form_rechamada,
         "form_ProvisoriosUploadForm": form_provisorios,
     }
-    return render(request, 'indicador/upload.html', contex)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'indicadores/upload_partial.html', contex)
+    return render(request, 'indicadores/upload.html', contex)
 
 
             
 
-def processar_nps(row, interacao_col, data_col, valioso_col, valor_col, modelo_nps):
-    
-    
+def processar_nps(row, interacao_col, data_col, valioso_col, valor_col, existentes, usuarios_cache, modelo_nps):
     valor_interacao = row.get(interacao_col)
     data_value = row.get(data_col)
     valioso = row.get(valioso_col)
+    
 
-    # Ignorar linhas inválidas
-    if not valor_interacao or str(valor_interacao).strip() == '':
-        return  
-    if not valioso or str(valioso).strip() == '':
-        return  
-    
-    
+    # Validar campos obrigatórios
+    if not valor_interacao or not str(valor_interacao).strip():
+        return None
+    if not valioso or not str(valioso).strip():
+        return None
+
+    # Converter data
     if isinstance(data_value, str):
         try:
             data_value = datetime.fromisoformat(data_value)
         except ValueError:
-            return  # Ignora datas inválidas
+            return None
     elif not isinstance(data_value, datetime):
-        return  # Ignora se não for string nem datetime
+        return None
 
-    # Verificar se a interação já existe
-    if modelo_nps.objects.filter(interacao=valor_interacao).exists():
-        return  # Evita duplicação de NPS
+    # Checar duplicados em memória
+    key = (valor_interacao, valioso)
+    if key in existentes:
+        return None
 
-    # Buscar ou criar o usuário sem duplicações
-    assistente, _ = TipoUsuario.objects.get_or_create(tipo="Assistente")
-    usuario, criado = Usuario.objects.get_or_create(
-        identificador=valioso,
-        defaults={"nome": valioso, "tipo": assistente}
-    )
+    # Buscar ou criar usuário em memória
+    usuario = usuarios_cache.get(valioso)
+    if not usuario:
+        usuario, _ = Usuario.objects.get_or_create(
+            identificador=valioso,
+            defaults={"nome": valioso, "supervisor": False}
+        )
+        usuarios_cache[valioso] = usuario
 
-    # Criar o objeto NPS
-    modelo_nps.objects.create(
+    existentes.add(key)
+
+    # Criar objeto (não salva ainda)
+    return modelo_nps(
         funcionario=usuario,
-        nota=row.get(valor_col, 0),  # Se não houver nota, assume 0
+        nota=row.get(valor_col, 0),
         data=data_value,
         interacao=valor_interacao
     )
-    return data_value.year
-    
-    
 
 def ler_excel_nps(file):
     df = pd.read_excel(file)
-    
 
-    # Processar FrontOfficeNPS
-    for _, row in df.iterrows():
-        processar_nps(row, 'ID_INTERACAO', 'DATA', 'Valioso', 'VALOR', FrontOfficeNPS)
+    print(df.columns)
+
+   
+    existentes_front = set(
+        FrontOfficeNPS.objects.values_list('interacao', 'funcionario__identificador')
+    )
+    existentes_back = set(
+        BackOfficeNPS.objects.values_list('interacao', 'funcionario__identificador')
+    )
+
+    # Cache de usuários
+    usuarios_cache = {u.identificador: u for u in Usuario.objects.all()}
+
+    front_objs, back_objs = [], []
+
+    front_objs = []
+    back_objs = []
+
+    for row in df.itertuples(index=False):
+        # Cria um dicionário com todas as colunas, mesmo as com '.1'
+        row_dict = dict(zip(df.columns, row))
         
-    for _, row in df.iterrows():
-        processar_nps(row, 'ID_INTERACAO.1', 'DATA.1', 'Valioso.1', 'VALOR.1', BackOfficeNPS)
-    
-    
+        # Processa Front
+        obj_front = processar_nps(
+                row_dict,           # o dict da linha
+                'ID_INTERACAO',     # nome do campo ID
+                'DATA',             # nome do campo DATA
+                'Valioso',          # nome do campo Valioso
+                'VALOR',            # nome do campo VALOR
+                existentes_front,   # lista ou set de objetos existentes
+                usuarios_cache,     # cache de usuários
+                FrontOfficeNPS      # modelo NPS
+            )
+        if obj_front:
+            print(obj_front)
+            front_objs.append(obj_front)
+        
+        # Processa Back
+        obj_back = processar_nps(
+            row_dict,
+            'ID_INTERACAO.1',   
+            'DATA.1',
+            'Valioso.1',
+            'VALOR.1',
+            existentes_back,
+            usuarios_cache,
+            BackOfficeNPS
+        )
+        if obj_back:
+            print(obj_back)
+            print(obj_back)
+            back_objs.append(obj_back)
+        
+
+    # Salvar objetos linha a linha (necessário para multi-table inheritance)
+    with transaction.atomic():
+        for obj in front_objs:
+            obj.save()
+        for obj in back_objs:
+            obj.save()
+
+    return {
+        "frontoffice_inseridos": len(front_objs),
+        "backoffice_inseridos": len(back_objs)
+    }
 
 
 

@@ -4,57 +4,91 @@
 
 <head>
     <meta charset="UTF-8">
-    {% if "/indicadores/"  not in request.path and "/darkheka/" not in request.path %}
-    <meta http-equiv="refresh" content="30">
+    {% if "/indicadores/" not in request.path and "/darkheka/" not in request.path %}
     {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1.2">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1.3">
     <link href="https://fonts.cdnfonts.com/css/itc-benguiat-std" rel="stylesheet">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=undo" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block title %} <title>Pausas Alto Valor</title>{% endblock %}
 </head>
+<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark-mode");
+    }
+</script>
 
 <body>
-    
-   <div class="container-fluid mt-2">
-    <div class="row align-items-center p-2">
-        <!-- Saudação -->
-        <div class="col-2 col-md-2 text-start mb-2 mb-md-0">
-            Olá {{ user.usuario }}
-        </div>
+   <nav id="navbar" class="navbar navbar-expand-md navbar-cor">
+  <div class="container-fluid">
+    <div class="row w-100 align-items-center">
+      
+      <!-- Esquerda -->
+      <div class="col-auto">
+        <span class="navbar-text">
+          Olá {{ user.usuario }}
+        </span>
+      </div>
 
-        <!-- Menu -->
-        <div class="col-8 col-md-8 d-flex flex-wrap justify-content-center mb-2 mb-md-0 ">
-            <a href="{% url 'home' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'lista_intervalos' %}active{% endif %}">Pausas</a>
-            <a href="{% url 'frontoffice_nps' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'frontoffice_nps' %}active{% endif %}">Indicadores</a>
-            <a href="{% url 'pesquisar_interlocutores' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'pesquisar_interlocutores' %}active{% endif %}">AT's e interlocutores</a>
-            <a href="{% url 'list_interacoes' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'list_interacoes' %}active{% endif %}">Interações</a>
-            <a href="{% url 'dark_heka_list' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'dark_heka_list' or request.resolver_match.url_name == 'details_darkheka' %}
-            or request.resolver_match.url_name == 'novo_darkheka' or request.resolver_match.url_name == 'edit_darkheka' %}active{% endif %} ">Dark Heka</a>
-            {% if user.usuario.tipo.tipo == "Supervisor" %}
-                <a href="{% url 'upload_view' %}" class="btn-menu me-2 mb-2 {% if request.resolver_match.url_name == 'upload_view' %}active{% endif %}">Upload</a>
+      <!-- Centro -->
+      <div class="col text-center">
+        <div class="collapse navbar-collapse justify-content-center" id="menuLinks">
+          <ul class="navbar-nav mb-2 mb-md-0">
+            <li class="nav-item btn-menu">
+              <a href="{% url 'home' %}" class="nav-link link-ajax">Pausas</a>
+            </li>
+            {% if user.usuario.beta %}
+            <li class="nav-item btn-menu">
+              <a href="#" class="nav-link link-ajax">Taxas</a>
+            </li>
             {% endif %}
+            <li class="nav-item btn-menu">
+              <a href="{% url 'frontoffice_nps' %}" class="nav-link link-ajax">Indicadores</a>
+            </li>
+            <li class="nav-item btn-menu">
+              <a href="{% url 'pesquisar_interlocutores' %}" class="nav-link link-ajax">AT's e interlocutores</a>
+            </li>
+            <li class="nav-item btn-menu">
+              <a href="{% url 'list_interacoes' %}" class="nav-link link-ajax">Interações</a>
+            </li>
+            <li class="nav-item btn-menu">
+              <a href="{% url 'dark_heka_list' %}" class="nav-link link-ajax">Dark Heka</a>
+            </li>
+            {% if user.usuario.supervisor or user.usuario.master %}
+            <li class="nav-item btn-menu">
+              <a href="{% url 'upload_view' %}" class="nav-link link-ajax">Upload</a>
+            </li>
+            {% endif %}
+          </ul>
         </div>
+      </div>
 
-        <!-- Logout -->
-        <div class="col-2 col-md-2 text-md-end text-center">
-            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
-                {% csrf_token %}
-                <input type="submit" value="Logout">
-            </form>
-            <a href="#" onclick="document.getElementById('logout-form').submit();" class="btn btn-secondary">Logout</a>
+      <!-- Direita -->
+      <div class="col-auto">
+        <div class="d-flex align-items-center gap-2">
+          <button id="theme-toggle" class="btn btn-outline-secondary">🌙 Escuro</button>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">Logout</button>
+          </form>
         </div>
+      </div>
+
     </div>
-</div>
+  </div>
+</nav>
 
 
-    <div class="text-center mt-5">
-        <p class="titulo-principal"><i>{% block titulo %} {% endblock %}</i></p>
-    </div>
-
-    <div class="container-main container-fluid">
+    <div class="container-main container-fluid" id="content-dynamic">
         {% block main %}
         {% endblock %}
     </div>
@@ -65,18 +99,26 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-    
 
-    <script src="{% static 'js/geral.js' %}?v=1.2"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
     <script>
         const imagem_grid = "{% static 'images/grid_view.svg' %}"
         const imagem_column = "{% static 'images/view_column.svg' %}"
+        window.locationHomePage = "{% url 'home' %}"
+        window.pausasList = "{% url 'lista_intervalos' %}"
+        window.FrontOfficeNpsUrl = "{% url 'frontoffice_nps' %}"
+        window.NPSJsonUrl = "{% url 'frontoffice_nps_json' %}";
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
+    <script src="{% static 'js/pausas.js' %}?v=1.4"></script>
+    <script src="{% static 'js/geral.js' %}?v=1.4"></script>
+    <script src="{% static 'js/interacoes.js' %}?v=1.4"></script>
+    <script src="{% static 'js/nps.js' %}?v=1.4"></script>
+    <script src="{% static 'js/iqs.js' %}?v=1.4"></script>
+    <script src="{% static 'js/pesquisar_interlocutores.js' %}?v=1.4"></script>
 </body>
 
 </html>

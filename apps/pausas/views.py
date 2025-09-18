@@ -1,18 +1,18 @@
 from datetime import timedelta
+import json
 from typing import Any
 from django.db.models.query import QuerySet
-from django.db.models.query_utils import Q
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse, HttpRequest, HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.utils import timezone
 from django.views.generic import ListView
-from django.contrib import messages
 from django.db import transaction
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias, ConfiguracaoPausa2
-from apps.backoffice.models import BackOffice, BackOfficeDiario, BackOfficeFilaEspera, formatted_time
 from apps.usuarios.models import Usuario
+from apps.pausas.utils import montar_contexto_home
 
 
 
@@ -20,10 +20,11 @@ from apps.usuarios.models import Usuario
 class Lista_Pausas(ListView):
     model = Pausa
     context_object_name = 'lista_pausas'
+    template_name = 'pausas/pausa_list.html'
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
        
-        if request.user.usuario.tipo.tipo == "Supervisor":
+        if request.user.usuario.supervisor:
             return redirect('home')  
         
         return super().dispatch(request, *args, **kwargs)
@@ -33,84 +34,20 @@ class Lista_Pausas(ListView):
         return Pausa.objects.filter(funcionario=funcionario,aprovado=True)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        funcionario = self.request.user.usuario
         context = super().get_context_data(**kwargs)
-        context['pausa_aprovada'] = Pausa.objects.filter(funcionario=funcionario,aprovado=True)
-        context['pausa_nao_aprovada'] = FilaEspera.objects.filter(funcionario=funcionario)
-
-        context['fila'] = FilaEspera.objects.order_by('data_entrada').first()
-        
-        context['pausa_iniciada'] = Pausa.objects.filter(funcionario= funcionario,inicio__isnull=False ,aprovado=True)
-        total_pausa = PausasDiarias()
-        tota_horas= total_pausa.calcular_tempo_decorrido(funcionario)
-        context['total_pausa'] = tota_horas
-        try:
-            pausa_object = get_object_or_404(Pausa,funcionario=funcionario)
-            context['alerta_pausa']  = pausa_object.calcular_tempo_ate_aviso()
-        except:
-            context['alerta_pausa'] = False
-        try:
-            bo_object = get_object_or_404(BackOffice,funcionario=funcionario)
-            context['alerta_bo'] = bo_object.calcular_tempo_ate_aviso()
-        except:
-            context['alerta_bo'] = False
-
-        # fila pausas 
-
-        if self.request.user.usuario.ja_utilizou_pausa:
-            user_pausa1 = Usuario.objects.filter(ja_utilizou_pausa=True)
-            fila_pausa_object = FilaEspera.objects.filter(funcionario__in=user_pausa1).order_by('data_entrada')
-        elif not self.request.user.usuario.ja_utilizou_pausa:
-            user_pausa2 = Usuario.objects.filter(ja_utilizou_pausa=False)
-            fila_pausa_object = FilaEspera.objects.filter(funcionario__in=user_pausa2).order_by('data_entrada')
-
-        idex_fila_pausa = None
-        for index_pausa, fila_pausa in enumerate(fila_pausa_object):
-            if fila_pausa.funcionario == self.request.user.usuario:
-                idex_fila_pausa = index_pausa
-
-        context['index_pausa'] = idex_fila_pausa
-        context['fila_total'] = fila_pausa_object.count()
-
-        # BO
-
-        context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True, pausa=False)
-        context['bo_nao_aprovado'] = BackOfficeFilaEspera.objects.filter(funcionario=funcionario)
-
-        fila_bo_object = None
-
-        if self.request.user.usuario.turno_manha:
-            usuarios_manha = Usuario.objects.filter(turno_manha=True)
-            fila_bo_object = BackOfficeFilaEspera.objects.filter(
-                funcionario__in=usuarios_manha
-                ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
-        elif not self.request.user.usuario.turno_manha:
-            usuarios_tarde = Usuario.objects.filter(turno_manha=False)
-            fila_bo_object = BackOfficeFilaEspera.objects.filter(
-                funcionario__in=usuarios_tarde
-                ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
-
-        context['fila_bo'] = fila_bo_object
-        idex_fila_bo = None
-        for index_bo, fila_bo in enumerate(fila_bo_object):
-            if fila_bo.funcionario == self.request.user.usuario:
-                idex_fila_bo = index_bo
-
-        context['index_bo'] = idex_fila_bo
-        context['bo_iniciado'] = BackOffice.objects.filter(
-            Q(funcionario= funcionario),
-            Q(inicio__isnull=False) | Q(pausa=True),
-            Q(aprovado=True))
-        total_bo = BackOfficeDiario()
-        total_tempo_bo = total_bo.calcular_tempo_decorrido_bo(funcionario)
-        context['bo_total_tempo'] = total_tempo_bo
-
-
+        context.update(montar_contexto_home(self.request.user.usuario))
         return context
 
 
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request') or self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            print("lista par")
+            return ['pausas/pausa_list_partial.html']
+        return ['pausas/pausa_list.html']
 
 
+
+@login_required
 def pedir_pausa(request):
     pausas_aceites1 = Pausa.objects.filter(aprovado=True,ja_utilizou_pausa=False)
     pausas_aceites2 = Pausa.objects.filter(aprovado=True,ja_utilizou_pausa=True)
@@ -130,15 +67,19 @@ def pedir_pausa(request):
             if Pausa.objects.filter(funcionario=user, aprovado=True).exists() or \
                 FilaEspera.objects.filter(funcionario=user).exists():
                 print("Pedido duplicado evitado")
-                return redirect('lista_intervalos')
+                context = montar_contexto_home(request.user.usuario)
+                return JsonResponse({"success": True, "message": "Pedido duplicado evitado."}, status=200)
+                
             if pausas_aceites2.count() < configuracao2.capacidade_maxima:
                 Pausa.objects.create(funcionario=user,aprovado=True,data_aprovacao=timezone.now(),ja_utilizou_pausa=True)
                 print(f"pausa aceite e nao criada fila no utilizador{request.user.usuario} ")
-                return redirect('lista_intervalos')
+                return JsonResponse({"success": True, "message": "Boa Pausa!!!"}, status=200)
+                
             else:
                 FilaEspera.objects.create(funcionario= user, data_entrada= timezone.now())
                 print(f"criada fila no utilizador{user}")
-                return redirect('lista_intervalos')
+                return JsonResponse({"success": True, "message": "Em Fila!!!"}, status=200)
+                
     else:
         user.ja_utilizou_pausa = False
         user.save()
@@ -146,128 +87,141 @@ def pedir_pausa(request):
             if Pausa.objects.filter(funcionario=user, aprovado=True).exists() or \
                 FilaEspera.objects.filter(funcionario=user).exists():
                 print("Pedido duplicado evitado")
-                return redirect('lista_intervalos')
+                return JsonResponse({"success": True, "message": "Pedido duplicado evitado."}, status=200)
+                
             if pausas_aceites1.count() < configuracao.capacidade_maxima:
                 Pausa.objects.create(funcionario=user,aprovado=True,data_aprovacao=timezone.now(),ja_utilizou_pausa=False)
                 print(f"pausa aceite e nao criada fila no utilizador{user} ")
-                return redirect('lista_intervalos')
+                return JsonResponse({"success": True, "message": "Boa Pausa!!!"}, status=200)
+                
             else:
                 FilaEspera.objects.create(funcionario= request.user.usuario, data_entrada= timezone.now())
                 print(f"criada fila no utilizador{request.user.usuario}")
-                return redirect('lista_intervalos')
+                context = montar_contexto_home(request.user.usuario)
+                return JsonResponse({"success": True, "message": "Em Fila!!!"}, status=200)
+
+    return JsonResponse({"success": False, "message": "Erro ao marcar pausa!!!"}, status=200)
+                
+   
+
+    
+
+
+
+@login_required
+def iniciar_intervalo(request):
+    try:
+        funcionario = request.user.usuario
+        intervalo = get_object_or_404(Pausa, funcionario=funcionario)
+        intervalo.iniciar_pausa()
+        return JsonResponse({'success': True,"message": "Boa Pausa!!!"}, status=200)
+    except Exception as e:
+            return JsonResponse({'success': False,"error": f"Erro interno: {str(e)}"}, status=500)
+
+    
 
 
 
 
-def iniciarIntervalo(request):
-    if request.method == 'POST':
-        try:
-            funcionario = request.user.usuario
-            intervalo = get_object_or_404(Pausa, funcionario=funcionario)
-            intervalo.iniciar_pausa()
-            return JsonResponse({"message": "Boa Pausa!!!"}, status=200)
-        except Exception as e:
-            return JsonResponse({"error": f"Erro interno: {str(e)}"}, status=500)
 
-    return JsonResponse({"error": "Método não permitido"}, status=405)
-
-
-
-
-
-
-def finalizarIntervalo(request):
+@login_required
+def finalizar_intervalo(request):
+    print(request.method)
     if request.method == 'POST':
         print("aqui")
         intervalo = get_object_or_404(Pausa,funcionario=request.user.usuario)
         if intervalo:
             intervalo.terminar_intervalo()
-        return redirect('home')
+            return JsonResponse({'success': True,"message": "Bom Trabalho!!!"}, status=200)
+        else:
+            return JsonResponse({'success': False,"error": "Intervalo nao iniciado"}, status=500)
 
-    return redirect('home')
+    return JsonResponse({'success': False,"error": "Método nao permitido"}, status=405)
 
 
 
 def cancelar_intervalo(request):
+    print(request.method)
     if request.method == 'POST':
+        user = request.user.usuario
+        print(f"user: {user}")
+        if user.supervisor:
+            id = request.GET.get('id') 
+            print(f"id: {id}")  
+            try:
+                pausa = get_object_or_404(Pausa, id=id)
+                print(f"pausa: {pausa}")
+            except:
+                pausa = get_object_or_404(FilaEspera, id=id) 
+        else:
+            try:
+                pausa = get_object_or_404(Pausa, funcionario=user)
+            except:
+                pausa = get_object_or_404(FilaEspera, funcionario=user)    
         try:
-            intervalo = Pausa.objects.filter(funcionario=request.user.usuario)
-            print(intervalo)
-            for pausa in intervalo:
+            
+            for pausa in Pausa.objects.filter(funcionario=pausa.funcionario):
                 pausa.delete()
         except Exception as e:
             print(f"Intervalo nao existe ou: {e}")
         try:
-            pausa= FilaEspera.objects.filter(funcionario=request.user.usuario)
-            for fila in pausa:
+            for fila in FilaEspera.objects.filter(funcionario=pausa.funcionario):
                 fila.delete()
         except Exception as e:
             print(f"Pausa nao existe ou: {e}")
 
-        return JsonResponse({"message": "Intervalo Cancelado."}, status=200)
-    return JsonResponse({"error": "Método não permitido"}, status=405)
+
+        return JsonResponse({"success": True, "message": "Intervalo Cancelado."}, status=200)
+    return JsonResponse({"success": False,"error": "Método não permitido "}, status=405)
+
 
 
 def maximo_intervalos(request,teve_intervalo):
-    numero_intervalo = request.GET.get('num')
-    teve_intervalo = str(teve_intervalo).lower()
-    print(teve_intervalo)
+    print(request.method)
+    if request.method == 'POST':
+        print("entrou")
+        numero_intervalo = request.POST.get('num')
+        print(numero_intervalo)
+        teve_intervalo = str(teve_intervalo).lower()
+        print(teve_intervalo)
 
-    if teve_intervalo == "true":
-        teve_intervalo = True
-    elif teve_intervalo == "false":
-        teve_intervalo = False
+        if teve_intervalo == "true":
+            teve_intervalo = True
+        elif teve_intervalo == "false":
+            teve_intervalo = False
 
-    if numero_intervalo:
-        if teve_intervalo:
-            config = ConfiguracaoPausa.objects.last() or ConfiguracaoPausa.objects.create(capacidade_maxima=0)
-        else:
-            config = ConfiguracaoPausa2.objects.last() or ConfiguracaoPausa2.objects.create(capacidade_maxima=0)
-        
-        if config:
-            config.capacidade_maxima = numero_intervalo
-            config.save()
-            return redirect('home')
-
-
-    return redirect('home')
-
-def cancelar_intervalo_sup(request):
-    nome = request.GET.get('nome')
-    funcionario = Usuario.objects.get(nome=nome)
-    try:
-        fila = FilaEspera.objects.get(funcionario=funcionario)
-        if fila:
-            fila.delete()
-    except:
-        pass
-
-    if funcionario:
-        pausa = Pausa.objects.filter(funcionario=funcionario)
-        for intervalo in pausa:
-            if intervalo.inicio is None:
-                intervalo.delete()
+        if numero_intervalo:
+            if teve_intervalo:
+                config = ConfiguracaoPausa.objects.last() or ConfiguracaoPausa.objects.create(capacidade_maxima=0)
             else:
-                print("aqui errado")
-                intervalo.fim = timezone.now()
-                intervalo.save()
-                arquivar = PausasDiarias(funcionario=intervalo.funcionario, inicio=intervalo.inicio, fim=intervalo.fim)
-                arquivar.save()
-                intervalo.delete()
+                config = ConfiguracaoPausa2.objects.last() or ConfiguracaoPausa2.objects.create(capacidade_maxima=0)
+            
+            if config:
+                config.capacidade_maxima = numero_intervalo
+                config.save()
+                return JsonResponse({"success": True,"message":"Capacidade alterada"}, status=200)
 
-            return redirect('home')
+        return JsonResponse({"success": False,"message": "Sem interalo para alterar "}, status=405)
+        
+    return JsonResponse({"success": False,"error": "Método não permitido"}, status=405)
 
-    return redirect('home')
 
-def autorizar_intervalo_sup(request):
-    nome = request.GET.get('nome')
-    funcionario = Usuario.objects.get(nome=nome)
-    fila  = FilaEspera.objects.get(funcionario= funcionario)
-    teve_pausa = fila.funcionario.ja_utilizou_pausa
-    fila.delete()
 
-    Pausa.objects.create(funcionario= funcionario, aprovado=True, data_aprovacao=timezone.now(),ja_utilizou_pausa=teve_pausa)
-    return redirect('home')
+def autorizar_intervalo(request):
+    if request.method == 'POST':
+        try:
+            id= request.GET.get('id')
+            print(f"id: {id}")
+            funcionario = Usuario.objects.get(id=id)
+            print(f"funcionario: {funcionario}")
+            for fila in FilaEspera.objects.filter(funcionario= funcionario):
+                fila.delete()
+            Pausa.objects.create(funcionario= funcionario, aprovado=True, data_aprovacao=timezone.now(),ja_utilizou_pausa=funcionario.ja_utilizou_pausa)
+            return JsonResponse({"success": True, "message": "Intervalo Autorizado."}, status=200)
+        except Exception as e:
+            print(f"Intervalo nao existe ou: {e}")
+            return JsonResponse({"success": False,"error": f"Erro interno: {str(e)}"}, status=500)
+    return JsonResponse({"success": False,"error": "Método não permitido"}, status=405)
 
 
 def calcular_tempo_pausa(request, id):
