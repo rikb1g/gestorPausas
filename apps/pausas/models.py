@@ -18,7 +18,6 @@ class Pausa(models.Model):
 
 
     def pedir_pausa(self):
-        pausas_aceites = Pausa.objects.filter(aprovado=True)
         ja_teve_pausa = PausasDiarias.objects.filter(funcionario=self.funcionario).exists()
         tempo_total = timedelta()
         if ja_teve_pausa:
@@ -43,7 +42,7 @@ class Pausa(models.Model):
             if pausa.inicio:
                 agora = timezone.now()
                 tempo_decorrido = agora - pausa.inicio
-                if tempo_decorrido > timedelta(minutes=20):
+                if tempo_decorrido > timedelta(minutes=18):
                     print("tempo decorrido")
                     return True
                 else:

@@ -35,6 +35,7 @@ window.onpopstate = function () {
 
 function pedirPausa(event){
     event.preventDefault()
+    document.body.style.cursor = 'wait';
     fetch('/pausas/pedir_pausa/', {
         method: 'POST',
         headers: {
@@ -46,19 +47,20 @@ function pedirPausa(event){
     .then(response => response.json())
     .then(data => {
         if (data.success){
-            if(data.message === "Boa Pausa!!!"){
-                notifyUser("✅ Pausa Aprovada!");
-            }
             carregarConteudo(window.pausasList);
         }
         else {
             alert(data.message);
         }
     })
+    .finally(() => {
+        document.body.style.cursor = 'default';
+    })
 }
 
 function pedirBO(event){
     event.preventDefault()
+    document.body.style.cursor = 'wait';
     var turno = document.getElementById('filterTurno').value
     fetch(`/backoffice/pedir_bo/?turno=${turno}`,{
         method: 'POST',
@@ -71,19 +73,20 @@ function pedirBO(event){
     .then(response => response.json())
     .then(data => {
         if (data.success){
-            if(data.message === "BackOffice Aprovado!!!"){
-                notifyUser("✅ BackOffice Aprovado!!!");
-            }
             carregarConteudo(window.pausasList);
         }
         else {
             alert(data.message);
         }
     })
+    .finally(() => {
+        document.body.style.cursor = 'default';
+    })
 }
 
 function iniciarBo(event){
     event.preventDefault()
+    document.body.style.cursor = 'wait';
     fetch('/backoffice/iniciar_bo/',{
         method: 'POST',
         headers: {
@@ -101,11 +104,15 @@ function iniciarBo(event){
             alert(data.message);
         }
     })
+    .finally(() => {
+        document.body.style.cursor = 'default';
+    })
 }
 
 
 function pausarBo(event, id, pausa){
     event.preventDefault()
+    document.body.style.cursor = 'wait';
     fetch(`/backoffice/pausar_bo/${id}/${pausa}/`,{
         method: 'POST',
         headers: {
@@ -127,10 +134,14 @@ function pausarBo(event, id, pausa){
             alert(data.message);
         }
     })
+    .finally(() => {
+        document.body.style.cursor = 'default';
+    })
 }
 
 function retomarBo(event, id){
     event.preventDefault();
+    document.body.style.cursor = 'wait';
         fetch(`/backoffice/retomar_bo/${id}/`,{
             method: 'POST',
             headers: {
@@ -150,6 +161,9 @@ function retomarBo(event, id){
             else {
                 alert(data.message);
             }
+        })
+        .finally(() => {
+            document.body.style.cursor = 'default';
         })
 }
 
@@ -185,7 +199,6 @@ function exibirPopUpconfirmacaoEliBO(event,id, nome) {
     event.preventDefault();
     if (confirm("Tens a certeza que pretendes anular o BO de " + nome + " ?")) {
         var url = "/backoffice/cancelar_bo/?id=" + encodeURIComponent(id);
-        console.log(url);
         fetch(url, {
             method: 'POST',
             headers: {
@@ -306,10 +319,9 @@ function exibirPopUpConfirmacaoAutPausa(event, id, nome) {
 }
 function exibirPopUpConfirmacaoEliPAusa(event, id, nome) {
     event.preventDefault();
-    console.log(id);
+    document.body.style.cursor = 'wait';
    if (confirm("Tens a certeza que pretendes anular o intervalo de " +nome+ " ?")) {
         var url = "/pausas/cancelar_intervalo/?id="+encodeURIComponent(id);
-        console.log(url);
         fetch(url, {
             method: 'POST',
             headers: {
@@ -328,6 +340,9 @@ function exibirPopUpConfirmacaoEliPAusa(event, id, nome) {
             alert(data.message);
         }
     })
+    .finally(() => {
+            document.body.style.cursor = 'default';
+        })
     }   
 } 
     
@@ -335,6 +350,7 @@ function exibirPopUpConfirmacaoEliPAusa(event, id, nome) {
 
 function canelarIntervalo(event) {
     event.preventDefault();
+    document.body.style.cursor = 'wait';
     if (confirm("Tens a certeza que pretendes cancelar o teu intervalo ?")) {
         fetch('/pausas/cancelar_intervalo/', {
             method: 'POST',
@@ -353,7 +369,11 @@ function canelarIntervalo(event) {
         else {
             alert(data.message);
         }
+        
     })
+    .finally(() => {
+            document.body.style.cursor = 'default';
+        })
     }
 
 
@@ -361,6 +381,7 @@ function canelarIntervalo(event) {
 
 function terminarIntervalo(event) {
     event.preventDefault();
+    document.body.style.cursor = 'wait';
     fetch('/pausas/finalizar_intervalo/', {
         method: 'POST',
         headers: {
@@ -378,11 +399,15 @@ function terminarIntervalo(event) {
             alert(data.message);
         }
     })
+    .finally(() => {
+        document.body.style.cursor = 'default';
+    })
 }
 
 
 function cancelarBO(event) {
     event.preventDefault();
+    document.body.style.cursor = 'wait';
     if(confirm("Tens a certeza que pretendes cancelar o teu pedido de BO ?")){
         fetch('/backoffice/cancelar_bo/', {
             method: 'POST',
@@ -402,11 +427,15 @@ function cancelarBO(event) {
                 alert(data.message);
             }
         })
+        .finally(() => {
+            document.body.style.cursor = 'default';
+        })
     }
 }
 
 function terminarBO(event) {
     event.preventDefault();
+    document.body.style.cursor = 'wait';
     fetch('/backoffice/finalizar_bo/', {
         method: 'POST',
         headers: {
@@ -424,6 +453,9 @@ function terminarBO(event) {
         else {
             alert(data.message);
         }
+    })
+    .finally(() => {
+        document.body.style.cursor = 'default';
     })
 }
 
@@ -462,7 +494,7 @@ function notifyUser(message) {
 
 function iniciarIntervalo(event){
     event.preventDefault();
-    console.log("iniciar intervalo");
+    document.body.style.cursor = 'wait';
    fetch('/pausas/iniciarIntervalo/', {
         method: 'POST',
         headers: {
@@ -474,8 +506,6 @@ function iniciarIntervalo(event){
     .then(response => response.json())
     .then(data => {
         if (data.success){
-            console.log(data.message);
-            console.log(window.pausasList)
             carregarConteudo(window.pausasList);
         } else {
             console.warn(data.message);
@@ -485,7 +515,7 @@ function iniciarIntervalo(event){
         console.error('Erro na requisição: ', error)
     })
     .finally(() => {
-        document.body.classList.remove('loading'); // sempre remove
+        document.body.style.cursor = 'default';
     });
 }
 
@@ -494,6 +524,7 @@ function iniciarIntervalo(event){
 document.addEventListener("submit", function (e) {
     if (e.target && e.target.matches("form[id^='form-filter']"))  {
         e.preventDefault();
+        document.body.style.cursor = 'wait';
 
         const form = e.target;
         const url = form.action;
@@ -513,8 +544,11 @@ document.addEventListener("submit", function (e) {
         } else {
             alert(data.message);
         }
+    })
+    .finally(() => {
+        document.body.style.cursor = 'default';
     });
-    }
+}
 
 
 

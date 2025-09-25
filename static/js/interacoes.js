@@ -1,15 +1,60 @@
 
 function procurarInteracoesSelect(event) {
     event.preventDefault();
+    document.body.style.cursor = 'wait';
     let utilizador = $('#utilizador-select').val();
     let nota = $('#filtro-note').val();
 
-    console.log(utilizador);
-    console.log(nota);
+    fetch(`/indicadores/pesquisar_interacoes_json/?utilizador=${utilizador}&nota=${nota}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            atualizarTabelaInteracoes(data.resultados);
+            console.log(data.resultados);
+        } else {
+            alert(data.message);
+        }
+    })
+    .finally(() => {
+        document.body.style.cursor = 'default';
+    });
+
     
 
 
 }
+
+function seleciorUtilizador(){
+    let utilizador = document.getElementById('utilizador-select');
+    if (utilizador){
+        fetch('/indicadores/pesquisar_interacoes_json/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {   
+            utilizador.value = data.resultados[0].id
+        } else {
+            alert(data.message);
+        }
+    })
+    }
+    
+}
+
+$(document).ready(function() {
+    seleciorUtilizador();        
+});
 
 function atualizarTabelaInteracoes(resultados){
             let tabelaBody = $('.tableInteracoes tbody'); 
@@ -42,9 +87,6 @@ let tabelaOriginal = $('.tableInteracoes tbody').html();
 
 $(document).on('keyup', '#procurarInteracoes', function() {
     let query = $(this).val().trim();
-    console.log(query);
-    console.log("asadss")
-
     if (query.length > 1) {
         $.ajax({
             url: '/indicadores/pesquisar_interacoes/',

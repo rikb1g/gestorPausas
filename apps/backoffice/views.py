@@ -103,7 +103,9 @@ def finalizar_bo(request):
             if bo_funcionario:
                 bo_funcionario.fim = timezone.now()
                 bo_funcionario.save()
-                BackOfficeDiario.objects.create(funcionario=bo_funcionario.funcionario, inicio=bo_funcionario.inicio,fim=bo_funcionario.fim)
+                if not bo_funcionario.pausa:
+                    print(f"BO finalizado {bo_funcionario.funcionario} por {request.user.usuario}")
+                    BackOfficeDiario.objects.create(funcionario=bo_funcionario.funcionario, inicio=bo_funcionario.inicio,fim=bo_funcionario.fim)
                 bo_funcionario.delete()
                 print(f"{bo_funcionario.funcionario} Finalizou BO")
                 return JsonResponse({"success": True,"message":"BO Finalizado"}, status=200)

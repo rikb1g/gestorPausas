@@ -1,4 +1,6 @@
 let intervaloPausa = null;
+let lastPausaId = null;
+let lastBoId = null
 
 
 function iniciarAtualizacaoPausa() {
@@ -108,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function atualizarPagina() {
-        console.log('Atualizando a página...');
         fetch(window.locationHomePage, {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
@@ -150,12 +151,27 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 });
+                atualizarSelectMaximo()
             })
             .catch(error => {
                 console.error('Erro na requisição: ', error);
             });
         atualizarSelectTurno();
     }
+
+
+     if ("Notification" in window) {
+        if (Notification.permission === "default") {
+            Notification.requestPermission().then(permission => {
+                console.log("Permissão escolhida:", permission);
+                if (permission === "granted") {
+                    new Notification("🔔 Notificações ativadas!", {
+                        body: "Agora vais receber alertas mesmo fora do site."
+                    });
+                }
+            });
+        }
+    }   
 
     // Atualiza o tempo de cada elemento a cada segundo
     setInterval(atualizarTempoBO, 1000);
@@ -164,6 +180,45 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })
 
+
+setInterval(()=>{
+    fetch('/pausas/verificar_estado_pedidos_pausa_e_bo/')
+    .then(response => response.json())
+    .then(data => {
+        let tituloAlterado = false;
+        
+            
+        if (data.ultrapassou_pausa){
+            document.title = "⏰ Já ultrapasste tempo de pausa!"
+            tituloAlterado= true;
+        }
+
+        if (data.ultrapassou_bo){
+            document.title = "⏰ Já ultrapasste tempo de BO!"
+            tituloAlterado= true;
+        }
+
+        if (data.pausa_id && !data.pausa_inicio) {
+                notifyUser("✅ Pausa Aprovada!");
+                lastPausaId = data.pausa_id;
+                document.title = "🔔 Pausa Aprovada!";
+                tituloAlterado = true; // guarda o último alertado
+            }
+
+            // BO aprovado
+        if (data.bo_id && !data.bo_iniciou) {
+                notifyUser("✅ BO Aprovado!");
+                lastBoId = data.bo_id;
+                document.title = "🔔 BO Aprovado!";
+                tituloAlterado= true;
+            }
+        if (!tituloAlterado){
+            document.title = "Alto Valor"
+        }
+        
+    })
+    
+},10000);
 
 function atualizarSelectTurno() {
     const filterTurno = document.getElementById("filterTurno");
@@ -177,51 +232,46 @@ function atualizarSelectTurno() {
     }
 }
 
+let shownAlerts = new Set();
 
+
+
+if ("Notification" in window) {
+    if (Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+}
 
 
 function notifyUser(message) {
-    const originalTitle = document.title;
-    let isTitleModified = false
-
-    const titleInterval = setInterval(function () {
-        document.title = isTitleModified ? originalTitle : message
-        isTitleModified = !isTitleModified
-        console.log("funciona ")
-    }, 1000)
-
-    window.addEventListener("focus", function handleFocus() {
-        if (!alertTriggered) {
-            clearInterval(titleInterval)
-            document.title = originalTitle
-            alert(message)
-            alertTriggered = true
-            window.removeEventListener("focus", handleFocus)
-        }
-
-    })
-
-    setTimeout(function () {
-        if (!alertTriggered) {
-            clearInterval(titleInterval);
-            document.title = originalTitle;
-            alert(message);
-            alertTriggered = true;
-        }
-    }, 1000);
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("🔔 Aviso", { body: message });
+    } else {
+        console.log("Notificação bloqueada ou não suportada:", message);
+        // fallback para Swal
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'info',
+            title: message,
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true
+        });
+    }
 }
-
 
 function atualizarSelectMaximo() {
     const intervalos = document.getElementById('num-1')
     const intervalos2 = document.getElementById('num-2')
-    const boManha = document.getElementById('num-bo')
+    const boManha = document.getElementById('num-bo-manha')
     const boTarde = document.getElementById('num-bo-tarde')
 
     if (intervalos && intervalos2 && boManha && boTarde) {
         fetch(`/backoffice/maximos_autorizados/`)
             .then(response => response.json())
             .then(data => {
+               
                 intervalos.value = data.maximo_intervalos1,
                     intervalos2.value = data.maximo_intervalos2,
                     boManha.value = data.maximo_bo_manha,
@@ -233,6 +283,7 @@ function atualizarSelectMaximo() {
 
 
 }
+
 
 atualizarSelectMaximo()
 
@@ -256,21 +307,39 @@ window.addEventListener("scroll", function () {
 window.addEventListener('popstate', function (event) {
     this.location.reload();
 })
-$(document).on('click', '.link-ajax', function (e) {
-    e.preventDefault();
-    const url = $(this).attr('href');
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('link-ajax')) {
+        e.preventDefault();
+        const url = e.target.getAttribute('href');
 
-    $.ajax({
-        url: url,
-        success: function (data) {
+        document.body.style.cursor = "wait"; // muda para cursor a pensar
+
+        fetch(url, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest" // caso precises de diferenciar no backend
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Erro HTTP: " + response.status);
+            return response.text();
+        })
+        .then(data => {
             // Atualiza o conteúdo dinâmico
-            $('#content-dynamic').html(data);
+            document.getElementById("content-dynamic").innerHTML = data;
+            atualizarSelectMaximo();
 
             // Atualiza o URL do browser
             window.history.pushState(null, null, url);
-        }
-    });
+        })
+        .catch(err => {
+            console.error("Erro no fetch:", err);
+        })
+        .finally(() => {
+            document.body.style.cursor = "default"; // volta ao normal
+        });
+    }
 });
+
 
 
 
@@ -279,6 +348,8 @@ const container = document.getElementById("content-dynamic");
 const observer = new MutationObserver(() => {
     atualizarCores();
     atualizarSelectTurno();
+    seleciorUtilizador();
+    
 });
 
 observer.observe(container, { childList: true, subtree: true });

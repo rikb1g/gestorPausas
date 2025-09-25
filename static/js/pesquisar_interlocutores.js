@@ -13,7 +13,7 @@ function getCookie(name) {
     return cookieValue;
 }
 $(document).on('click', '.edit-btn',function () {
-    console.log('clicou')
+
         let row = $(this).closest('tr');
         let at = row.find('.at').text();
         let destinatarios = row.find('.destinatarios').text().trim();
@@ -101,10 +101,8 @@ function atualizarTabela(resultados) {
 let tabelaOriginalInterlocutores = $('.tableInterlocutores tbody').html();
 
 $(document).on('keyup', '#procurarInterlocutores', function () {
-    console.log("asadss")
     let query = $(this).val().trim();
     let supervisor = $(this).data('supervisor') === 'True';
-    console.log(query)
 
     if (query.length > 1) {
         $.ajax({

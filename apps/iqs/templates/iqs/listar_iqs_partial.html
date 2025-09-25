@@ -1,0 +1,119 @@
+{% load static %}
+
+<div class="text-center mt-5">
+    <p class="titulo-principal"><i>Taxas</i></p>
+</div>
+
+<div class="container">
+
+    <div class="table-container">
+        <table id="iqs-table-total">
+            <thead>
+                <tr>
+                    <th>Taxa IQS</th>
+                    <th>Taxa IQS BO</th>
+                    <th>Taxa resposta Global</th>
+                    <th>Total IQS</th>
+                    <th>Total Não IQS</th>
+                    <th>Total IQS BO</th>
+                    <th>Total Não IQS BO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        {%if taxa_geral >= 80 %}<span class="text-success">{{taxa_geral}}{% else %}<span class="text-danger">{{taxa_geral}}{% endif %}
+
+                    </td>
+                    <td>
+                        {%if taxa_geral_bo >= 40 %}<span class="text-success">{{taxa_geral_bo}}{% else %}<span class="text-danger">{{taxa_geral_bo}}{% endif %}
+                    </td>
+                    <td>
+                        {%if taxa_resposta_geral >= 60 %}<span class="text-success">{{taxa_resposta_geral}}{% else %}<span class="text-danger">{{taxa_resposta_geral}}{% endif %}
+                    </td>
+                    <td><span class="text-success">{{total_transferidos_fo}}</span></td>
+                    <td><span class="text-danger">{{total_nao_transferidos_fo}}</span></td>
+                    <td><span class="text-success">{{total_transferidos_bo}}</span></td>
+                    <td><span class="text-danger">{{total_nao_transferidos_bo}}</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <table id="iqs-table" data-user-id="{{ request.user.usuario.id }}">
+            <thead>
+                <tr>
+                    <th>Dia</th>
+                    <th>Transferida FO</th>
+                    <th>Não transferida FO</th>
+                    <th>Transferida BO</th>
+                    <th>Não transferida BO</th>
+                    <th>Taxa resposta dia</th>
+                    <th>Taxa IQS dia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in dias_taxas %}
+                <tr>
+                    <th class="td-center">{{ d.dia }}</th>
+
+                    <td class="td-center">
+                        <button onclick="anularIQSFO(event,'true', '{{d.dia}}')" type="button" class="btn-span">
+                            <span class="material-symbols-outlined">check_indeterminate_small</span>
+                        </button>
+                        <span class="value-span text-success">{{ d.transferida_fo }}</span>
+                        <button onclick="novoIqsFO(event,'true', '{{d.dia}}')" type="button" class="btn-span">
+                            <span class="material-symbols-outlined">add</span>
+                        </button>
+                    </td>
+
+                    <td class="td-center">
+                        <div class="cell-flex">
+                            <button onclick="anularIQSFO(event,'false', '{{d.dia}}')" type="button" class="btn-span">
+                                <span class="material-symbols-outlined">check_indeterminate_small</span>
+                            </button>
+
+                            <span class="value-span text-danger">{{ d.nao_transferida_fo }}</span>
+
+                            <button onclick="novoIqsFO(event,'false', '{{d.dia}}')" type="button" class="btn-span">
+                                <span class="material-symbols-outlined">add</span>
+                            </button>
+                        </div>
+                    </td>
+
+                    <td class="td-center">
+                        <button onclick="eliminarIqsBO(event,'true', '{{d.dia}}')" type="button" class="btn-span">
+                            <span class="material-symbols-outlined">check_indeterminate_small</span>
+                        </button>
+                        <span class="value-span text-success">{{ d.transerida_bo }} </span>  
+                        <button onclick="novoIqsBO(event,'true', '{{d.dia}}')" type="button" class="btn-span">
+                            <span class="material-symbols-outlined">add</span>
+                        </button>
+                    </td>
+
+                    <td class="td-center">
+                        <button onclick="eliminarIqsBO(event,'false', '{{d.dia}}')" type="button" class="btn-span">
+                            <span class="material-symbols-outlined">check_indeterminate_small</span>
+                        </button>
+                        <span class="value-span text-danger">{{ d.nao_transferida_bo }}</span>
+                        <button onclick="novoIqsBO(event,'false', '{{d.dia}}')" type="button" class="btn-span">
+                            <span class="material-symbols-outlined">add</span>
+                        </button>
+                    </td>
+
+                    <td class="td-center">
+                        {% if d.taxa_resposta_dia >= 60 %}<span class="text-success">{{d.taxa_resposta_dia}}{% elif d.taxa_resposta_dia > 0 %}<span class="text-danger">{{d.taxa_resposta_dia}} {% else %} {{d.taxa_resposta_dia}} {% endif %}
+                        
+                    </td>
+
+                    <td class="td-center">
+                        {% if d.taxa_iqs_dia >= 80 %}<span class="text-success">{{d.taxa_iqs_dia}}{% elif d.taxa_iqs_dia > 0 %}<span class="text-danger">{{d.taxa_iqs_dia}} {% else %} {{d.taxa_iqs_dia}} {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>

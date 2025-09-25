@@ -1,14 +1,27 @@
+
+:root {
+    --bg-color: #0F172A;
+    --text-color: #F1F5F9;
+    --table-bg: #1E293B;
+    --table-border: #334155;
+    --link-color: #60A5FA;
+    --btn-bg: #2563EB;
+    --btn-hover-bg: #1D4ED8;
+    --btn-text: #FFFFFF;
+    --table-bg: #1E293B;
+}
+
 html,body{
     height: 100%;
     margin: 0;
-    background-color: #363535;
-    color: white;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
 
 }
 .titulo-principal{
     font-family: 'ITC Benguiat Std', sans-serif;
     font-size: 80px;
-    color: white;
+    color: var(--te);
     transition: all 0.2s;
     shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
@@ -20,11 +33,11 @@ html,body{
     left: 50%;
     transform: translate(-50%, -50%);
     width: 300px;
-    background-color: white;
+    background-color: var(--table-bg);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    color: black !important;
+    color: var(--text-color)!important;
 }
 
 .login-form h2 {
@@ -42,21 +55,21 @@ html,body{
 .login-form button {
     width: 100%;
     padding: 10px;
-    background-color: #007BFF;
-    color: white;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .login-form button:hover {
-    background-color: #0056b3;
+    background-color: var(--btn-hover-bg);
 }
 .login-title {
   font-size: 2rem;
   font-weight: bold;
   text-align: center;
-  background: linear-gradient(45deg, #000000, #434343);
+  background: linear-gradient(45deg, #FFFFFF, #F1F5F9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;

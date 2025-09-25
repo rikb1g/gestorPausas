@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import frontoffice_nps, pesquisar_interacoes, upload_view,editar_interlocutores, pesquisar_interlocutores, frontoffice_nps_json
-from .views import Interlocutores, InterlocutoresCreate,eliminar_interlocutores, List_interacoes
+from .views import Interlocutores, InterlocutoresCreate,eliminar_interlocutores, List_interacoes,pesquisar_interacoes_json
 
 urlpatterns = [
     path('nps/',frontoffice_nps.as_view(), name='frontoffice_nps'),
@@ -12,5 +12,5 @@ urlpatterns = [
     path('eliminar_interlocutores/<int:id>/', eliminar_interlocutores, name='eliminar_interlocutores'),
     path('list_interacoes/', List_interacoes.as_view(), name='list_interacoes'),
     path("frontoffice_nps_json",frontoffice_nps_json ,name='frontoffice_nps_json'),
-
+    path("pesquisar_interacoes_json/",pesquisar_interacoes_json ,name='pesquisar_interacoes_json'),
 ]

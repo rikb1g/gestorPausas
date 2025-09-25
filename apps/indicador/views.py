@@ -213,25 +213,6 @@ class List_interacoes(ListView):
     template_name = 'indicadores/interacoes.html'
 
     def get_queryset(self, **kwargs):
-        queryset = NPS.objects.all()
-        id_utilizador = self.request.GET.get('utilizador')
-        nota_get = self.request.GET.get('nota')
-        if id_utilizador:
-            queryset = queryset.filter(funcionario_id=id_utilizador)
-
-            if nota_get and nota_get != "0":
-                if nota_get == "1":
-                    queryset = queryset.filter(nota__gte=9)
-                elif nota_get == "2":
-                    queryset = queryset.filter(nota__gte=7, nota__lt=9)
-                elif nota_get == "3":
-                    queryset = queryset.filter(nota__lt=7)
-
-                return queryset.order_by('-data')[:300]
-
-
-
-
         if self.request.user.usuario.supervisor:
             supervisor = self.request.user.usuario
             equipa = Usuario.objects.filter(equipa=supervisor.equipa)
@@ -264,7 +245,31 @@ class List_interacoes(ListView):
         context['utilizadores'] = Usuario.objects.filter().order_by('nome')
         return context
     
-      
+def pesquisar_interacoes_json(request):
+    id_utilizador = request.GET.get('utilizador')
+    nota_get = request.GET.get('nota')
+    resultados =[]
+    if id_utilizador:
+        queryset = NPS.objects.filter(funcionario_id=id_utilizador)
+
+        if nota_get and nota_get != "0":
+            if nota_get == "1":
+                queryset = queryset.filter(nota__gte=9)
+            elif nota_get == "2":
+                queryset = queryset.filter(nota__gte=7, nota__lt=9)
+            elif nota_get == "3":
+                queryset = queryset.filter(nota__lt=7)
+        for resultado in queryset:
+            resultados.append({
+                'interacao': resultado.interacao,
+                'funcionario': resultado.funcionario.nome,
+                'data': resultado.data,
+                'nota': resultado.nota,
+            })
+
+        return JsonResponse({'success': True,'resultados': resultados})
+    return JsonResponse({'success': True,'resultados': [{'id': request.user.usuario.id }]})
+
 
 def get_nps_context(ano):
     for funcionario in Usuario.objects.all():
@@ -482,11 +487,13 @@ def processar_nps(row, interacao_col, data_col, valioso_col, valor_col, existent
     )
 
 def ler_excel_nps(file):
-    df = pd.read_excel(file)
+    # Lê as duas folhas (índices 0 e 1 → primeira e segunda)
+    sheets = pd.read_excel(file, sheet_name=['STS', 'BJ'])
+    print(sheets.keys())
 
-    print(df.columns)
+    # Cache de usuários
+    usuarios_cache = {u.identificador: u for u in Usuario.objects.all()}
 
-   
     existentes_front = set(
         FrontOfficeNPS.objects.values_list('interacao', 'funcionario__identificador')
     )
@@ -494,51 +501,55 @@ def ler_excel_nps(file):
         BackOfficeNPS.objects.values_list('interacao', 'funcionario__identificador')
     )
 
-    # Cache de usuários
-    usuarios_cache = {u.identificador: u for u in Usuario.objects.all()}
-
     front_objs, back_objs = [], []
 
-    front_objs = []
-    back_objs = []
+    # Percorre cada folha (df é um DataFrame)
+    for df in sheets.values():
+   
 
-    for row in df.itertuples(index=False):
-        # Cria um dicionário com todas as colunas, mesmo as com '.1'
-        row_dict = dict(zip(df.columns, row))
-        
-        # Processa Front
-        obj_front = processar_nps(
-                row_dict,           # o dict da linha
-                'ID_INTERACAO',     # nome do campo ID
-                'DATA',             # nome do campo DATA
-                'Valioso',          # nome do campo Valioso
-                'VALOR',            # nome do campo VALOR
-                existentes_front,   # lista ou set de objetos existentes
-                usuarios_cache,     # cache de usuários
-                FrontOfficeNPS      # modelo NPS
+        for row in df.itertuples(index=False):
+            row_dict = dict(zip(df.columns, row))
+
+            # Encontra o campo assistente
+            campo_valioso = None
+            for candidato in ['Valioso', 'Agente de Beja']:
+                if candidato in row_dict:
+                    campo_valioso = candidato
+                    break
+
+            if not campo_valioso:
+                print("Nenhuma coluna encontrada para Valioso/Agente de Beja")
+                continue  # salta esta linha se não houver nenhum campo válido
+
+            # Processa Front
+            obj_front = processar_nps(
+                row_dict,
+                'ID_INTERACAO',
+                'DATA',
+                campo_valioso,       
+                'VALOR',
+                existentes_front,
+                usuarios_cache,
+                FrontOfficeNPS
             )
-        if obj_front:
-            print(obj_front)
-            front_objs.append(obj_front)
-        
-        # Processa Back
-        obj_back = processar_nps(
-            row_dict,
-            'ID_INTERACAO.1',   
-            'DATA.1',
-            'Valioso.1',
-            'VALOR.1',
-            existentes_back,
-            usuarios_cache,
-            BackOfficeNPS
-        )
-        if obj_back:
-            print(obj_back)
-            print(obj_back)
-            back_objs.append(obj_back)
-        
+            if obj_front:
+                front_objs.append(obj_front)
 
-    # Salvar objetos linha a linha (necessário para multi-table inheritance)
+            # Processa Back
+            obj_back = processar_nps(
+                row_dict,
+                'ID_INTERACAO.1',
+                'DATA.1',
+                'Valioso.1',
+                'VALOR.1',
+                existentes_back,
+                usuarios_cache,
+                BackOfficeNPS
+            )
+            if obj_back:
+                back_objs.append(obj_back)
+
+    # Salvar objetos linha a linha
     with transaction.atomic():
         for obj in front_objs:
             obj.save()

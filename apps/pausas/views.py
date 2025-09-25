@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.views.generic import ListView
 from django.db import transaction
 from .models import Pausa, ConfiguracaoPausa, FilaEspera, PausasDiarias, ConfiguracaoPausa2
+from apps.backoffice.models import BackOffice
 from apps.usuarios.models import Usuario
 from apps.pausas.utils import montar_contexto_home
 
@@ -235,9 +236,37 @@ def calcular_tempo_pausa(request, id):
         return JsonResponse({'error': 'Objeto não encontrado'}, status=404)
 
 
+def verificar_estado_pedidos_pausa_e_bo(request):
+    funcionario = request.user.usuario
 
+    pausa_id = None
+    bo_id = None
+    ultrapassou_pausa = False
+    ultrapassou_bo = False
+    iniciou_pausa = False
+    iniciou_bo = False
 
+    # Query mais eficiente -> usa .filter() em vez de try/except com .get()
+    pausa = Pausa.objects.filter(funcionario=funcionario, aprovado=True).first()
+    if pausa:
+        pausa_id = pausa.id
+        ultrapassou_pausa = pausa.calcular_tempo_ate_aviso()
+        if pausa.inicio is not None:
+            iniciou_pausa = True
 
+    bo = BackOffice.objects.filter(funcionario=funcionario, aprovado=True).first()
+    if bo:
+        bo_id = bo.id
+        if bo.inicio is not None:
+            iniciou_bo = True
+        ultrapassou_bo = bo.calcular_tempo_ate_aviso()
 
-
+    return JsonResponse({
+        'pausa_id': pausa_id,
+        'pausa_inicio': iniciou_pausa,
+        'bo_iniciou': iniciou_bo,
+        'bo_id': bo_id,
+        'ultrapassou_pausa': ultrapassou_pausa,
+        'ultrapassou_bo': ultrapassou_bo,
+    })
 

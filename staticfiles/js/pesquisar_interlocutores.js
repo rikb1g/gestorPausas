@@ -12,8 +12,8 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-$(document).ready(function() {
-    $('.edit-btn').on('click', function() {
+$(document).on('click', '.edit-btn',function () {
+
         let row = $(this).closest('tr');
         let at = row.find('.at').text();
         let destinatarios = row.find('.destinatarios').text().trim();
@@ -27,7 +27,7 @@ $(document).ready(function() {
         row.find('.save-btn').show();
         row.find('.remove-btn').hide();
     })
-    $('.save-btn').on('click', function(e) {
+    $('.save-btn').on('click', function (e) {
         e.preventDefault();
 
         let row = $(this).closest('tr');
@@ -39,7 +39,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/indicadores/editar_interlocutores/',
             method: 'POST',
-            
+
             data: {
                 'id': id,
                 'at': at,
@@ -48,7 +48,7 @@ $(document).ready(function() {
                 'csrfmiddlewaretoken': getCookie('csrftoken'),
             },
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 if (data.success) {
                     row.find('.at').text(at);
                     row.find('.destinatarios').text(destinatarios);
@@ -61,7 +61,7 @@ $(document).ready(function() {
             }
         })
     })
-})
+
 
 window.addEventListener("beforeunload", function () {
     localStorage.setItem("scrollPosition", window.scrollY);
@@ -77,6 +77,49 @@ window.addEventListener("load", function () {
 
 function eliminarInterlocutores(id, at) {
     if (confirm("Tem certeza de que deseja eliminar a AT " + at + " ?")) {
-        window.location.href = '/indicadores/eliminar_interlocutores/' + encodeURIComponent(id)+"/";
+        window.location.href = '/indicadores/eliminar_interlocutores/' + encodeURIComponent(id) + "/";
     }
 }
+
+
+function atualizarTabela(resultados) {
+    let tabelaBody = $('.tableInterlocutores tbody');
+    tabelaBody.empty();
+
+    if (resultados.length > 0) {
+        resultados.forEach(item => {
+            let row = `<tr>
+                <td>${item.at}</td>
+                <td>${item.destinatarios}</td>
+                <td>${item.cc !== 'nan' ? item.cc : ''}</td>
+            </tr>`;
+            tabelaBody.append(row);
+        });
+    }
+}
+
+let tabelaOriginalInterlocutores = $('.tableInterlocutores tbody').html();
+
+$(document).on('keyup', '#procurarInterlocutores', function () {
+    let query = $(this).val().trim();
+    let supervisor = $(this).data('supervisor') === 'True';
+
+    if (query.length > 1) {
+        $.ajax({
+            url: '/indicadores/pesquisar_interlocutores/',
+            data: {
+                'pesquisar_at': query
+            },
+            dataType: 'json',
+            success: function (data) {
+                atualizarTabela(data.resultados);
+            },
+            error: function () {
+                console.error("Erro ao buscar interlocutores.");
+            }
+        });
+    } else if (query.length === 0) {
+         $('.tableInterlocutores tbody').html(tabelaOriginalInterlocutores);
+    }
+
+});

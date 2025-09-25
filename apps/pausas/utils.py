@@ -73,7 +73,7 @@ def montar_contexto_home(funcionario):
     context['taxa_dia_fo'] = Iqs.calcular_taxa_dia_fo(funcionario)
     context['iqs_falta_mes'] = Iqs.calcular_previsao_para_objetivo_fo(funcionario=funcionario)
     context['taxa_mes_fo'] = Iqs.calcular_taxa_transferencia_fo(funcionario=funcionario)
-    context['taxa_resposta_geral'] = Iqs.calcular_taxa_resposta_geral(funcionario=funcionario)
+    context['taxa_resposta_geral'] = Iqs.calcular_taxa_resposta_FO(funcionario=funcionario)
 
     #IQS BO
 

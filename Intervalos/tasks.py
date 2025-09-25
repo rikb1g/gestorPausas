@@ -20,7 +20,8 @@ django.setup()
 from apps.pausas.models import Pausa, PausasDiarias,ConfiguracaoPausa, FilaEspera, ConfiguracaoPausa2
 from apps.backoffice.models import BackOffice, BackofficeConfig, BackOfficeDiario, BackOfficeFilaEspera,BackofficeConfigTarde_BO
 from apps.usuarios.models import Usuario
-from apps.indicador.models import NPS, FrontOfficeNPS,BackOfficeNPS,Interlocutores,HistoricoNPS
+from apps.indicador.models import NPS
+from apps.iqs.models import Iqs
 
 
 def delete_old_data():
@@ -126,15 +127,8 @@ def eliminar_interacoes_duplicadas(
     keep='first',
     chunk_size=1000,
     ignore_null_interacao=False
-):
-    """
-    Identifica duplicados de NPS (funcionario, data, nota, interacao).
+        ):
     
-    - dry_run=True: apenas lista o que seria apagado.
-    - confirm=True e dry_run=False: apaga realmente.
-    - keep: 'first' (mantém id menor) ou 'last' (mantém id maior).
-    - ignore_null_interacao: se True ignora grupos com interacao isnull.
-    """
     qs_values = ["funcionario", "data", "nota", "interacao"]
     qs = (
         NPS.objects
@@ -195,39 +189,21 @@ def eliminar_interacoes_duplicadas(
         print(f"Foram apagados aproximadamente {deleted} registos.")
     return deleted
 
-
-eliminar_interacoes_duplicadas(confirm=True, dry_run=True)
 from datetime import datetime, date
+eliminar_interacoes_duplicadas(confirm=True, dry_run=True)
 
-def limpar_nps_mes_atual():
+from datetime import date
+from dateutil.relativedelta import relativedelta
+def eliminar_iqs_mes_anterior():
     hoje = date.today()
-    primeiro_dia = hoje.replace(day=1)
+    mes_anterior = hoje - relativedelta(months=1)
 
-    # Próximo mês
-    if hoje.month == 12:
-        primeiro_dia_mes_seguinte = hoje.replace(year=hoje.year+1, month=1, day=1)
-    else:
-        primeiro_dia_mes_seguinte = hoje.replace(month=hoje.month+1, day=1)
+    ano = mes_anterior.year
+    mes = mes_anterior.month
 
-    # FrontOffice
-    front_qs = NPS.objects.filter(
-        data__gte=primeiro_dia,
-        data__lt=primeiro_dia_mes_seguinte
-    )
-    count_front = front_qs.count()
-    front_qs.delete()
+    # apaga apenas registos do mês anterior
+    Iqs.objects.filter(data__year=ano, data__month=mes).delete()
+    
 
-    # Historico
-    historico_qs = HistoricoNPS.objects.filter(
-        data__gte=primeiro_dia,
-        data__lt=primeiro_dia_mes_seguinte
-    )
-    count_historico = historico_qs.count()
-    historico_qs.delete()
+eliminar_iqs_mes_anterior()
 
-    print("at")
-
-    print(f"FrontOffice deletados: {count_front}")
-    print(f"Historico deletados: {count_historico}")
-
- 
