@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Atualiza o tempo de cada elemento a cada segundo
     setInterval(atualizarTempoBO, 1000);
     setInterval(atualizarTempoPausa, 1000);
-    setInterval(atualizarPagina, 10000);
+    setInterval(atualizarPagina, 30000);
 
 })
 
@@ -186,6 +186,7 @@ setInterval(()=>{
     .then(response => response.json())
     .then(data => {
         let tituloAlterado = false;
+        
         
             
         if (data.ultrapassou_pausa){
@@ -199,7 +200,7 @@ setInterval(()=>{
         }
 
         if (data.pausa_id && !data.pausa_inicio) {
-                notifyUser("✅ Pausa Aprovada!");
+                notifyUser("✅ Pausa Aprovada!",data.pausa_id);
                 lastPausaId = data.pausa_id;
                 document.title = "🔔 Pausa Aprovada!";
                 tituloAlterado = true; // guarda o último alertado
@@ -207,7 +208,7 @@ setInterval(()=>{
 
             // BO aprovado
         if (data.bo_id && !data.bo_iniciou) {
-                notifyUser("✅ BO Aprovado!");
+                notifyUser("✅ BO Aprovado!",data.bo_id);
                 lastBoId = data.bo_id;
                 document.title = "🔔 BO Aprovado!";
                 tituloAlterado= true;
@@ -218,7 +219,7 @@ setInterval(()=>{
         
     })
     
-},10000);
+},30000);
 
 function atualizarSelectTurno() {
     const filterTurno = document.getElementById("filterTurno");
@@ -243,12 +244,25 @@ if ("Notification" in window) {
 }
 
 
-function notifyUser(message) {
+let lastNotifiedPausaId = null; 
+
+function notifyUser(message, pausaId) {
+    console.log(pausaId)
+    console.log(lastNotifiedPausaId)
+    if (pausaId === lastNotifiedPausaId) {
+        console.log("Pausa ja notificada:", pausaId);
+        return;
+    }
+
+    lastNotifiedPausaId = pausaId; // marca esta pausa como notificada
+
     if ("Notification" in window && Notification.permission === "granted") {
         new Notification("🔔 Aviso", { body: message });
+        console.log("Notificação enviada:", message);
     } else {
         console.log("Notificação bloqueada ou não suportada:", message);
-        // fallback para Swal
+
+        // fallback com SweetAlert2
         Swal.fire({
             toast: true,
             position: 'top-end',
@@ -260,7 +274,6 @@ function notifyUser(message) {
         });
     }
 }
-
 function atualizarSelectMaximo() {
     const intervalos = document.getElementById('num-1')
     const intervalos2 = document.getElementById('num-2')

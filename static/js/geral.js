@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Atualiza o tempo de cada elemento a cada segundo
     setInterval(atualizarTempoBO, 1000);
     setInterval(atualizarTempoPausa, 1000);
-    setInterval(atualizarPagina, 10000);
+    setInterval(atualizarPagina, 30000);
 
 })
 
@@ -186,6 +186,7 @@ setInterval(()=>{
     .then(response => response.json())
     .then(data => {
         let tituloAlterado = false;
+        
         
             
         if (data.ultrapassou_pausa){
@@ -243,11 +244,13 @@ if ("Notification" in window) {
 }
 
 
-let lastNotifiedPausaId = null; // guarda o último ID notificado
+let lastNotifiedPausaId = null; 
 
 function notifyUser(message, pausaId) {
-    // se já foi notificada esta pausa, não repete
+    console.log(pausaId)
+    console.log(lastNotifiedPausaId)
     if (pausaId === lastNotifiedPausaId) {
+        console.log("Pausa ja notificada:", pausaId);
         return;
     }
 
@@ -255,6 +258,7 @@ function notifyUser(message, pausaId) {
 
     if ("Notification" in window && Notification.permission === "granted") {
         new Notification("🔔 Aviso", { body: message });
+        console.log("Notificação enviada:", message);
     } else {
         console.log("Notificação bloqueada ou não suportada:", message);
 

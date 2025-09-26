@@ -459,37 +459,6 @@ function terminarBO(event) {
     })
 }
 
-let alertTriggered = false
-
-function notifyUser(message) {
-    const originalTitle = document.title;
-    let isTitleModified = false
-
-    const titleInterval = setInterval(function () {
-        document.title = isTitleModified ? originalTitle : message
-        isTitleModified = !isTitleModified
-    }, 1000)
-
-    window.addEventListener("focus", function handleFocus() {
-        if (!alertTriggered) {
-            clearInterval(titleInterval)
-            document.title = originalTitle
-            alert(message)
-            alertTriggered = true
-            window.removeEventListener("focus", handleFocus)
-        }
-
-    })
-
-    setTimeout(function () {
-        if (!alertTriggered) {
-            clearInterval(titleInterval);
-            document.title = originalTitle;
-            alert(message);
-            alertTriggered = true;
-        }
-    }, 1000);
-}
 
 
 function iniciarIntervalo(event){
