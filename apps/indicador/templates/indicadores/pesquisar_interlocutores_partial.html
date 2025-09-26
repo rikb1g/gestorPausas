@@ -15,13 +15,13 @@
             <div></div>
             <div></div>
             <div></div>
-            <a href="{%  url 'novo_interlocutor' %}" class="text-end"><img src="{% static 'images/add_image.svg' %}"
+            <a class="link-ajax" href="{%  url 'novo_interlocutor' %}" class="text-end"><img src="{% static 'images/add_image.svg' %}"
                     alt=""></a>
             {% endif %}
             <ul id="resultados"></ul>
         </div>
         <div class="table-container">
-            <table class="tableInterlocutores">
+            <table class="tableInterlocutores" data-supervisor="{{ user.usuario.supervisor }}">
                 <thead>
                     <tr>
                         <th>AT</th>
@@ -40,11 +40,11 @@
                         <td class="cc">{% if resultado.cc == 'nan' %}{% else %}{{ resultado.cc }}{% endif %}</td>
                         {% if user.usuario.supervisor %}
                         <td>
-                            <a href="#" class="edit-btn"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
-                            <a href="#" class="save-btn" style="display: none;"><img
-                                    src="{% static 'images/save_image.svg' %}" alt=""></a>
-                            <a href="#" , onclick="eliminarInterlocutores('{{ resultado.id }}', '{{ resultado.at }}')"
-                                class="remove-btn"><img src="{% static 'images/remove_image.svg' %}" alt=""></a>
+                            <button type="button"  class="edit-btn btn-remove"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
+                            <button type="button"  class="save-btn btn-remove" style="display: none;"><img
+                                    src="{% static 'images/save_image.svg' %}" alt=""></button>
+                            <button type="button" class="btn-remove remove-btn" , onclick="eliminarInterlocutores(event,'{{ resultado.id }}', '{{ resultado.at }}')"
+                                class="remove-btn"><img src="{% static 'images/remove_image.svg' %}" alt=""></button>
                         </td>
                         {% endif %}
                     </tr>

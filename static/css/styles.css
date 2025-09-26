@@ -330,6 +330,12 @@ a:hover{
     top: 50%;
     transform: translate(-50%, -50%);
 }
+
+
+form input {
+    background-color: var(--table-bg) !important;
+    color: var(--text-color) !important;
+}
 @keyframes spin {
     0% {
         transform: rotate(0deg);

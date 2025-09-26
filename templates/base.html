@@ -107,11 +107,16 @@
   <script>
     const imagem_grid = "{% static 'images/grid_view.svg' %}"
     const imagem_column = "{% static 'images/view_column.svg' %}"
+    const image_edit = "{% static 'images/edit_image.svg' %}"
+    const image_remove = "{% static 'images/remove_image.svg' %}"
+    const image_save = "{% static 'images/save_image.svg' %}"
     window.locationHomePage = "{% url 'home' %}"
     window.pausasList = "{% url 'lista_intervalos' %}"
     window.taxasList = "{% url 'listar_iqs' %}"
     window.FrontOfficeNpsUrl = "{% url 'frontoffice_nps' %}"
     window.NPSJsonUrl = "{% url 'frontoffice_nps_json' %}";
+    window.interlocutoresList = "{% url 'pesquisar_interlocutores' %}"
+
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

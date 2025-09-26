@@ -1,0 +1,16 @@
+{% load static %}
+
+<div class="text-center mt-5">
+    <p class="titulo-principal"><i>Interlocutores</i></p>
+</div>
+
+
+<div class="container text-center w-80">
+    <h2>Novo Interlocutor</h2>
+
+    <form method="post" class="form-new w-50 mx-auto">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-azul">Salvar</button>
+    </form>
+</div>

@@ -602,11 +602,39 @@ def editar_interlocutores(request):
 class InterlocutoresCreate(CreateView):
     model = Interlocutores
     form_class = InterlocutoresForm
-    template_name = 'indicador/interlocutores_create.html'
+    template_name = 'indicadores/interlocutores_create.html'
     success_url = reverse_lazy('pesquisar_interlocutores')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'id': self.object.id,
+                'nome': str(self.object)
+            })
+        return super().form_valid(form)
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # só o partial (sem base.html)
+            return render(request, 'indicador/interlocutores_form_partial.html', {'form': form})
+        # página completa
+        return render(request, self.template_name, {'form': form})
+
+    def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+        return super().form_invalid(form)
 
 
 def eliminar_interlocutores(request, id):
-    interlocutores = get_object_or_404(Interlocutores, pk=id)
-    interlocutores.delete()
-    return redirect('pesquisar_interlocutores')
+    try:
+        interlocutores = get_object_or_404(Interlocutores, pk=id)
+        interlocutores.delete()
+        return JsonResponse({'success':True},status=200)
+    except Interlocutores.DoesNotExist:
+        return JsonResponse({'success':False},status=400)
+   
+    

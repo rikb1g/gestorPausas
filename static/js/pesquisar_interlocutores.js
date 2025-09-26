@@ -12,12 +12,12 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-$(document).on('click', '.edit-btn',function () {
-
+$(document).ready(function() {
+    $('.edit-btn').on('click', function() {
         let row = $(this).closest('tr');
         let at = row.find('.at').text();
         let destinatarios = row.find('.destinatarios').text().trim();
-        let cc = row.find('.cc').text().trim();
+        let cc = row.find('.cc').text().trim(); 
 
         row.find('.at').html(`<input type="text" class="edit-at" value="${at}">`);
         row.find('.destinatarios').html(`<input type="text" class="edit-destinatarios" value="${destinatarios}">`);
@@ -27,7 +27,7 @@ $(document).on('click', '.edit-btn',function () {
         row.find('.save-btn').show();
         row.find('.remove-btn').hide();
     })
-    $('.save-btn').on('click', function (e) {
+    $('.save-btn').on('click', function(e) {
         e.preventDefault();
 
         let row = $(this).closest('tr');
@@ -39,7 +39,7 @@ $(document).on('click', '.edit-btn',function () {
         $.ajax({
             url: '/indicadores/editar_interlocutores/',
             method: 'POST',
-
+            
             data: {
                 'id': id,
                 'at': at,
@@ -48,19 +48,21 @@ $(document).on('click', '.edit-btn',function () {
                 'csrfmiddlewaretoken': getCookie('csrftoken'),
             },
             dataType: 'json',
-            success: function (data) {
+            success: function(data) {
                 if (data.success) {
                     row.find('.at').text(at);
                     row.find('.destinatarios').text(destinatarios);
                     row.find('.cc').text(cc);
 
-                    row.find('.edit-btn').show();
-                    row.find('.save-btn').hide();
-                    row.find('.remove-btn').show();
+                        row.find('.edit-btn').show();
+                        row.find('.save-btn').hide();
+                        row.find('.remove-btn').show();
                 }
             }
         })
     })
+})
+
 
 
 window.addEventListener("beforeunload", function () {
@@ -75,14 +77,33 @@ window.addEventListener("load", function () {
     }
 });
 
-function eliminarInterlocutores(id, at) {
+function eliminarInterlocutores(event, id, at) {
+    event.preventDefault();
     if (confirm("Tem certeza de que deseja eliminar a AT " + at + " ?")) {
-        window.location.href = '/indicadores/eliminar_interlocutores/' + encodeURIComponent(id) + "/";
+        url = '/indicadores/eliminar_interlocutores/' + encodeURIComponent(id) + "/";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    carregarConteudo(window.interlocutoresList);
+                }
+                else {
+                    alert(data.message);
+                }
+            })
     }
 }
 
 
 function atualizarTabela(resultados) {
+    let supervisor = $('#procurarInterlocutores').data('supervisor') === 'True';
     let tabelaBody = $('.tableInterlocutores tbody');
     tabelaBody.empty();
 
@@ -91,8 +112,23 @@ function atualizarTabela(resultados) {
             let row = `<tr>
                 <td>${item.at}</td>
                 <td>${item.destinatarios}</td>
-                <td>${item.cc !== 'nan' ? item.cc : ''}</td>
-            </tr>`;
+                <td>${item.cc !== 'nan' ? item.cc : ''}</td>`;
+
+            if (supervisor) {
+                row += `<td>
+                    <button type="button" class="edit-btn btn-remove">
+                        <img src="${image_edit}" alt="Editar">
+                    </button>
+                    <button type="button" class="save-btn btn-remove" style="display: none;">
+                        <img src="${image_save}" alt="Salvar">
+                    </button>
+                    <button type="button" class="btn-remove remove-btn" onclick="eliminarInterlocutores(event,'${item.id}', '${item.at}')">
+                        <img src="${image_remove}" alt="Remover">
+                    </button>
+                </td>`;
+            }
+
+            row += `</tr>`;
             tabelaBody.append(row);
         });
     }
@@ -119,7 +155,7 @@ $(document).on('keyup', '#procurarInterlocutores', function () {
             }
         });
     } else if (query.length === 0) {
-         $('.tableInterlocutores tbody').html(tabelaOriginalInterlocutores);
+        $('.tableInterlocutores tbody').html(tabelaOriginalInterlocutores);
     }
 
 });

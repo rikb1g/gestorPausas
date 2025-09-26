@@ -6,17 +6,7 @@
 </div>
 
 {% block main %}
-<div class="container">
-<div class="">Novo Interlocutor</div>
 
-    <form method="post" class="form-new text-center">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-azul">Salvar</button>
-    </form>
-
-</div>
-
-
+{% include 'indicadores/interlocutores_create_partial.html' %}
 
 {% endblock %}
