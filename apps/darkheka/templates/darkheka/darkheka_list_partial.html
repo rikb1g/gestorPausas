@@ -13,7 +13,9 @@
        <div class="div"></div>
        <div class="div">
               {% if user.usuario.supervisor %}
-              <a href="{% url 'novo_darkheka' %}" class="text-start link-ajax"><img src="{% static 'images/add_image.svg' %}" alt=""></a>
+              <a href="{% url 'novo_darkheka' %}" class="text-start link-ajax"><span class="material-symbols-outlined btn-span add">
+add_circle
+</span></a>
               {% endif %}
        </div>
       
@@ -31,8 +33,12 @@
 <ul class=" mt-5"><a href="{% url 'details_darkheka' darkheka.id %}" class="text-start fs-3 link-ajax">{{ darkheka.title }}</a>
        {% if user.usuario.supervisor %}
 
-       <a href="{% url 'editar_darkheka' darkheka.id %}" class="text-end link-ajax"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
-       <a href="#"><img src="{% static 'images/remove_image.svg' %}" alt=""></a>
+       <a href="{% url 'editar_darkheka' darkheka.id %}" class="text-end link-ajax"><span class="material-symbols-outlined btn-span">
+edit
+</span></a>
+       <a href="#"><span class="material-symbols-outlined btn-span">
+delete
+</span></a>
        {% endif %}
 
 </ul>

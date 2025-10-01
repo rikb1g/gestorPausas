@@ -1,13 +1,14 @@
 {% load static %}
 
 <div class="text-center mt-5">
-        <p class="titulo-principal"><i>Interlocutores</i></p>
+    <p class="titulo-principal"><i>Interlocutores</i></p>
 </div>
 
 <div class="container mt-5">
     <div>
         <div class="d-flex justify-content-between ms-3">
-            <input type="text" id="procurarInterlocutores" name="pesquisar_at" placeholder="Procurar AT" class="ms-5" data-supervisor="{{ user.usuario.supervisor }}">
+            <input type="text" id="procurarInterlocutores" name="pesquisar_at" placeholder="Procurar AT" class="ms-5"
+                data-supervisor="{{ user.usuario.supervisor }}">
             {% if user.usuario.supervisor %}
             <div></div>
             <div></div>
@@ -15,8 +16,9 @@
             <div></div>
             <div></div>
             <div></div>
-            <a class="link-ajax" href="{%  url 'novo_interlocutor' %}" class="text-end"><img src="{% static 'images/add_image.svg' %}"
-                    alt=""></a>
+            <a class="link-ajax" href="{%  url 'novo_interlocutor' %}" class="text-end"><span class="material-symbols-outlined btn-span add">
+add_circle
+</span></a>
             {% endif %}
             <ul id="resultados"></ul>
         </div>
@@ -40,11 +42,19 @@
                         <td class="cc">{% if resultado.cc == 'nan' %}{% else %}{{ resultado.cc }}{% endif %}</td>
                         {% if user.usuario.supervisor %}
                         <td>
-                            <button type="button"  class="edit-btn btn-remove"><img src="{% static 'images/edit_image.svg' %}" alt=""></a>
-                            <button type="button"  class="save-btn btn-remove" style="display: none;"><img
-                                    src="{% static 'images/save_image.svg' %}" alt=""></button>
-                            <button type="button" class="btn-remove remove-btn" , onclick="eliminarInterlocutores(event,'{{ resultado.id }}', '{{ resultado.at }}')"
-                                class="remove-btn"><img src="{% static 'images/remove_image.svg' %}" alt=""></button>
+                            <button type="button" class="edit-btn btn-remove"><span
+                                    class="material-symbols-outlined btn-span">
+                                    edit
+                                </span></a>
+                                <button type="button" class="save-btn btn-remove" style="display: none;"><span
+                                        class="material-symbols-outlined btn-span">
+                                        save
+                                    </span></button>
+                                <button type="button" class="btn-remove remove-btn" ,
+                                    onclick="eliminarInterlocutores(event,'{{ resultado.id }}', '{{ resultado.at }}')"
+                                    class="remove-btn"><span class="material-symbols-outlined btn-span">
+                                        delete
+                                    </span></button>
                         </td>
                         {% endif %}
                     </tr>
@@ -55,5 +65,3 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-   
-   

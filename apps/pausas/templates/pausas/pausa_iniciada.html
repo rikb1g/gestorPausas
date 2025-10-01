@@ -4,7 +4,7 @@
 {% for time in pausa_iniciada %}
  {% if time.id %}
         <p class="mt-2">Intervalo iniciado:</p>
-        <div class="linha">
+        <div class="d-inline-flex align-items-center text-center gap-1">
             <p data-id="{{ time.id }}" class="tempo-decorrido-pausa tempo-total"></p>
         </div>
     {% endif %}

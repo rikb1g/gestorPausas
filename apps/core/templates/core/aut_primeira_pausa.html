@@ -1,47 +1,55 @@
 {% load static %}
 
 {% for intervalo in pausa_autorizada_1 %}
-                        <div class="dados  rounded m-3" style="--bs-bg-opacity: .5;">
-                            <div class="linha mt-2">
-                                {% if intervalo.inicio is None %}
-                                <p class="btn-azul-claro">{{ intervalo.funcionario}}</p>
+<div class="dados  rounded m-3" style="--bs-bg-opacity: .5;">
+    <div class="d-inline-flex align-items-center text-center gap-1 p-1 mt-2">
+        {% if intervalo.inicio is None %}
+        <p class="btn-azul-claro">{{ intervalo.funcionario}}</p>
 
-                                <button type="button" class="btn-remove" class="mb-3 ms-3" onclick="exibirPopUpConfirmacaoEliPAusa(event,'{{ intervalo.id }}','{{ intervalo.funcionario }}')" ><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO"></button>
-                                
-                                {% else %}
-                                {% if intervalo.calcular_tempo_ate_aviso %}
-                                <p class="btn-vermelho">
-                                    {{ intervalo.funcionario}}
-                                </p>
-                                {% else %}                                
-                                <p class="btn-verde">
-                                    {{ intervalo.funcionario}}
-                                </p>
-                                {% endif %}
-                                <button type="button" class="btn-remove" class="mb-3 ms-3" onclick="exibirPopUpConfirmacaoEliPAusa(event,'{{ intervalo.id }}','{{ intervalo.funcionario }}')" ><img
-                                        src="{% static 'images/close.svg' %}" alt="remover BO"></button>
-                                {% endif %}
+        <button type="button" class="btn-remove" class="mb-3 ms-3"
+            onclick="exibirPopUpConfirmacaoEliPAusa(event,'{{ intervalo.id }}','{{ intervalo.funcionario }}')"><span
+                class="material-symbols-outlined btn-span">
+                delete
+            </span></button>
 
-                            </div>
-                            {% if intervalo.inicio is None %}
-                            <div class="linha mt-0-5">
-                            <div>Pausa aceite: <b>{{intervalo.calcular_tempo_desde_aprovacao }}</b></div>
+        {% else %}
+        {% if intervalo.calcular_tempo_ate_aviso %}
+        <p class="btn-vermelho">
+            {{ intervalo.funcionario}}
+        </p>
+        {% else %}
+        <p class="btn-verde">
+            {{ intervalo.funcionario}}
+        </p>
+        {% endif %}
+        <button type="button" class="btn-remove" class="mb-3 ms-3"
+            onclick="exibirPopUpConfirmacaoEliPAusa(event,'{{ intervalo.id }}','{{ intervalo.funcionario }}')"><span
+                class="material-symbols-outlined btn-span">
+                delete
+            </span></button>
+        {% endif %}
 
-                            </div>
-                            {% else %}
+    </div>
+    {% if intervalo.inicio is None %}
+    <div class="linha mt-0-5">
+        <div>Pausa aceite: <b>{{intervalo.calcular_tempo_desde_aprovacao }}</b></div>
 
-                            {% endif %}
+    </div>
+    {% else %}
 
-                            {% if intervalo.inicio %}
-                            <div class="linha mt-0-5 p-0">
-                                <div><p>Iniciado a: <span id="tempo-decorrido-pausa-{{ intervalo.id }}'" data-id="{{ intervalo.id }}" class="tempo-decorrido-pausa"></span></p>
-                            </div>
+    {% endif %}
 
-                            </div>
-                            {% endif %}
-                            <div class="linha mt-0-5">
-                                <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa  }}</b></div>
-                            </div>
-                        </div>
+    {% if intervalo.inicio %}
+    <div class="linha mt-0-5 p-0">
+        <div>
+            <p>Iniciado a: <span id="tempo-decorrido-pausa-{{ intervalo.id }}'" data-id="{{ intervalo.id }}"
+                    class="tempo-decorrido-pausa"></span></p>
+        </div>
+
+    </div>
+    {% endif %}
+    <div class="linha mt-0-5">
+        <div>Total pausa: <b>{{ intervalo.calcular_tempo_decorrido_pausa }}</b></div>
+    </div>
+</div>
 {% endfor %}

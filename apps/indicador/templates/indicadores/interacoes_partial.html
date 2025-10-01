@@ -7,7 +7,7 @@
 <div class="container">
 
 <div class="text-end mb-5">
-    <form  method="get" id="form-filter-interacoes">
+    <form  method="get" id="form-filter-interacoes" class="d-inline-flex align-items-center gap-2">
 
     <select name="utilizador" id="utilizador-select"  class="form-select-md ms-2 select-turno">
          {% for utilizador in utilizadores%}
@@ -24,7 +24,9 @@
     </select>
 
     <button type="button"  onclick="procurarInteracoesSelect(event)" class="btn-remove">
-            <img src="{% static 'images/filter_image.svg' %}" alt=""></a>
+            <span class="material-symbols-outlined btn-span filter">
+filter_alt
+</span></a>
 
     </button>
 

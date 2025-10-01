@@ -2,13 +2,19 @@
 
 {% for pausa in pausas_fila_1 %}
 <div class="dados  rounded m-2 p-2" style="--bs-bg-opacity: .5;">
-    <div class="linha mt-2">
+    <div class="d-inline-flex align-items-center text-center gap-1 p-1 mt-2">
         <p class="btn-azul-claro">{{ pausa.funcionario}}</p>
 
-        <button  type="button" class="mb-3 ms-2 btn-remove"  onclick="exibirPopUpConfirmacaoAutPausa(event,'{{ pausa.funcionario.id }}','{{ pausa.funcionario }}')"><img
-                src="{% static 'images/check.svg' %}" alt="autorizar pausa"></a>
-        <button type="button" class="mb-3 btn-remove" onclick="exibirPopUpConfirmacaoEliPAusa(event,'{{ pausa.id }}','{{ pausa.funcionario }}')"><img
-                src="{% static 'images/close.svg'%}" alt="remover pausa"></button>
+        <button type="button" class="mb-3 ms-2 btn-remove"
+            onclick="exibirPopUpConfirmacaoAutPausa(event,'{{ pausa.funcionario.id }}','{{ pausa.funcionario }}')"><span
+                class="material-symbols-outlined btn-span">
+                check_circle
+            </span></a>
+            <button type="button" class="mb-3 btn-remove"
+                onclick="exibirPopUpConfirmacaoEliPAusa(event,'{{ pausa.id }}','{{ pausa.funcionario }}')"><span
+                    class="material-symbols-outlined btn-span">
+                    delete
+                </span></button>
     </div>
     <div class="linha mt-0-5 int">
         <div>Em fila: <b>{{ pausa.calcular_tempo_decorrido_entrada_fila }}</b></div>
