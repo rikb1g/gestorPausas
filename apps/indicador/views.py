@@ -259,6 +259,8 @@ def pesquisar_interacoes_json(request):
                 queryset = queryset.filter(nota__gte=7, nota__lt=9)
             elif nota_get == "3":
                 queryset = queryset.filter(nota__lt=7)
+        elif nota_get == "0":
+            queryset = queryset.filter().order_by('-data')[:100]
         for resultado in queryset:
             resultados.append({
                 'interacao': resultado.interacao,

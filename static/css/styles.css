@@ -102,6 +102,7 @@ a:hover{
     cursor: pointer;
 }
 
+
 .Assistente {
     display: flex;
     justify-content: space-between;  /* Distribui as caixas ao longo da página */
