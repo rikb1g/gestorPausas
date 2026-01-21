@@ -141,7 +141,7 @@ class BackOfficeDiario(models.Model):
         for bo in bo_diario:
             if bo.inicio and bo.fim:
                 tempo_total =+ (bo.fim - bo.inicio)
-        if tempo_total > timedelta(minutes=1):
+        if tempo_total > timedelta(minutes=30):
             funcionario.ja_utilizou_bo = True
             funcionario.save()
             return True
