@@ -500,10 +500,7 @@ td {
 }
 
 
-.table-iqs{
-     max-height: 400px;  /* altura máxima desejada */
-    overflow-y: auto; 
-}
+
 
 *::-webkit-scrollbar {
     width: 8px; /* largura da barra de rolagem */
