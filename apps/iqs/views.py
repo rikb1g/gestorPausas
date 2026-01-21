@@ -32,7 +32,7 @@ class IqsListView(ListView):
         NAO_TRANSFERIDA_BO = TipoIqs.objects.get_or_create(name='Nao Transferido BO')[0]
 
        
-        
+
         hoje = timezone.now().date()
         ano, mes = hoje.year, hoje.month
         numero_dias = calendar.monthrange(ano, mes)[1]
@@ -51,25 +51,8 @@ class IqsListView(ListView):
             )
         )
 
-        nps_mes = (
-            NPS.objects.filter(funcionario=funcionario, data__range=(inicio_mes, fim_mes))
-            .values('data')
-            .annotate(
-                total_nps = Count('id'),
-            )
-        )
-
-        
-
-       
-
         # Indexar por data para lookup rápido
         iqs_por_dia = {item['data']: item for item in iqs_mes}
-        nps_por_dia = {item['data']: item for item in nps_mes}
-
-        nps_dados = nps_por_dia.get(dia_data, {
-                'total_nps': 0,
-                })
 
         dias_taxas = []
         for dia in range(1, numero_dias + 1):
@@ -110,8 +93,6 @@ class IqsListView(ListView):
             total_nao_transferidos_bo=Count('id', filter=Q(tipo_id=NAO_TRANSFERIDA_BO.id)),
         )
 
-        totais_nps = NPS.calcular_taxa_resposta_geral(funcionario, mes, ano)
-
         total_fo = totais['total_transferidos_fo'] + totais['total_nao_transferidos_fo']
         total_bo = totais['total_transferidos_bo'] + totais['total_nao_transferidos_bo']
         total_geral = total_fo + total_bo
@@ -130,7 +111,7 @@ class IqsListView(ListView):
         ) if total_bo > 0 else 0
 
         context['taxa_resposta_geral'] = round(
-            (totais['total_transferidos_fo'] + totais['total_transferidos_bo']) / totais_nps * 100, 2
+            (totais['total_transferidos_fo'] + totais['total_transferidos_bo']) / total_geral * 100, 2
         ) if total_geral > 0 else 0
 
         return context
