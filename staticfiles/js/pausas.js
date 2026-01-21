@@ -60,9 +60,7 @@ function pedirPausa(event){
 
 function pedirBO(event){
     event.preventDefault()
-    document.body.style.cursor = 'wait';
-    var turno = document.getElementById('filterTurno').value
-    fetch(`/backoffice/pedir_bo/?turno=${turno}`,{
+    fetch("/backoffice/pedir_bo/",{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

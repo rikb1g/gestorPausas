@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function atualizarTempoBO() {
         document.querySelectorAll('.tempo-decorrido-bo').forEach(function (element) {
             const id = element.getAttribute('data-id');
+            
             fetch(`/backoffice/tempo_bo/${id}/`)
                 .then(response => {
                     if (!response.ok) {
@@ -80,11 +81,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
-    atualizarSelectTurno();
+
 
     function atualizarTempoPausa() {
         document.querySelectorAll('.tempo-decorrido-pausa').forEach(function (element) {
             const id = element.getAttribute('data-id');
+            
 
             if (!id) {
                 console.warn("Ignorado: elemento sem data-id", element);
@@ -156,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Erro na requisição: ', error);
             });
-        atualizarSelectTurno();
+        
     }
 
 
@@ -221,17 +223,7 @@ setInterval(()=>{
     
 },30000);
 
-function atualizarSelectTurno() {
-    const filterTurno = document.getElementById("filterTurno");
-    if (filterTurno) {
-        fetch(`/usuarios/turno_funcionario/`)
-            .then(r => r.json())
-            .then(data => {
-                filterTurno.value = data.turno === "manha" ? "True" : "False";
-            })
-            .catch(err => console.error("Erro ao buscar turno:", err));
-    }
-}
+
 
 let shownAlerts = new Set();
 
@@ -360,7 +352,6 @@ const container = document.getElementById("content-dynamic");
 
 const observer = new MutationObserver(() => {
     atualizarCores();
-    atualizarSelectTurno();
     seleciorUtilizador();
     
 });

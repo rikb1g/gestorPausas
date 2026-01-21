@@ -42,8 +42,8 @@ def home(request):
     # BO
     bo = BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True)
     fila_bo = BackOfficeFilaEspera.objects.filter(funcionario = request.user.usuario)
-    funcionarios_manha = Usuario.objects.filter(turno_manha=True)
-    funcionarios_tarde = Usuario.objects.filter(turno_manha= False)
+    funcionarios_manha = Usuario.objects.filter(ja_utilizou_bo=False)
+    funcionarios_tarde = Usuario.objects.filter(ja_utilizou_bo= True)
     data['total_bo'] = BackOfficeDiario.calcular_tempo_decorrido_bo(request.user.usuario)
     data['bo_autorizado_manha'] = BackOffice.objects.filter(funcionario__in=funcionarios_manha,aprovado=True)
     data['bo_autorizado_tarde'] = BackOffice.objects.filter(funcionario__in=funcionarios_tarde,aprovado=True)

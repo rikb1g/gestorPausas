@@ -51,15 +51,7 @@
         {% include 'pausas/bo_nao_aprovado.html' %}
         {% else %}
 
-        <div class="linha mb-3">
-            <label for="filterTurno" class="me-2">Fila:</label>
-            <select id="filterTurno" class="form-select-sm select-turno">
-                <option value="True">Manhã</option>
-                <option value="False">Tarde</option>
-            </select>
-
-        </div>
-
+       
         <button type="button" class="btn-azul link-a" onclick="pedirBO(event)">Pedir BO</button>
         <div class="spinner" id="spinner" style="display: none;"></div>
 

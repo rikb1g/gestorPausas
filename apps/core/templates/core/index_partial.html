@@ -84,11 +84,11 @@
 
     <div class="row text-center mt-5">
         <div class="col col-bo-manha" id="box-bo-manha">
-            <p class="fs-2 mt-4"><b>BO Manhã</b></p>
+            <p class="fs-2 mt-4"><b>BO 1ª vez</b></p>
             <form id="form-filterBoManha" method="post" class="form-container align-items-center"
                 action="{% url 'maximo_bo_autorizados' 'true' %}">
                 <div>
-                    <label>Máximo de BO Manha ({{ num_bo_autorizado_manha }}): </label>
+                    <label>Máximo de BO 1ª vez ({{ num_bo_autorizado_manha }}): </label>
                     <select name="num" id="num-bo-manha" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
                         <option value="{{ num }}">{{ num }}</option>
@@ -116,12 +116,12 @@
 
         </div>
         <div class="col col-bo-tarde" id="box-bo-tarde">
-            <p class="fs-2 mt-4"><b>BO Tarde</b></p>
+            <p class="fs-2 mt-4"><b>BO 2ª vez</b></p>
             <form id="form-filterBoTarde" method="post" class="form-container align-items-center"
                 action="{% url 'maximo_bo_autorizados' 'false' %}">
 
                 <div>
-                    <label>Máximo de BO Tarde ({{ num_bo_autorizado_tarde }}): </label>
+                    <label>Máximo de BO 2ª vez ({{ num_bo_autorizado_tarde }}): </label>
                     <select name="num" id="num-bo-tarde" aria-label="Small select example" class="ms-2">
                         {% for num in contador %}
                         <option value="{{ num }}">{{ num }}</option>

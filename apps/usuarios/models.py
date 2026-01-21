@@ -11,6 +11,7 @@ class Usuario(models.Model):
     supervisor = models.BooleanField(default=False)
     turno_manha = models.BooleanField(default=True)
     ja_utilizou_pausa = models.BooleanField(default=False)
+    ja_utilizou_bo = models.BooleanField(default=False)
     quantidade_pausas = models.IntegerField(default=0)
     pausa_aceite = models.BooleanField(default=False)
     ultrapassou_tempo_bo = models.BooleanField(default=False)

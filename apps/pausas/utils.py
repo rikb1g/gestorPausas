@@ -44,15 +44,15 @@ def montar_contexto_home(funcionario):
     context['bo_aprovado'] = BackOffice.objects.filter(funcionario=funcionario, aprovado=True, pausa=False)
     context['bo_nao_aprovado'] = BackOfficeFilaEspera.objects.filter(funcionario=funcionario)
 
-    if funcionario.turno_manha:
-        usuarios_manha = Usuario.objects.filter(turno_manha=True)
+    if not funcionario.ja_utilizou_bo:
+        primeiro_bo = Usuario.objects.filter(ja_utilizou_bo=False)
         fila_bo_object = BackOfficeFilaEspera.objects.filter(
-            funcionario__in=usuarios_manha
+            funcionario__in=primeiro_bo
         ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
     else:
-        usuarios_tarde = Usuario.objects.filter(turno_manha=False)
+        segundo_Bo = Usuario.objects.filter(ja_utilizou_bo=True)
         fila_bo_object = BackOfficeFilaEspera.objects.filter(
-            funcionario__in=usuarios_tarde
+            funcionario__in=segundo_Bo
         ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada')
 
     context['fila_bo'] = fila_bo_object

@@ -8,28 +8,23 @@ from apps.usuarios.models import Usuario
 from apps.pausas.models import ConfiguracaoPausa, ConfiguracaoPausa2
 
 
-
+# corrigir 
 def pedir_bo(request):
     if request.method == 'POST':
-        turno = str(request.GET.get('turno')).lower()
         usuario = get_object_or_404(Usuario, user=request.user)
-        if turno == "true":
-            usuario.turno_manha = True
-            usuario_turno = True
-        elif turno == "false":
-            usuario.turno_manha = False
-            usuario_turno = False
-        usuario.save()
-        print(f"turno: {turno}")
+        BackOfficeDiario.calcular_tempo_para_2_bo(usuario)
+        
+        usuarios_primeiro_bo = Usuario.objects.filter(ja_utilizou_bo=False)
+        usuarios_segundo_bo = Usuario.objects.filter(ja_utilizou_bo=True)
+        
 
-        bo_aceites_manha = BackOffice.objects.filter(aprovado=True,turno_manha=True)
-        bo_aceites_tarde = BackOffice.objects.filter(aprovado=True,turno_manha=False)
-        print(f"pediu bo: {request.user} turno: {usuario_turno}")
+        bo_aceites_manha = BackOffice.objects.filter(aprovado=True,funcionario__in=usuarios_primeiro_bo)
+        bo_aceites_tarde = BackOffice.objects.filter(aprovado=True,funcionario__in=usuarios_segundo_bo)
+        
         ultrapassou_limite = False
-        if usuario_turno:
-            configuracao_manha = BackofficeConfig.objects.first()
-        else:
-            configuracao_tarde = BackofficeConfigTarde_BO.objects.first()
+        
+        configuracao_manha = BackofficeConfig.objects.first()
+        configuracao_tarde = BackofficeConfigTarde_BO.objects.first()
         limite_bo = BackOfficeDiario.objects.filter(funcionario=usuario).first()
         if limite_bo:
             print(limite_bo)
@@ -37,7 +32,9 @@ def pedir_bo(request):
         else:
             print("sem bo diario")
 
-        if usuario_turno:
+         #parei aqui   
+        
+        if not usuario.ja_utilizou_bo:
             with transaction.atomic():
                 if BackOffice.objects.filter(funcionario=usuario, aprovado=True,turno_manha=True).exists() or \
                 BackOfficeFilaEspera.objects.filter(funcionario= usuario).exists():
@@ -53,6 +50,7 @@ def pedir_bo(request):
                     BackOfficeFilaEspera.objects.create(funcionario=request.user.usuario, data_entrada= timezone.now())
                     return JsonResponse({"success": True,"message":"BO pedido, estás em fila de espera!"}, status=200)
         else:
+            print("aqui")
             with transaction.atomic():
                 if BackOffice.objects.filter(funcionario=request.user.usuario, aprovado=True,turno_manha=False).exists() or \
                         BackOfficeFilaEspera.objects.filter(funcionario=request.user.usuario).exists():
@@ -68,9 +66,9 @@ def pedir_bo(request):
                     print()
                     BackOfficeFilaEspera.objects.create(funcionario=request.user.usuario, data_entrada=timezone.now())
                     return JsonResponse({"success": True,"message":"BO pedido, estás em fila de espera!"}, status=200)
+                    
 
     return JsonResponse({"success": False,"message": "Método não permitido"}, status=405)
-
 
 def iniciar_bo(request):
     print(request.method)
@@ -108,6 +106,7 @@ def finalizar_bo(request):
                     BackOfficeDiario.objects.create(funcionario=bo_funcionario.funcionario, inicio=bo_funcionario.inicio,fim=bo_funcionario.fim)
                 bo_funcionario.delete()
                 print(f"{bo_funcionario.funcionario} Finalizou BO")
+                BackOfficeDiario.calcular_tempo_para_2_bo(request.user.usuario)
                 return JsonResponse({"success": True,"message":"BO Finalizado"}, status=200)
         except Exception as e:
             return JsonResponse({"success": False,"error": f"Erro interno: {str(e)}"}, status=500)
@@ -123,10 +122,11 @@ def cancelar_bo(request):
                 print(f"id: {id}")
                 bo = BackOffice.objects.filter(id=id).first()
                 if bo is not None:
-                    for backoffice in BackOffice.objects.filter(funcionario=bo.funcionario):
-                        print(f"backoffice: {backoffice}")
-                        backoffice.delete()
-                        print(f"{backoffice.funcionario} teve BO cancelado por {user}")
+                    bo.fim = timezone.now()
+                    bo.save()
+                    BackOfficeDiario.objects.create(funcionario=bo.funcionario, inicio= bo.inicio, fim = bo.fim)
+                    BackOfficeDiario.calcular_tempo_para_2_bo(bo.funcionario)
+                    bo.delete()
                     return JsonResponse({"success": True,"message":"BO Cancelado"}, status=200)
                
                 else:

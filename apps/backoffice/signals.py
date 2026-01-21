@@ -27,16 +27,16 @@ def autorizar_proximo_bo(sender, instance, **kwargs):
     config_manha = BackofficeConfig.objects.last()
     config_tarde = BackofficeConfigTarde_BO.objects.last()
 
-    funcionarios_manha = Usuario.objects.filter(turno_manha=True)
-    funcionarios_tarde = Usuario.objects.filter(turno_manha=False)
+    primeiro_bo = Usuario.objects.filter(ja_utilizou_bo=False)
+    segundo_bo = Usuario.objects.filter(ja_utilizou_bo=True)
     if config_manha:
         num_maximo_bo_manha = config_manha.capacidade_maxima
-        num_bo_autorizado_manha = BackOffice.objects.filter(funcionario__in=funcionarios_manha, aprovado=True).count()
+        num_bo_autorizado_manha = BackOffice.objects.filter(funcionario__in=primeiro_bo, aprovado=True).count()
         print(f"Nº máximo de manha autorizados: {num_maximo_bo_manha}")
         print(f"Nº de BO manha aprovados: {num_bo_autorizado_manha}")
         while num_bo_autorizado_manha < num_maximo_bo_manha:
             proximo = BackOfficeFilaEspera.objects.filter(
-                funcionario__in=funcionarios_manha
+                funcionario__in=primeiro_bo
                 ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada').first()
 
 
@@ -50,22 +50,22 @@ def autorizar_proximo_bo(sender, instance, **kwargs):
                     break
                 else:
                     BackOffice.objects.create(funcionario=proximo.funcionario, aprovado=True,
-                                              data_aprovacao=timezone.now(),turno_manha=True)
+                                              data_aprovacao=timezone.now())
                     proximo.delete()
-            num_bo_autorizado_manha = BackOffice.objects.filter(funcionario__in=funcionarios_manha, aprovado=True).count()
+            num_bo_autorizado_manha = BackOffice.objects.filter(funcionario__in=primeiro_bo, aprovado=True).count()
             
     else:
         BackofficeConfig.objects.create(capacidade_maxima=0)
 
     if config_tarde:
         num_maximo_bo_tarde= config_tarde.capacidade_maxima
-        num_bo_autorizado_tarde= BackOffice.objects.filter(funcionario__in=funcionarios_tarde,
+        num_bo_autorizado_tarde= BackOffice.objects.filter(funcionario__in=segundo_bo,
                                                            aprovado=True).count()
         print(f"Nº máximo de BO tarde autorizados: {num_maximo_bo_tarde}")
         print(f"Nº de BO tarde autorizados: {num_bo_autorizado_tarde}")
         while num_bo_autorizado_tarde < num_maximo_bo_tarde:
             proximo_tarde = BackOfficeFilaEspera.objects.filter(
-                funcionario__in=funcionarios_tarde
+                funcionario__in=segundo_bo
                 ).order_by('funcionario__ultrapassou_tempo_bo', 'data_entrada').first()
 
             if not proximo_tarde:
@@ -81,10 +81,10 @@ def autorizar_proximo_bo(sender, instance, **kwargs):
                 else:
                     print("BO autorizado")
                     BackOffice.objects.create(funcionario=proximo_tarde.funcionario,
-                                              aprovado=True,data_aprovacao=timezone.now(),turno_manha=False)
+                                              aprovado=True,data_aprovacao=timezone.now())
                     proximo_tarde.delete()
             
-            num_bo_autorizado_tarde = BackOffice.objects.filter(funcionario__in=funcionarios_tarde,
+            num_bo_autorizado_tarde = BackOffice.objects.filter(funcionario__in=segundo_bo,
                                                            aprovado=True).count()
     else:
         BackofficeConfigTarde_BO.objects.create(capacidade_maxima=0)

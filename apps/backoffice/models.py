@@ -132,6 +132,25 @@ class BackOfficeDiario(models.Model):
     inicio = models.DateTimeField(null=True,blank=True)
     fim = models.DateTimeField(null=True, blank=True)
 
+
+    @classmethod
+    def calcular_tempo_para_2_bo(cls,funcionario):
+        bo_diario = BackOfficeDiario.objects.filter(funcionario=funcionario)
+        tempo_total = timedelta()
+        print(tempo_total)
+        for bo in bo_diario:
+            if bo.inicio and bo.fim:
+                tempo_total =+ (bo.fim - bo.inicio)
+        if tempo_total > timedelta(minutes=1):
+            funcionario.ja_utilizou_bo = True
+            funcionario.save()
+            return True
+        else:
+            funcionario.ja_utilizou_bo = False
+            funcionario.save()
+            return False
+
+
     @classmethod
     def calcular_tempo_decorrido_bo(cls,funcionario):
         bo_funcionario = BackOfficeDiario.objects.filter(funcionario=funcionario)
@@ -209,11 +228,7 @@ class BackofficeConfigTarde_BO(models.Model):
         return f"Capacidade_maxima_BO_tarde = {self.capacidade_maxima}"
     
 
-class BackofficeConfigTerceiroBO(models.Model):
-    capacidade_maxima = models.IntegerField(default=0)
 
-    def __str__(self):
-        return f"Capacidade_maxima_BO_terceiro = {self.capacidade_maxima}"
 
 
 def formatted_time(time):
